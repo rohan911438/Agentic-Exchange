@@ -16,6 +16,8 @@ class TaskCreateRequest(BaseModel):
     threshold: float = Field(20.0, ge=0)
     personality: str = Field("neutral")
     randomness: float = Field(0.0, ge=0, le=1)
+    deadline: Optional[str] = None
+    task_description: Optional[str] = None
 
 
 class TaskCreateResponse(BaseModel):
