@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import json
 from buyer_agent import BuyerAgent
 from seller_agent import SellerAgent
 from strategy import is_within_threshold
 from utils import log_round, print_final_result
+
+from llm_negotiator import (
+    call_gemini,
+    parse_llm_response,
+    BUYER_PROMPT,
+    SELLER_PROMPT
+)
 
 
 class NegotiationEngine:
@@ -14,51 +22,88 @@ class NegotiationEngine:
 
     def run(self) -> dict:
         max_rounds = min(self.buyer.max_rounds, self.seller.max_rounds)
-        history: list[dict] = []
+        conversation: list[dict] = []
+        
+        # We will keep a textual history to feed into the prompt
+        format_history = ""
+
+        # Tracking state
+        current_buyer_price = self.buyer.initial_offer
+        current_seller_price = self.seller.initial_price
 
         for round_number in range(1, max_rounds + 1):
-            buyer_offer = self.buyer.make_offer(round_number)
-            seller_price = self.seller.make_counter(round_number)
-
-            log_round(round_number, buyer_offer, seller_price)
-            history.append(
-                {
-                    "round": round_number,
-                    "buyer": buyer_offer,
-                    "seller": seller_price,
-                }
+            # Formulate prompts
+            buyer_prompt = BUYER_PROMPT.format(
+                budget=self.buyer.budget,
+                initial_offer=current_buyer_price,
+                history=format_history or "No conversation yet."
             )
+            
+            # Call Gemini for Buyer
+            buyer_raw = call_gemini(buyer_prompt)
+            buyer_message, buyer_price = parse_llm_response(buyer_raw)
+            
+            if buyer_price > 0:
+                # Rule-based bound constraint
+                current_buyer_price = min(buyer_price, self.buyer.budget)
 
-            if self.seller.can_accept(buyer_offer):
-                return {
-                    "status": "success",
-                    "final_price": round(buyer_offer, 2),
-                    "rounds": round_number,
-                    "history": history,
-                }
+            format_history += f"\nBuyer: {buyer_message}\nOffer: {current_buyer_price}"
 
-            if self.buyer.can_accept(seller_price):
-                return {
-                    "status": "success",
-                    "final_price": round(seller_price, 2),
-                    "rounds": round_number,
-                    "history": history,
-                }
+            # Formulate seller prompt based on updated history
+            seller_prompt = SELLER_PROMPT.format(
+                min_price=self.seller.min_price,
+                initial_price=current_seller_price,
+                history=format_history
+            )
+            
+            # Call Gemini for Seller
+            seller_raw = call_gemini(seller_prompt)
+            seller_message, seller_price = parse_llm_response(seller_raw)
 
-            if is_within_threshold(buyer_offer, seller_price, self.threshold):
-                agreed_price = round((buyer_offer + seller_price) / 2, 2)
+            if seller_price > 0:
+                 # Rule-based bound constraint
+                 current_seller_price = max(seller_price, self.seller.min_price)
+
+            format_history += f"\nSeller: {seller_message}\nOffer: {current_seller_price}"
+
+            # Store full conversation
+            conversation.append({
+                "buyer": buyer_message,
+                "seller": seller_message,
+                "buyer_price": current_buyer_price,
+                "seller_price": current_seller_price
+            })
+
+            log_round(round_number, current_buyer_price, current_seller_price)
+
+            # Deal Closing Logic based on threshold
+            if abs(current_buyer_price - current_seller_price) < self.threshold:
+                agreed_price = round((current_buyer_price + current_seller_price) / 2, 2)
                 return {
-                    "status": "success",
+                    "status": "closed",
                     "final_price": agreed_price,
-                    "rounds": round_number,
-                    "history": history,
+                    "conversation": conversation
+                }
+
+            # Optional rule-based accepts from existing agents
+            if self.seller.can_accept(current_buyer_price):
+                return {
+                    "status": "closed",
+                    "final_price": round(current_buyer_price, 2),
+                    "conversation": conversation
+                }
+
+            if self.buyer.can_accept(current_seller_price):
+                return {
+                    "status": "closed",
+                    "final_price": round(current_seller_price, 2),
+                    "conversation": conversation
                 }
 
         return {
             "status": "failed",
             "final_price": None,
-            "rounds": max_rounds,
-            "history": history,
+            "conversation": conversation
         }
 
 
@@ -66,7 +111,7 @@ def main() -> None:
     buyer = BuyerAgent(
         budget=500,
         initial_offer=300,
-        max_rounds=8,
+        max_rounds=5, # Reduce rounds for LLM to avoid rate limits
         increase_pct=0.10,
         threshold=20,
         personality="neutral",
@@ -76,7 +121,7 @@ def main() -> None:
     seller = SellerAgent(
         min_price=350,
         initial_price=500,
-        max_rounds=8,
+        max_rounds=5,
         decrease_pct=0.10,
         threshold=20,
         personality="neutral",
@@ -85,7 +130,9 @@ def main() -> None:
 
     engine = NegotiationEngine(buyer=buyer, seller=seller, threshold=20)
     result = engine.run()
-    print_final_result(result)
+    
+    # We dump it nicely to verify
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":
