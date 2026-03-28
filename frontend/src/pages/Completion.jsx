@@ -1,40 +1,124 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Share2, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { CheckCircle2, Star, ArrowLeft, Share2, PartyPopper, Trophy } from 'lucide-react';
 
-const Completion = () => (
-  <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex items-center justify-center relative overflow-hidden">
-     {/* Celebration backglow */}
-     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-aqua/10 blur-[150px] -z-10 rounded-full" />
+const Completion = () => {
+  const navigate = useNavigate();
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
 
-     <div className="max-w-xl w-full text-center space-y-10 animate-fadeInUp">
-        <div className="flex justify-center flex-col items-center gap-4">
-           <div className="w-24 h-24 rounded-full bg-aqua/20 border border-aqua/30 flex items-center justify-center mb-6">
-              <CheckCircle size={48} className="text-aqua" />
-           </div>
-           <h1 className="text-5xl font-bold font-display text-white italic">Deal Finalized</h1>
-           <p className="text-slate italic max-w-sm mx-auto">The autonomous agents have fulfilled the milestones. Funds have been securely released to the service provider.</p>
-        </div>
+  const finalDeal = {
+    title: "Fintech App UI Design",
+    price: 450,
+    summary: "Complete mobile UI/UX overhaul with 12 screens, custom icons, and interactive prototypes. Verified on the Algorand blockchain."
+  };
 
-        <div className="grid grid-cols-2 gap-4">
-           <button className="p-4 bg-ink-800 border border-white/10 rounded-2xl text-white text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink-700 transition-colors">
-              <Download size={14} /> Download Receipt
-           </button>
-           <button className="p-4 bg-ink-800 border border-white/10 rounded-2xl text-white text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink-700 transition-colors">
-              <Share2 size={14} /> Share Success
-           </button>
-        </div>
+  return (
+    <div className="pt-32 pb-24 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">
+      {/* Background Celebration Elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-lime/5 to-transparent -z-10" />
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute -top-20 -right-20 w-80 h-80 bg-aqua/5 blur-[80px] rounded-full -z-10" 
+      />
 
-        <div className="pt-10 border-t border-white/5">
-           <Link 
-             to="/dashboard" 
-             className="px-10 py-5 bg-aqua text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all shadow-soft inline-flex items-center gap-2"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-2xl w-full text-center space-y-10"
+      >
+        {/* Success Icon & Heading */}
+        <div className="space-y-6">
+           <motion.div 
+             initial={{ y: 20, opacity: 0 }}
+             animate={{ y: 0, opacity: 1 }}
+             transition={{ delay: 0.2 }}
+             className="w-24 h-24 bg-lime/10 border border-lime/20 rounded-full flex items-center justify-center mx-auto relative"
            >
-              Return to Dashboard <ArrowRight size={20} />
-           </Link>
+              <CheckCircle2 size={48} className="text-lime" />
+              <motion.div 
+                animate={{ scale: [1, 1.5, 1], opacity: [0, 0.5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 bg-lime rounded-full"
+              />
+           </motion.div>
+           
+           <div className="space-y-2">
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-white italic">Deal Successfully Completed 🎉</h1>
+              <p className="text-slate text-sm max-w-md mx-auto italic">The transaction for "{finalDeal.title}" has been finalized and released from escrow.</p>
+           </div>
         </div>
-     </div>
-  </div>
-);
+
+        {/* Final Summary Card */}
+        <div className="bg-ink-800/50 border border-white/5 p-8 md:p-10 rounded-[2.5rem] backdrop-blur-xl shadow-soft space-y-8 relative group">
+           <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
+              <div className="text-center md:text-left">
+                 <div className="text-[10px] uppercase font-mono text-slate tracking-widest mb-1">Final Settlement</div>
+                 <div className="text-4xl font-display font-bold text-white">₹{finalDeal.price}.00</div>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
+                 <Trophy size={16} className="text-aqua" />
+                 <span className="text-xs font-bold text-white uppercase tracking-tighter italic">Top Tier Delivery</span>
+              </div>
+           </div>
+
+           <div className="space-y-4">
+              <h3 className="text-xs uppercase font-mono text-slate tracking-widest text-left font-bold">Project Summary</h3>
+              <p className="text-slate text-sm leading-relaxed text-left italic">
+                 {finalDeal.summary}
+              </p>
+           </div>
+
+           {/* Rating System */}
+           <div className="pt-4 space-y-4 border-t border-white/5">
+              <h3 className="text-xs uppercase font-mono text-slate tracking-widest font-bold">Rate the Negotiation</h3>
+              <div className="flex justify-center gap-3">
+                 {[1, 2, 3, 4, 5].map((star) => (
+                   <button
+                     key={star}
+                     type="button"
+                     className="transition-all hover:scale-125 focus:outline-none"
+                     onClick={() => setRating(star)}
+                     onMouseEnter={() => setHover(star)}
+                     onMouseLeave={() => setHover(0)}
+                   >
+                     <Star
+                       size={32}
+                       fill={(hover || rating) >= star ? '#5EF0FF' : 'transparent'}
+                       className={(hover || rating) >= star ? 'text-aqua' : 'text-slate/20'}
+                     />
+                   </button>
+                 ))}
+              </div>
+              <p className="text-[10px] text-slate/40 italic">Your feedback helps improve the AI Agent training models.</p>
+           </div>
+
+           {/* Actions */}
+           <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="w-full py-4 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2"
+              >
+                 <ArrowLeft size={18} /> Back to Dashboard
+              </button>
+              <button 
+                className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+              >
+                 <Share2 size={18} /> Share Results
+              </button>
+           </div>
+        </div>
+
+        {/* Blockchain Receipt */}
+        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-aqua/5 border border-aqua/10">
+           <PartyPopper size={16} className="text-aqua" />
+           <span className="text-[10px] font-mono text-aqua uppercase tracking-widest font-bold">Transaction Confirmed: 0x8a...4b12</span>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 export default Completion;
