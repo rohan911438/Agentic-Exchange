@@ -11,7 +11,7 @@ const Navbar = ({ connected, setConnected }) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-900/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={connected ? "/dashboard" : "/"} className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-aqua to-blush flex items-center justify-center">
              <div className="w-4 h-4 rounded-full border-2 border-white/20" />
           </div>
@@ -20,10 +20,18 @@ const Navbar = ({ connected, setConnected }) => {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          <Link to="/" className="text-slate hover:text-white transition-colors">Home</Link>
-          <Link to="/dashboard" className="text-slate hover:text-white transition-colors">Dashboard</Link>
-          <Link to="/create-deal" className="text-slate hover:text-white transition-colors">Create Deal</Link>
+        <div className="hidden md:flex items-center gap-6">
+          {!connected ? (
+            <Link to="/" className="text-slate hover:text-white transition-colors">Home</Link>
+          ) : (
+            <>
+              <Link to="/dashboard" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Dashboard</Link>
+              <Link to="/create-deal" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Create Deal</Link>
+              <Link to="/negotiation-room" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Negotiation</Link>
+              <Link to="/summary" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Summary</Link>
+              <Link to="/active-deal" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Active Deal</Link>
+            </>
+          )}
           
           <button
             onClick={() => setConnected(!connected)}

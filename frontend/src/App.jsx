@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -22,13 +22,13 @@ function App() {
         
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/create-deal" element={<CreateDeal />} />
-            <Route path="/negotiation-room" element={<NegotiationRoom />} />
-            <Route path="/summary" element={<DealSummary />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/active-deal" element={<ActiveDeal />} />
-            <Route path="/completion" element={<Completion />} />
+            <Route path="/" element={connected ? <Navigate to="/dashboard" /> : <Home />} />
+            <Route path="/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
+            <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
+            <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />
+            <Route path="/dashboard" element={connected ? <Dashboard /> : <Navigate to="/" />} />
+            <Route path="/active-deal" element={connected ? <ActiveDeal /> : <Navigate to="/" />} />
+            <Route path="/completion" element={connected ? <Completion /> : <Navigate to="/" />} />
           </Routes>
         </main>
 
