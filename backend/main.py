@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+import os
+
+from dotenv import load_dotenv
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
@@ -14,6 +17,8 @@ from backend.models import (
     TaskCreateResponse,
 )
 from backend.store import DEALS, TASKS, DealRecord, TaskRecord
+
+load_dotenv()
 
 app = FastAPI(title="Agentic Exchange Backend", version="0.1.0")
 
@@ -42,6 +47,12 @@ def create_task(payload: TaskCreateRequest) -> TaskCreateResponse:
 def start_negotiation(task_id: str) -> NegotiationStartResponse:
     if task_id not in TASKS:
         raise HTTPException(status_code=404, detail="task_id not found")
+
+    if not os.getenv("GEMINI_API_KEY"):
+        raise HTTPException(
+            status_code=400,
+            detail="GEMINI_API_KEY is not set. Export it before starting negotiation.",
+        )
 
     started_at = datetime.utcnow()
     task = TASKS[task_id]
