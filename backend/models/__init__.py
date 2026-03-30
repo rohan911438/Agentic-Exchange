@@ -1,17 +1,15 @@
 from .schemas import (
-    TaskCreateRequest,
-    TaskCreateResponse,
-    NegotiationStartResponse,
-    DealResponse,
-    NegotiationDirectRequest,
-    NegotiationDirectResponse
+    DealCreateRequest,
+    DealCreateResponse,
+    NegotiationRequest,
+    NegotiationResponse,
+    DealDetailsResponse
 )
 
 __all__ = [
-    "TaskCreateRequest",
-    "TaskCreateResponse",
-    "NegotiationStartResponse",
-    "DealResponse",
-    "NegotiationDirectRequest",
-    "NegotiationDirectResponse"
+    "DealCreateRequest",
+    "DealCreateResponse",
+    "NegotiationRequest",
+    "NegotiationResponse",
+    "DealDetailsResponse"
 ]

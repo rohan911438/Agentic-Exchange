@@ -8,7 +8,7 @@ from typing import Any
 deals: dict[str, dict[str, Any]] = {}
 
 
-def create_deal(data: dict[str, Any], status: str = "negotiated", deal_id: str | None = None) -> str:
+def create_deal(data: dict[str, Any], status: str = "created", deal_id: str | None = None) -> str:
     """
     Creates a new deal in the store.
     If deal_id is not provided, a unique one is generated.
@@ -23,9 +23,24 @@ def create_deal(data: dict[str, Any], status: str = "negotiated", deal_id: str |
     return deal_id
 
 
+def update_deal(deal_id: str, data: dict[str, Any] | None = None, status: str | None = None) -> bool:
+    """
+    Updates an existing deal record.
+    """
+    if deal_id not in deals:
+        return False
+    
+    if data is not None:
+        deals[deal_id]["data"] = data
+    if status is not None:
+        deals[deal_id]["status"] = status
+    return True
+
+
 def get_deal(deal_id: str) -> dict[str, Any] | None:
     """
     Retrieves a deal by ID.
+    Returns the full record: {"data": ..., "status": ...}
     """
     return deals.get(deal_id)
 

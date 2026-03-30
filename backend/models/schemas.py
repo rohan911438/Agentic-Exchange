@@ -5,49 +5,32 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 
-class TaskCreateRequest(BaseModel):
-    budget: float = Field(..., gt=0)
-    min_price: float = Field(..., gt=0)
-    initial_offer: float = Field(..., gt=0)
-    initial_price: float = Field(..., gt=0)
-    max_rounds: int = Field(8, ge=1, le=100)
-    increase_pct: float = Field(0.10, ge=0, le=1)
-    decrease_pct: float = Field(0.10, ge=0, le=1)
-    threshold: float = Field(20.0, ge=0)
-    personality: str = Field("neutral")
-    randomness: float = Field(0.0, ge=0, le=1)
-    deadline: Optional[str] = None
-    task_description: Optional[str] = None
-
-
-class TaskCreateResponse(BaseModel):
-    task_id: str
-    status: str
-    created_at: datetime
-
-
-class NegotiationStartResponse(BaseModel):
-    task_id: str
-    status: str
-    started_at: datetime
-
-
-class DealResponse(BaseModel):
-    task_id: str
-    status: str
-    deal: Optional[dict[str, Any]] = None
-    updated_at: datetime
-
-
-class NegotiationDirectRequest(BaseModel):
+class DealCreateRequest(BaseModel):
     budget: float = Field(..., gt=0)
     min_price: float = Field(..., gt=0)
     deadline: str
     description: str
 
 
-class NegotiationDirectResponse(BaseModel):
+class DealCreateResponse(BaseModel):
+    deal_id: str
     status: str
-    final_price: Optional[float]
-    conversation: list[dict[str, Any]]
-    rounds: int
+    created_at: datetime
+
+
+class NegotiationRequest(BaseModel):
+    deal_id: str
+
+
+class NegotiationResponse(BaseModel):
+    status: str
+    final_price: Optional[float] = None
+    conversation: list[dict[str, Any]] = []
+    rounds: int = 0
+
+
+class DealDetailsResponse(BaseModel):
+    deal_id: str
+    status: str
+    data: Optional[dict[str, Any]] = None
+    created_at: Optional[datetime] = None
