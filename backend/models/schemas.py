@@ -37,3 +37,17 @@ class DealResponse(BaseModel):
     status: str
     deal: Optional[dict[str, Any]] = None
     updated_at: datetime
+
+
+class NegotiationDirectRequest(BaseModel):
+    budget: float = Field(..., gt=0)
+    min_price: float = Field(..., gt=0)
+    deadline: str
+    description: str
+
+
+class NegotiationDirectResponse(BaseModel):
+    status: str
+    final_price: Optional[float]
+    conversation: list[dict[str, Any]]
+    rounds: int
