@@ -5,7 +5,7 @@ import sys
 from typing import Any
 
 # Allow importing the agent modules that live in the Agents/ folder
-AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Agents"))
+AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "Agents"))
 if AGENTS_DIR not in sys.path:
     sys.path.insert(0, AGENTS_DIR)
 

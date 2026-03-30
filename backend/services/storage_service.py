@@ -19,5 +19,6 @@ class DealRecord:
     updated_at: datetime
 
 
+# In-memory storage for tasks and deals
 TASKS: dict[str, TaskRecord] = {}
 DEALS: dict[str, DealRecord] = {}
