@@ -76,27 +76,14 @@ class NegotiationEngine:
 
             log_round(round_number, current_buyer_price, current_seller_price)
 
-            # Deal Closing Logic based on threshold
-            if abs(current_buyer_price - current_seller_price) < self.threshold:
-                agreed_price = round((current_buyer_price + current_seller_price) / 2, 2)
+            # 🛡️ Agent-Driven Finalization Logic
+            # A deal is only closed if the agents actually reach an agreement 
+            # where the Buyer meets or exceeds the Seller's ask.
+            if current_buyer_price >= current_seller_price:
+                # The agreed price is set to the seller's price (as the buyer met it)
                 return {
                     "status": "closed",
-                    "final_price": agreed_price,
-                    "conversation": conversation
-                }
-
-            # Optional rule-based accepts from existing agents
-            if self.seller.can_accept(current_buyer_price):
-                return {
-                    "status": "closed",
-                    "final_price": round(current_buyer_price, 2),
-                    "conversation": conversation
-                }
-
-            if self.buyer.can_accept(current_seller_price):
-                return {
-                    "status": "closed",
-                    "final_price": round(current_seller_price, 2),
+                    "final_price": current_seller_price,
                     "conversation": conversation
                 }
 
