@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useWallet } from '../context/WalletContext';
+import { LogOut, Wallet } from 'lucide-react';
 
-const Navbar = ({ connected, setConnected }) => {
-  const truncateAddress = (address) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+const Navbar = () => {
+  const { account, connected, toggleModal, disconnect, formatAddress } = useWallet();
 
-  const mockAddress = "0xA1B2C3D4E5F678901234567890ABCDEF12345678";
+  // Using real address from context
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-900/80 backdrop-blur-md border-b border-white/5">
@@ -33,16 +33,29 @@ const Navbar = ({ connected, setConnected }) => {
             </>
           )}
           
-          <button
-            onClick={() => setConnected(!connected)}
-            className={`px-6 py-2.5 rounded-full font-medium shadow-soft transition-all duration-300 ${
-              connected 
-              ? 'bg-ink-700 text-aqua border border-aqua/30' 
-              : 'bg-gradient-to-r from-aqua to-blush text-ink-900 hover:shadow-[0_0_20px_rgba(94,240,255,0.4)]'
-            }`}
-          >
-            {connected ? `Connected: ${truncateAddress(mockAddress)}` : 'Connect Wallet'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={connected ? undefined : toggleModal}
+              className={`px-6 py-2.5 rounded-full font-medium shadow-soft transition-all duration-300 flex items-center gap-2 ${
+                connected 
+                ? 'bg-ink-700 text-aqua border border-aqua/30 cursor-default' 
+                : 'bg-gradient-to-r from-aqua to-blush text-ink-900 hover:shadow-[0_0_20px_rgba(94,240,255,0.4)]'
+              }`}
+            >
+              <Wallet className="w-4 h-4" />
+              {connected ? `Connected: ${formatAddress(account)}` : 'Connect Wallet'}
+            </button>
+
+            {connected && (
+              <button
+                onClick={disconnect}
+                className="p-2.5 rounded-full bg-ink-700 border border-white/10 text-slate hover:text-blush hover:border-blush/30 transition-all duration-300"
+                title="Disconnect Wallet"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Mobile menu button could go here */}
