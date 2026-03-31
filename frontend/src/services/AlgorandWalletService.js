@@ -6,32 +6,17 @@ class AlgorandWalletService {
   constructor() {
     this.peraWallet = new PeraWalletConnect();
     this.deflyWallet = new DeflyWalletConnect();
-    this.selectedWallet = null; // 'pera' | 'defly' | 'algosigner'
+    this.selectedWallet = null;
   }
 
   /**
-   * Detects available wallet extensions in the browser.
+   * Detects available wallet extensions.
    */
   async detectWallets() {
     return {
-      pera: {
-        id: 'pera',
-        name: 'Pera Wallet',
-        installed: true, // Pera is always available via QR/Mobile
-        extensionInstalled: !!window?.algorand?.isPera
-      },
-      defly: {
-        id: 'defly',
-        name: 'Defly Wallet',
-        installed: true, // Defly is always available via QR/Mobile
-        extensionInstalled: !!window?.algorand?.isDefly
-      },
-      algosigner: {
-        id: 'algosigner',
-        name: 'AlgoSigner',
-        installed: typeof window !== 'undefined' && !!window.AlgoSigner,
-        extensionInstalled: typeof window !== 'undefined' && !!window.AlgoSigner
-      }
+      pera: { id: 'pera', name: 'Pera Wallet', installed: true, extensionInstalled: !!window?.algorand?.isPera },
+      defly: { id: 'defly', name: 'Defly Wallet', installed: true, extensionInstalled: !!window?.algorand?.isDefly },
+      algosigner: { id: 'algosigner', name: 'AlgoSigner', installed: typeof window !== 'undefined' && !!window.AlgoSigner, extensionInstalled: typeof window !== 'undefined' && !!window.AlgoSigner }
     };
   }
 
@@ -41,9 +26,14 @@ class AlgorandWalletService {
   async connectPera() {
     try {
       const accounts = await this.peraWallet.connect();
-      this.peraWallet.handleDisconnected(() => {
-        this.disconnect();
-      });
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No accounts shared. Please select an account in your Pera app.");
+      }
+
+      // Standard Pera v1 disconnect handling
+      this.peraWallet.connector?.on("disconnect", () => this.disconnect());
+      
       this.selectedWallet = 'pera';
       return accounts[0];
     } catch (error) {
@@ -59,9 +49,13 @@ class AlgorandWalletService {
   async connectDefly() {
     try {
       const accounts = await this.deflyWallet.connect();
-      this.deflyWallet.handleDisconnected(() => {
-        this.disconnect();
-      });
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No accounts shared. Please select an account in your Defly app.");
+      }
+
+      this.deflyWallet.connector?.on("disconnect", () => this.disconnect());
+      
       this.selectedWallet = 'defly';
       return accounts[0];
     } catch (error) {
@@ -81,7 +75,7 @@ class AlgorandWalletService {
 
     await window.AlgoSigner.connect();
     const accounts = await window.AlgoSigner.accounts({
-      ledger: "MainNet", // Default to MainNet, can be changed
+      ledger: "MainNet",
     });
 
     if (accounts.length === 0) {
@@ -93,57 +87,57 @@ class AlgorandWalletService {
   }
 
   /**
-   * Reconnects to previous session if available.
+   * Reconnects to an existing session.
    */
   async reconnect(savedProvider) {
-    if (savedProvider === 'pera') {
-      try {
-        const accounts = await this.peraWallet.reconnectSession();
+    try {
+      let accounts = [];
+      if (savedProvider === 'pera') {
+        accounts = await this.peraWallet.reconnectSession();
         if (accounts.length > 0) {
-          this.peraWallet.handleDisconnected(() => this.disconnect());
+          this.peraWallet.connector?.on("disconnect", () => this.disconnect());
           this.selectedWallet = 'pera';
           return accounts[0];
         }
-      } catch (e) {
-        console.error("Pera reconnect failed", e);
-      }
-    } else if (savedProvider === 'defly') {
-      try {
-        const accounts = await this.deflyWallet.reconnectSession();
+      } else if (savedProvider === 'defly') {
+        accounts = await this.deflyWallet.reconnectSession();
         if (accounts.length > 0) {
-          this.deflyWallet.handleDisconnected(() => this.disconnect());
+          this.deflyWallet.connector?.on("disconnect", () => this.disconnect());
           this.selectedWallet = 'defly';
           return accounts[0];
         }
-      } catch (e) {
-        console.error("Defly reconnect failed", e);
+      } else if (savedProvider === 'algosigner') {
+        return await this.connectAlgoSigner();
       }
-    } else if (savedProvider === 'algosigner') {
-      // AlgoSigner doesn't have a specific reconnect, just check if connected
-      return await this.connectAlgoSigner();
+    } catch (e) {
+      console.error(`Reconnect failed for ${savedProvider}`, e);
     }
     return null;
   }
 
   /**
-   * Disconnects the active wallet.
+   * Disconnects everything and reloads the page to clear all provider memory.
    */
   async disconnect() {
-    if (this.selectedWallet === 'pera') {
-      await this.peraWallet.disconnect();
-    } else if (this.selectedWallet === 'defly') {
-      await this.deflyWallet.disconnect();
-    }
+    try {
+      if (this.selectedWallet === 'pera') {
+        await this.peraWallet.disconnect();
+      } else if (this.selectedWallet === 'defly') {
+        await this.deflyWallet.disconnect();
+      }
+    } catch (e) {}
+    
     this.selectedWallet = null;
     localStorage.removeItem("wallet_provider");
-    window.location.reload(); // Force reload to clear all states reliably
+    localStorage.removeItem("wallet_account");
+    window.location.reload();
   }
 
   /**
    * Helper to truncate address for UI.
    */
   formatAddress(address) {
-    if (!address) return "";
+    if (!address || typeof address !== 'string') return "";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }
 }

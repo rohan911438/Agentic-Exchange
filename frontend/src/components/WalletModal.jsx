@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Smartphone, Layers, ShieldCheck, ExternalLink, Loader2 } from "lucide-react";
+import { X, Smartphone, Layers, ShieldCheck, ExternalLink, Loader2, AlertCircle } from "lucide-react";
 import { useWallet } from "../context/WalletContext";
 import { walletService } from "../services/AlgorandWalletService";
 
 const WalletModal = () => {
-  const { isModalOpen, toggleModal, connect, connecting } = useWallet();
+  const { isModalOpen, toggleModal, connect, connecting, error } = useWallet();
   const [availableWallets, setAvailableWallets] = useState({
     pera: { installed: true, name: "Pera Wallet", id: "pera" },
     defly: { installed: true, name: "Defly Wallet", id: "defly" },
@@ -82,6 +82,18 @@ const WalletModal = () => {
           </div>
 
           <div className="p-6 space-y-4">
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="p-3 rounded-xl bg-blush/10 border border-blush/20 flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-blush flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-blush leading-tight">{error}</p>
+              </motion.div>
+            )}
+
             {wallets.map((wallet) => (
               <button
                 key={wallet.id}

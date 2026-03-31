@@ -5,9 +5,7 @@ const WalletContext = createContext();
 
 export const useWallet = () => {
   const context = useContext(WalletContext);
-  if (!context) {
-    throw new Error("useWallet must be used within a WalletProvider");
-  }
+  if (!context) throw new Error("useWallet must be used within a WalletProvider");
   return context;
 };
 
@@ -22,53 +20,38 @@ export const WalletProvider = ({ children }) => {
   // Sync with localStorage on mount
   useEffect(() => {
     const savedProvider = localStorage.getItem("wallet_provider");
-    if (savedProvider) {
-      reconnect(savedProvider);
+    const savedAccount = localStorage.getItem("wallet_account");
+    
+    if (savedProvider && savedAccount) {
+      setAccount(savedAccount);
+      setConnected(true);
+      setProvider(savedProvider);
+      // Attempt to silently reconnect SDK session in background
+      walletService.reconnect(savedProvider).catch(err => {
+        console.warn("Background reconnect failed", err);
+      });
     }
   }, []);
-
-  const reconnect = async (savedProvider) => {
-    setConnecting(true);
-    try {
-      const address = await walletService.reconnect(savedProvider);
-      if (address) {
-        setAccount(address);
-        setConnected(true);
-        setProvider(savedProvider);
-      } else {
-        localStorage.removeItem("wallet_provider");
-      }
-    } catch (err) {
-      console.error("Reconnect failed", err);
-      localStorage.removeItem("wallet_provider");
-    } finally {
-      setConnecting(false);
-    }
-  };
 
   const connect = async (walletType) => {
     setConnecting(true);
     setError(null);
     try {
-      let address;
-      if (walletType === 'pera') {
-        address = await walletService.connectPera();
-      } else if (walletType === 'defly') {
-        address = await walletService.connectDefly();
-      } else if (walletType === 'algosigner') {
-        address = await walletService.connectAlgoSigner();
-      }
-
+      const address = await walletService[`connect${walletType.charAt(0).toUpperCase() + walletType.slice(1)}`]();
+      
       if (address) {
         setAccount(address);
         setConnected(true);
         setProvider(walletType);
         localStorage.setItem("wallet_provider", walletType);
+        localStorage.setItem("wallet_account", address);
         setIsModalOpen(false);
+      } else {
+        throw new Error("No address returned from wallet.");
       }
     } catch (err) {
-      console.error(`Connection error for ${walletType}:`, err);
-      setError(err.message || "Failed to connect wallet");
+      console.error(`Connection failed for ${walletType}:`, err);
+      setError(err.message || "Failed to connect. Please make sure you select an account in your app.");
     } finally {
       setConnecting(false);
     }
@@ -81,12 +64,14 @@ export const WalletProvider = ({ children }) => {
       setConnected(false);
       setProvider(null);
       localStorage.removeItem("wallet_provider");
+      localStorage.removeItem("wallet_account");
     } catch (err) {
       console.error("Disconnect failed", err);
     }
   };
 
   const toggleModal = useCallback(() => {
+    setError(null);
     setIsModalOpen(prev => !prev);
   }, []);
 
@@ -100,12 +85,10 @@ export const WalletProvider = ({ children }) => {
     connect,
     disconnect,
     toggleModal,
-    formatAddress: walletService.formatAddress
+    formatAddress: (addr) => walletService.formatAddress(addr)
   };
 
   return (
-    <WalletContext.Provider value={value}>
-      {children}
-    </WalletContext.Provider>
+    <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
   );
 };
