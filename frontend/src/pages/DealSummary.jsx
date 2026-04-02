@@ -1,33 +1,182 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, Calendar, ListChecks, ArrowRight, XCircle, ShieldCheck } from 'lucide-react';
+import { CheckCircle, Calendar, ListChecks, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useWallet } from '../context/WalletContext';
+import { walletService } from '../services/AlgorandWalletService';
+import { getCreateDealTxn, getAcceptTxnForDeal, getContractInfo, getDepositTxns, submitSignedTxns } from '../services/ContractService';
+import { getDeal, approveDeal, rejectDeal, recordOnchainAccept, fundDeal } from '../services/DealService';
 
 const DealSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { account, connected } = useWallet();
+  const [contractInfo, setContractInfo] = useState(null);
+  const [txStatus, setTxStatus] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
   
-  // Default fallback data if navigated directly
-  const dealData = location.state || {
+  const dealId = location.state?.dealId || null;
+  const [dealRecord, setDealRecord] = useState(null);
+
+  const requestData = dealRecord?.data?.request || dealRecord?.data || location.state || {
     title: "Mobile App Development",
     finalPrice: 450,
     deadline: "2026-04-15",
     priority: "Quality"
   };
+  const finalPrice = dealRecord?.data?.result?.final_price || requestData.finalPrice || 0;
+  const approvals = dealRecord?.data?.approvals || { buyer: false, seller: false };
+  const onchainAccepts = dealRecord?.data?.onchain_accepts || { buyer: false, seller: false };
+  const funded = Boolean(dealRecord?.data?.funded);
+  const buyerWallet = requestData?.buyer_wallet || '';
+  const sellerWallet = dealRecord?.data?.seller_wallet || '';
+  const isBuyer = account && buyerWallet && account.toLowerCase() === buyerWallet.toLowerCase();
+  const isSeller = account && sellerWallet && account.toLowerCase() === sellerWallet.toLowerCase();
+  const bothApproved = approvals.buyer && approvals.seller;
+  const readyForActive = funded && onchainAccepts.buyer && onchainAccepts.seller;
+  const isCompleted = (dealRecord?.status || '').toLowerCase() === 'completed';
 
-  const milestones = [
-    { task: "UI/UX Design & Wireframing", amount: 150 },
-    { task: "Frontend Implementation & Logic", amount: 200 },
-    { task: "Testing & Deployment", amount: 100 }
-  ];
+  const computedMilestones = (() => {
+    if (dealRecord?.data?.result?.milestones?.length) return dealRecord.data.result.milestones;
+    if (finalPrice > 0) {
+      const first = Math.round(finalPrice * 0.4);
+      const second = Math.max(finalPrice - first, 0);
+      return [first, second].filter((v) => v > 0);
+    }
+    return [];
+  })();
 
-  const handleAccept = () => {
-    // Navigate to Active Deal for "Execution" simulation
-    navigate('/active-deal');
+  const milestones = computedMilestones.map((amt, idx) => ({
+    task: `Milestone ${idx + 1}`,
+    amount: amt
+  }));
+
+  useEffect(() => {
+    getContractInfo()
+      .then(setContractInfo)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!dealId) return;
+    getDeal(dealId)
+      .then(setDealRecord)
+      .catch(() => {});
+  }, [dealId, refreshTick]);
+
+  useEffect(() => {
+    const id = setInterval(() => setRefreshTick((t) => t + 1), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const handleAccept = async () => {
+    if (!connected || !account) {
+      setTxStatus('Connect a wallet to accept on-chain.');
+      return;
+    }
+    setLoading(true);
+    setTxStatus('Preparing accept transaction...');
+    try {
+      if (!dealId) return;
+      if (isSeller) {
+        if (!onchainAccepts.buyer) {
+          setTxStatus('Waiting for buyer to create escrow on-chain.');
+          return;
+        }
+        if (approvals.seller) {
+          setTxStatus('Seller already accepted.');
+          return;
+        }
+        await approveDeal(dealId, 'seller');
+        const { txn } = await getAcceptTxnForDeal(account, dealId);
+        const signed = await walletService.signTransactions(txn, 'TestNet');
+        const { txids } = await submitSignedTxns(signed);
+        await recordOnchainAccept(dealId, 'seller', txids[0]);
+        await getDeal(dealId).then(setDealRecord).catch(() => {});
+        setTxStatus(`Seller accepted on-chain. TxID: ${txids[0]}`);
+        if (readyForActive) {
+          navigate('/active-deal', { state: { dealId } });
+        }
+      } else if (isBuyer) {
+        if (approvals.buyer) {
+          setTxStatus('Buyer already accepted.');
+          return;
+        }
+        await approveDeal(dealId, 'buyer');
+        const amount = Math.max(Math.round(finalPrice || 0), 0);
+        if (!amount) {
+          setTxStatus('Final price is missing. Cannot create escrow.');
+          return;
+        }
+        const milestoneValues = computedMilestones.length ? computedMilestones : [amount];
+        const { txns } = await getCreateDealTxn(account, dealId, amount, milestoneValues);
+        const signed = await walletService.signTransactions(txns, 'TestNet');
+        const { txids } = await submitSignedTxns(signed);
+        await recordOnchainAccept(dealId, 'buyer', txids[0]);
+        // Immediately fund escrow in the same flow
+        const { txns: depositTxns } = await getDepositTxns(account, dealId, amount);
+        const signedDeposit = await walletService.signTransactions(depositTxns, 'TestNet');
+        const { txids: depositTxids } = await submitSignedTxns(signedDeposit);
+        await fundDeal(dealId, depositTxids[0]);
+        await getDeal(dealId).then(setDealRecord).catch(() => {});
+        setTxStatus('Buyer created escrow and funded it on-chain.');
+        if (readyForActive) {
+          navigate('/active-deal', { state: { dealId } });
+        }
+      } else {
+        setTxStatus('Only buyer or seller can accept.');
+      }
+    } catch (err) {
+      setTxStatus(err.message || 'Accept transaction failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = () => {
-    navigate('/create-deal');
+  const handleFund = async () => {
+    if (!connected || !account) {
+      setTxStatus('Connect a wallet to fund escrow.');
+      return;
+    }
+      if (!bothApproved) {
+        setTxStatus('Both parties must accept before funding.');
+        return;
+      }
+      if (!isBuyer) {
+        setTxStatus('Only buyer can fund escrow.');
+        return;
+      }
+    setLoading(true);
+    setTxStatus('Preparing deposit transaction...');
+    try {
+      const amount = Math.max(Math.round(finalPrice || 0), 0);
+      if (!amount) {
+        setTxStatus('Final price is missing. Cannot fund escrow.');
+        setLoading(false);
+        return;
+      }
+      const { txns } = await getDepositTxns(account, dealId, amount);
+      const signed = await walletService.signTransactions(txns, 'TestNet');
+      const { txids } = await submitSignedTxns(signed);
+      await fundDeal(dealId, txids[0]);
+      await getDeal(dealId).then(setDealRecord).catch(() => {});
+      setTxStatus(`Escrow funded. TxID: ${txids[0]}`);
+      if (readyForActive) {
+        navigate('/active-deal', { state: { dealId } });
+      }
+    } catch (err) {
+      setTxStatus(err.message || 'Deposit failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!dealId || !(isBuyer || isSeller)) return;
+    const role = isBuyer ? 'buyer' : 'seller';
+    await rejectDeal(dealId, role);
+    navigate('/dashboard');
   };
 
   return (
@@ -58,7 +207,7 @@ const DealSummary = () => {
                     Final Price
                  </div>
                  <div className="text-4xl font-display font-bold text-white">
-                    ₹{dealData.finalPrice || 450}
+                    ₹{finalPrice || 0}
                  </div>
               </div>
               <div className="space-y-1 text-right">
@@ -66,7 +215,7 @@ const DealSummary = () => {
                     <Calendar size={12} className="text-aqua" /> Deadline
                  </div>
                  <div className="text-xl font-bold text-white">
-                    {dealData.deadline || "Apr 15, 2026"}
+                    {requestData.deadline || "Apr 15, 2026"}
                  </div>
               </div>
            </div>
@@ -77,7 +226,7 @@ const DealSummary = () => {
                  <h3 className="text-sm font-bold text-white font-display flex items-center gap-2">
                     <ListChecks size={18} className="text-aqua" /> Milestones Breakout
                  </h3>
-                 <span className="text-[10px] text-slate/50 font-mono tracking-tighter italic">3 Total Stages</span>
+                 <span className="text-[10px] text-slate/50 font-mono tracking-tighter italic">{milestones.length} Total Stages</span>
               </div>
 
               <div className="space-y-3">
@@ -100,18 +249,52 @@ const DealSummary = () => {
 
            {/* Buttons */}
            <div className="pt-4 flex flex-col gap-3">
-              <button 
-                onClick={handleAccept}
-                className="w-full py-5 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-2xl hover:scale-[1.02] transition-all shadow-soft flex items-center justify-center gap-2 group"
-              >
-                 Accept Deal & Deploy <ArrowRight size={20} className="group-hover:translate-x-1" />
-              </button>
-              <button 
-                onClick={handleReject}
-                className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-              >
-                 <XCircle size={18} /> Reject Agreement
-              </button>
+              {isCompleted ? (
+                <button
+                  onClick={() => navigate('/completion', { state: { dealId } })}
+                  className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                >
+                  View Completion
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={handleAccept}
+                    disabled={loading || !(isBuyer || isSeller) || (isBuyer && approvals.buyer) || (isSeller && approvals.seller)}
+                    className="w-full py-5 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-2xl hover:scale-[1.02] transition-all shadow-soft flex items-center justify-center gap-2 group"
+                  >
+                     {isBuyer && approvals.buyer ? 'Buyer Accepted' : isSeller && approvals.seller ? 'Seller Accepted' : 'Accept Offer'} <ArrowRight size={20} className="group-hover:translate-x-1" />
+                  </button>
+                  <button 
+                    onClick={handleReject}
+                    disabled={!dealId || !(isBuyer || isSeller)}
+                    className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                  >
+                     Reject Offer
+                  </button>
+                  {bothApproved && isBuyer && !funded && (
+                    <button 
+                      onClick={handleFund}
+                      disabled={loading}
+                      className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                    >
+                       Deposit to Escrow
+                    </button>
+                  )}
+                  {funded && (
+                    <button
+                      onClick={() => navigate('/active-deal', { state: { dealId } })}
+                      className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                    >
+                      View Active Deal
+                    </button>
+                  )}
+                </>
+              )}
+              {txStatus && (
+                <div className="text-xs text-slate text-center">{txStatus}</div>
+              )}
+
            </div>
 
         </div>

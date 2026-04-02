@@ -1,30 +1,159 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, TrendingUp, History, CheckCircle2, Clock, ArrowRight, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, CheckCircle2, ExternalLink } from 'lucide-react';
+import { listDeals, approveDeal, rejectDeal, recordOnchainAccept, fundDeal } from '../services/DealService';
+import { useWallet } from '../context/WalletContext';
+import { getCreateDealTxn, getAcceptTxnForDeal, getContractInfo, getDepositTxns, submitSignedTxns } from '../services/ContractService';
+import { walletService } from '../services/AlgorandWalletService';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('active');
+  const [deals, setDeals] = useState([]);
+  const [contractInfo, setContractInfo] = useState(null);
+  const [actionStatus, setActionStatus] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
   const navigate = useNavigate();
+  const { account, connected } = useWallet();
 
-  const activeDeals = [
-    { id: 1, title: "Fintech App UI Design", price: 450, status: "Negotiating", date: "Mar 28, 2026" },
-    { id: 2, title: "Solidity Smart Contract Audit", price: 1200, status: "Execution", date: "Mar 25, 2026" },
-    { id: 3, title: "Algorand Marketplace Integration", price: 800, status: "Negotiating", date: "Mar 27, 2026" }
-  ];
+  const loadDeals = () => {
+    listDeals()
+      .then((data) => {
+        const items = Object.entries(data || {}).map(([id, record]) => ({
+          id,
+          status: record.status || 'created',
+          data: record.data || {},
+        }));
+        setDeals(items);
+      })
+      .catch(() => setDeals([]));
+  };
 
-  const completedDeals = [
-    { id: 4, title: "Landing Page Development", price: 300, status: "Completed", date: "Mar 10, 2026" },
-    { id: 5, title: "Tokenomics Consultation", price: 1500, status: "Completed", date: "Feb 22, 2026" },
-    { id: 6, title: "Whitepaper Copywriting", price: 600, status: "Completed", date: "Jan 15, 2026" }
-  ];
+  useEffect(() => {
+    loadDeals();
+  }, []);
+  
+  useEffect(() => {
+    getContractInfo()
+      .then(setContractInfo)
+      .catch(() => {});
+  }, []);
 
+  const normalized = useMemo(() => deals.map((deal) => {
+    const request = deal.data?.request || deal.data || {};
+    const title = request?.title || request?.description?.split('—')[0]?.trim() || request?.description || 'Deal';
+    const finalPrice = deal.data?.result?.final_price || deal.data?.final_price || request?.budget || 0;
+    const statusKey = (deal.status || '').toLowerCase();
+    const status = statusKey === 'rejected'
+      ? 'Rejected'
+      : statusKey === 'negotiated'
+        ? 'Negotiated'
+        : statusKey === 'active'
+          ? 'Active'
+          : statusKey === 'completed'
+            ? 'Completed'
+            : statusKey === 'success'
+              ? 'Completed'
+              : 'Negotiating';
+    return {
+      id: deal.id,
+      title,
+      price: Math.round(finalPrice),
+      status,
+      data: deal.data,
+    };
+  }), [deals]);
+
+  const activeDeals = normalized.filter((d) => d.status !== 'Completed' && d.status !== 'Rejected');
+  const completedDeals = normalized.filter((d) => d.status === 'Completed');
+  const negotiatedDeals = normalized.filter((d) => d.status === 'Negotiated');
+  const onchainActiveDeals = normalized.filter((d) => d.status === 'Active');
+  const sellerOnchainDeals = normalized.filter((d) => {
+    const request = d.data?.request || d.data || {};
+    const sellerWallet = d.data?.seller_wallet || '';
+    const isSeller = account && sellerWallet && account.toLowerCase() === sellerWallet.toLowerCase();
+    const onchain = d.data?.onchain_accepts || {};
+    return isSeller && onchain.seller && d.status !== 'Active' && d.status !== 'Completed';
+  });
+  const dealsNeedingYourApproval = negotiatedDeals.filter((deal) => {
+    const request = deal.data?.request || deal.data || {};
+    const buyerWallet = request?.buyer_wallet || '';
+    const sellerWallet = deal.data?.seller_wallet || '';
+    const approvals = deal.data?.approvals || { buyer: false, seller: false };
+    const isBuyer = account && buyerWallet && account.toLowerCase() === buyerWallet.toLowerCase();
+    const isSeller = account && sellerWallet && account.toLowerCase() === sellerWallet.toLowerCase();
+    if (isBuyer) return !approvals.buyer;
+    if (isSeller) return !approvals.seller;
+    return false;
+  });
   const currentDeals = activeTab === 'active' ? activeDeals : completedDeals;
+
+  const handleApprove = async (deal) => {
+    const request = deal.data?.request || deal.data || {};
+    const buyerWallet = request?.buyer_wallet || '';
+    const sellerWallet = deal.data?.seller_wallet || '';
+    const role = account && account.toLowerCase() === buyerWallet.toLowerCase() ? 'buyer' : account && account.toLowerCase() === sellerWallet.toLowerCase() ? 'seller' : null;
+    if (!role) return;
+    if (!connected || !account) {
+      setActionStatus('Connect wallet to sign on-chain.');
+      return;
+    }
+    setActionLoading(true);
+    setActionStatus('Preparing on-chain acceptance...');
+    try {
+      await approveDeal(deal.id, role);
+      if (role === 'seller') {
+        const onchain = deal.data?.onchain_accepts || {};
+        if (!onchain.buyer) {
+          setActionStatus('Waiting for buyer to create escrow on-chain.');
+          return;
+        }
+        const { txn } = await getAcceptTxnForDeal(account, deal.id);
+        const signed = await walletService.signTransactions(txn, 'TestNet');
+        const { txids } = await submitSignedTxns(signed);
+        await recordOnchainAccept(deal.id, 'seller', txids[0]);
+        setActionStatus(`Seller accepted on-chain. TxID: ${txids[0]}`);
+      } else {
+        const amount = Math.max(Math.round(deal.price || 0), 0);
+        if (!amount) {
+          setActionStatus('Final price is missing. Cannot create escrow.');
+          return;
+        }
+        const milestones =
+          deal.data?.result?.milestones?.length
+            ? deal.data.result.milestones
+            : [Math.round(amount * 0.4), Math.max(amount - Math.round(amount * 0.4), 0)].filter((v) => v > 0);
+        const { txns } = await getCreateDealTxn(account, deal.id, amount, milestones);
+        const signed = await walletService.signTransactions(txns, 'TestNet');
+        const { txids } = await submitSignedTxns(signed);
+        await recordOnchainAccept(deal.id, 'buyer', txids[0]);
+        const { txns: depositTxns } = await getDepositTxns(account, deal.id, amount);
+        const signedDeposit = await walletService.signTransactions(depositTxns, 'TestNet');
+        const { txids: depositTxids } = await submitSignedTxns(signedDeposit);
+        await fundDeal(deal.id, depositTxids[0]);
+        setActionStatus('Buyer created escrow and funded it on-chain.');
+      }
+      loadDeals();
+    } catch (err) {
+      setActionStatus(err.message || 'Acceptance failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async (deal) => {
+    const request = deal.data?.request || deal.data || {};
+    const buyerWallet = request?.buyer_wallet || '';
+    const sellerWallet = deal.data?.seller_wallet || '';
+    const role = account && account.toLowerCase() === buyerWallet.toLowerCase() ? 'buyer' : account && account.toLowerCase() === sellerWallet.toLowerCase() ? 'seller' : null;
+    if (!role) return;
+    await rejectDeal(deal.id, role);
+    loadDeals();
+  };
 
   return (
     <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900">
       <div className="max-w-6xl mx-auto space-y-12">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-1">
             <h1 className="text-4xl font-bold text-white font-display italic tracking-tight">Your Deals</h1>
@@ -35,12 +164,10 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        {/* Stats Summary */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {[
-            { label: 'Active Deals', value: activeDeals.length, icon: <TrendingUp className="text-aqua" />, color: 'aqua' },
-            { label: 'Funds in Escrow', value: '₹2,450', icon: <History className="text-blush" />, color: 'blush' },
-            { label: 'Total Completed', value: completedDeals.length, icon: <CheckCircle2 className="text-lime" />, color: 'lime' }
+            { label: 'Active Deals', value: activeDeals.length, icon: <TrendingUp className="text-aqua" /> },
+            { label: 'Total Completed', value: completedDeals.length, icon: <CheckCircle2 className="text-lime" /> }
           ].map((stat) => (
             <div key={stat.label} className="p-8 rounded-[2rem] bg-ink-800/50 border border-white/5 flex items-center justify-between group hover:border-white/10 transition-colors backdrop-blur-sm">
               <div>
@@ -54,8 +181,100 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Tabs & Content */}
         <div className="space-y-8">
+          {sellerOnchainDeals.length > 0 && (
+            <div className="space-y-4">
+              <div className="text-xs font-mono uppercase tracking-[0.2em] text-slate">Seller Accepted (On-Chain)</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sellerOnchainDeals.map((deal) => (
+                  <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
+                    <div>
+                      <div className="text-lg font-bold text-white">{deal.title}</div>
+                      <div className="text-sm text-slate">₹{deal.price}</div>
+                      <div className="text-xs text-slate/70">Awaiting buyer funding</div>
+                    </div>
+                    <button
+                      onClick={() => navigate('/active-deal', { state: { dealId: deal.id } })}
+                      className="px-4 py-2 rounded-xl bg-aqua/10 border border-aqua/30 text-aqua text-xs font-bold"
+                    >
+                      View Active Deal
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {onchainActiveDeals.length > 0 && (
+            <div className="space-y-4">
+              <div className="text-xs font-mono uppercase tracking-[0.2em] text-slate">Active Deals (On-Chain)</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {onchainActiveDeals.map((deal) => (
+                  <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
+                    <div>
+                      <div className="text-lg font-bold text-white">{deal.title}</div>
+                      <div className="text-sm text-slate">₹{deal.price}</div>
+                    </div>
+                    <button
+                      onClick={() => navigate('/active-deal', { state: { dealId: deal.id } })}
+                      className="px-4 py-2 rounded-xl bg-aqua/10 border border-aqua/30 text-aqua text-xs font-bold"
+                    >
+                      View Active Deal
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {actionStatus && (
+            <div className="text-xs text-slate">{actionStatus}</div>
+          )}
+          {dealsNeedingYourApproval.length > 0 && (
+            <div className="space-y-4">
+              <div className="text-xs font-mono uppercase tracking-[0.2em] text-slate">Deals Needing Approval</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {dealsNeedingYourApproval.map((deal) => {
+                  const request = deal.data?.request || deal.data || {};
+                  const buyerWallet = request?.buyer_wallet || '';
+                  const sellerWallet = deal.data?.seller_wallet || '';
+                  const role = account && account.toLowerCase() === buyerWallet.toLowerCase()
+                    ? 'buyer'
+                    : account && account.toLowerCase() === sellerWallet.toLowerCase()
+                      ? 'seller'
+                      : null;
+                  const canAct = Boolean(role);
+                  return (
+                  <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
+                    <div>
+                      <div className="text-lg font-bold text-white">{deal.title}</div>
+                      <div className="text-sm text-slate">₹{deal.price}</div>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleApprove(deal)}
+                        disabled={actionLoading || !canAct}
+                        className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10"
+                      >
+                        Accept Offer
+                      </button>
+                      <button
+                        onClick={() => handleReject(deal)}
+                        disabled={actionLoading || !canAct}
+                        className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10"
+                      >
+                        Reject Offer
+                      </button>
+                      <button
+                        onClick={() => navigate('/summary', { state: { dealId: deal.id } })}
+                        className="px-4 py-2 rounded-xl bg-aqua/10 border border-aqua/30 text-aqua text-xs font-bold"
+                      >
+                        Review
+                      </button>
+                    </div>
+                  </div>
+                )})}
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-4 p-1.5 bg-ink-800/50 rounded-2xl border border-white/5 w-fit">
             <button
               onClick={() => setActiveTab('active')}
@@ -89,7 +308,6 @@ const Dashboard = () => {
                       }`}>
                         {deal.status}
                       </div>
-                      <span className="text-[10px] font-mono text-slate opacity-50">{deal.date}</span>
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2 group-hover:text-aqua transition-colors">{deal.title}</h3>
                     <div className="text-2xl font-display font-bold text-white/90">₹{deal.price}</div>
@@ -97,18 +315,11 @@ const Dashboard = () => {
 
                   <div className="pt-6 flex justify-between items-center bg-ink-800/50">
                     <button 
-                      onClick={() => navigate(deal.status === 'Completed' ? '/completion' : '/negotiation-room')}
+                      onClick={() => navigate(deal.status === 'Completed' ? '/summary' : '/negotiation-room', { state: { dealId: deal.id } })}
                       className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 group/btn"
                     >
                       View <ExternalLink size={12} className="group-hover/btn:scale-110 transition-transform" />
                     </button>
-                    {deal.status === 'Execution' && (
-                      <div className="flex gap-1">
-                        <span className="w-1 h-1 rounded-full bg-aqua animate-pulse" />
-                        <span className="w-1 h-1 rounded-full bg-aqua animate-pulse delay-75" />
-                        <span className="w-1 h-1 rounded-full bg-aqua animate-pulse delay-150" />
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               ))}

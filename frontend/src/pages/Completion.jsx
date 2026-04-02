@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Star, ArrowLeft, Share2, PartyPopper, Trophy } from 'lucide-react';
+import { getDeal } from '../services/DealService';
 
 const Completion = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+  const [dealRecord, setDealRecord] = useState(null);
+
+  const dealId = location.state?.dealId || null;
+
+  useEffect(() => {
+    if (!dealId) return;
+    getDeal(dealId).then(setDealRecord).catch(() => {});
+  }, [dealId]);
+
+  const finalPrice = dealRecord?.data?.result?.final_price || 0;
+  const summary = dealRecord?.data?.request?.description || 'Escrow payment released on Algorand TestNet.';
 
   const finalDeal = {
-    title: "Fintech App UI Design",
-    price: 450,
-    summary: "Complete mobile UI/UX overhaul with 12 screens, custom icons, and interactive prototypes. Verified on the Algorand blockchain."
+    title: dealRecord?.data?.request?.description || "Deal Completed",
+    price: finalPrice,
+    summary
   };
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">
-      {/* Background Celebration Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-lime/5 to-transparent -z-10" />
       <motion.div 
         animate={{ rotate: 360 }}
@@ -29,7 +41,6 @@ const Completion = () => {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-2xl w-full text-center space-y-10"
       >
-        {/* Success Icon & Heading */}
         <div className="space-y-6">
            <motion.div 
              initial={{ y: 20, opacity: 0 }}
@@ -46,12 +57,11 @@ const Completion = () => {
            </motion.div>
            
            <div className="space-y-2">
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-white italic">Deal Successfully Completed 🎉</h1>
-              <p className="text-slate text-sm max-w-md mx-auto italic">The transaction for "{finalDeal.title}" has been finalized and released from escrow.</p>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-white italic">Deal Successfully Completed</h1>
+              <p className="text-slate text-sm max-w-md mx-auto italic">The transaction for your deal has been finalized and released from escrow.</p>
            </div>
         </div>
 
-        {/* Final Summary Card */}
         <div className="bg-ink-800/50 border border-white/5 p-8 md:p-10 rounded-[2.5rem] backdrop-blur-xl shadow-soft space-y-8 relative group">
            <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
               <div className="text-center md:text-left">
@@ -71,7 +81,6 @@ const Completion = () => {
               </p>
            </div>
 
-           {/* Rating System */}
            <div className="pt-4 space-y-4 border-t border-white/5">
               <h3 className="text-xs uppercase font-mono text-slate tracking-widest font-bold">Rate the Negotiation</h3>
               <div className="flex justify-center gap-3">
@@ -95,7 +104,6 @@ const Completion = () => {
               <p className="text-[10px] text-slate/40 italic">Your feedback helps improve the AI Agent training models.</p>
            </div>
 
-           {/* Actions */}
            <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
                 onClick={() => navigate('/dashboard')}
@@ -111,10 +119,9 @@ const Completion = () => {
            </div>
         </div>
 
-        {/* Blockchain Receipt */}
         <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-aqua/5 border border-aqua/10">
            <PartyPopper size={16} className="text-aqua" />
-           <span className="text-[10px] font-mono text-aqua uppercase tracking-widest font-bold">Transaction Confirmed: 0x8a...4b12</span>
+           <span className="text-[10px] font-mono text-aqua uppercase tracking-widest font-bold">Transaction Confirmed</span>
         </div>
       </motion.div>
     </div>

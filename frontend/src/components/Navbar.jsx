@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { LogOut, Wallet } from 'lucide-react';
+import { getWalletBalance } from '../services/ContractService';
 
 const Navbar = () => {
   const { account, connected, toggleModal, disconnect, formatAddress } = useWallet();
+  const [balance, setBalance] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [showBalance, setShowBalance] = useState(false);
 
   // Using real address from context
 
@@ -27,15 +31,27 @@ const Navbar = () => {
             <>
               <Link to="/dashboard" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Dashboard</Link>
               <Link to="/create-deal" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Create Deal</Link>
-              <Link to="/negotiation-room" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Negotiation</Link>
-              <Link to="/summary" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Summary</Link>
-              <Link to="/active-deal" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Active Deal</Link>
             </>
           )}
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative">
             <button
               onClick={connected ? undefined : toggleModal}
+              onMouseEnter={async () => {
+                if (!connected || !account) return;
+                setShowBalance(true);
+                if (balanceLoading || balance !== null) return;
+                setBalanceLoading(true);
+                try {
+                  const data = await getWalletBalance(account);
+                  setBalance(data.microalgos || 0);
+                } catch (e) {
+                  setBalance(null);
+                } finally {
+                  setBalanceLoading(false);
+                }
+              }}
+              onMouseLeave={() => setShowBalance(false)}
               className={`px-6 py-2.5 rounded-full font-medium shadow-soft transition-all duration-300 flex items-center gap-2 ${
                 connected 
                 ? 'bg-ink-700 text-aqua border border-aqua/30 cursor-default' 
@@ -45,6 +61,13 @@ const Navbar = () => {
               <Wallet className="w-4 h-4" />
               {connected ? `Connected: ${formatAddress(account)}` : 'Connect Wallet'}
             </button>
+            {connected && showBalance && (
+              <div className="absolute top-12 right-0 z-50 rounded-xl bg-ink-800/90 border border-white/10 px-4 py-2 text-xs text-slate backdrop-blur-md">
+                {balanceLoading && 'Loading balance...'}
+                {!balanceLoading && balance !== null && `TestNet Balance: ${(balance / 1_000_000).toFixed(3)} ALGO`}
+                {!balanceLoading && balance === null && 'Balance unavailable'}
+              </div>
+            )}
 
             {connected && (
               <button

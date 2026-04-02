@@ -1,27 +1,131 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Clock, CheckCircle2, Circle, ArrowRight, UploadCloud, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Clock, CheckCircle2, Circle, ArrowRight, AlertCircle } from 'lucide-react';
+import { useWallet } from '../context/WalletContext';
+import { walletService } from '../services/AlgorandWalletService';
+import { getContractInfo, getReleaseTxn, submitSignedTxns } from '../services/ContractService';
+import { getDeal, recordRelease, completeDeal } from '../services/DealService';
 
 const ActiveDeal = () => {
   const navigate = useNavigate();
-  const [milestones, setMilestones] = useState([
-    { id: 1, task: "UI/UX Design & Wireframing", status: "Completed", amount: 150 },
-    { id: 2, task: "Frontend Implementation & Logic", status: "In Progress", amount: 200 },
-    { id: 3, task: "Final Testing & Handover", status: "Pending", amount: 100 }
-  ]);
+  const location = useLocation();
+  const dealId = location.state?.dealId || null;
+  const { account, connected } = useWallet();
+  const [milestones, setMilestones] = useState([]);
+  const [contractInfo, setContractInfo] = useState(null);
+  const [dealRecord, setDealRecord] = useState(null);
+  const [txStatus, setTxStatus] = useState('');
+  const [loadingId, setLoadingId] = useState(null);
 
-  const toggleMilestone = (id) => {
-    setMilestones(prev => prev.map(m => {
-      if (m.id === id) {
-        return { ...m, status: m.status === 'Completed' ? 'Pending' : 'Completed' };
+  useEffect(() => {
+    getContractInfo().then(setContractInfo).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!dealId) return;
+    let mounted = true;
+    const fetchDeal = () => getDeal(dealId).then((data) => mounted && setDealRecord(data)).catch(() => {});
+    fetchDeal();
+    const timer = setInterval(fetchDeal, 4000);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, [dealId]);
+
+  useEffect(() => {
+    const tasks = ["Milestone 1", "Milestone 2", "Milestone 3"];
+    const result = dealRecord?.data?.result || {};
+    const finalPrice = result.final_price || 0;
+    const milestoneAmounts = result.milestones?.length
+      ? result.milestones
+      : finalPrice
+        ? [Math.round(finalPrice * 0.4), Math.max(finalPrice - Math.round(finalPrice * 0.4), 0)].filter((v) => v > 0)
+        : contractInfo?.milestones || [150, 230];
+
+    const releases = dealRecord?.data?.releases?.completed || [];
+    const releasedSet = new Set(releases);
+    let firstOpen = 0;
+    for (let i = 0; i < milestoneAmounts.length; i++) {
+      if (!releasedSet.has(i)) {
+        firstOpen = i;
+        break;
       }
-      return m;
-    }));
+    }
+    const mapped = milestoneAmounts.map((amt, idx) => {
+      let status = "Pending";
+      if (releasedSet.has(idx)) status = "Completed";
+      else if (idx === firstOpen) status = "In Progress";
+      return {
+        id: idx + 1,
+        task: tasks[idx] || `Milestone ${idx + 1}`,
+        status,
+        amount: amt,
+      };
+    });
+    setMilestones(mapped);
+  }, [dealRecord, contractInfo]);
+
+  const dealTitle = useMemo(() => {
+    const request = dealRecord?.data?.request || dealRecord?.data || {};
+    return request?.title || request?.description?.split('—')[0]?.trim() || 'Active Deal';
+  }, [dealRecord]);
+
+  const totalPrice = useMemo(() => {
+    const result = dealRecord?.data?.result || {};
+    return result.final_price || contractInfo?.total || 0;
+  }, [dealRecord, contractInfo]);
+
+  const sellerWalletRaw = useMemo(() => {
+    return dealRecord?.data?.seller_wallet || '';
+  }, [dealRecord]);
+
+  const sellerWallet = useMemo(() => {
+    return sellerWalletRaw.toLowerCase();
+  }, [sellerWalletRaw]);
+
+  const buyerWallet = useMemo(() => {
+    const request = dealRecord?.data?.request || dealRecord?.data || {};
+    return (request?.buyer_wallet || '').toLowerCase();
+  }, [dealRecord]);
+
+  const isBuyer = useMemo(() => {
+    if (!account) return false;
+    return buyerWallet && account.toLowerCase() === buyerWallet;
+  }, [account, buyerWallet]);
+
+  const handleRelease = async (milestone) => {
+    if (!connected || !account) {
+      setTxStatus('Connect a wallet to release on-chain.');
+      return;
+    }
+    setLoadingId(milestone.id);
+    setTxStatus('Preparing release transaction...');
+    try {
+      const { txn } = await getReleaseTxn(account, dealId, milestone.id - 1, sellerWalletRaw);
+      const signed = await walletService.signTransactions(txn, 'TestNet');
+      const { txids } = await submitSignedTxns(signed);
+      await recordRelease(dealId, milestone.id - 1, txids[0]);
+      setTxStatus(`Released on-chain. TxID: ${txids[0]}`);
+      setMilestones((prev) =>
+        prev.map((m) => {
+          if (m.id === milestone.id) return { ...m, status: 'Completed' };
+          if (m.id === milestone.id + 1 && m.status === 'Pending') {
+            return { ...m, status: 'In Progress' };
+          }
+          return m;
+        })
+      );
+    } catch (err) {
+      setTxStatus(err.message || 'Release failed');
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const completedCount = milestones.filter(m => m.status === 'Completed').length;
-  const progressPercent = (completedCount / milestones.length) * 100;
+  const progressPercent = milestones.length ? (completedCount / milestones.length) * 100 : 0;
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">
@@ -39,16 +143,16 @@ const ActiveDeal = () => {
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aqua/10 border border-aqua/20 text-[10px] font-mono uppercase tracking-[0.2em] text-aqua">
                 <ShieldCheck size={12} /> Escrow Active
              </div>
-             <h1 className="text-4xl lg:text-5xl font-display font-bold text-white italic">Active Deal Tracker</h1>
+             <h1 className="text-4xl lg:text-5xl font-display font-bold text-white italic">{dealTitle}</h1>
           </div>
           <div className="flex gap-8 border-l border-white/10 pl-8 h-fit">
              <div className="space-y-1">
                 <span className="text-[10px] uppercase font-mono text-slate tracking-widest block">Total Price</span>
-                <span className="text-xl font-bold text-white uppercase tracking-tight italic">₹450.00</span>
+                <span className="text-xl font-bold text-white uppercase tracking-tight italic">₹{totalPrice || 0}</span>
              </div>
              <div className="space-y-1">
                 <span className="text-[10px] uppercase font-mono text-slate tracking-widest block">Remaining</span>
-                <span className="text-xl font-bold text-aqua uppercase tracking-tight italic">₹300.00</span>
+                <span className="text-xl font-bold text-aqua uppercase tracking-tight italic">₹{totalPrice || 0}</span>
              </div>
           </div>
         </div>
@@ -105,12 +209,19 @@ const ActiveDeal = () => {
 
                       <div className="flex items-center gap-3 w-full md:w-auto">
                         {m.status === 'In Progress' ? (
-                          <button 
-                            onClick={() => toggleMilestone(m.id)}
-                            className="flex-1 md:flex-none px-6 py-2.5 bg-white text-ink-900 text-xs font-bold rounded-xl hover:scale-105 transition-all flex items-center justify-center gap-2"
-                          >
-                             Approve & Release <CheckCircle2 size={14} />
-                          </button>
+                          isBuyer ? (
+                            <button 
+                              onClick={() => handleRelease(m)}
+                              disabled={loadingId === m.id}
+                              className="flex-1 md:flex-none px-6 py-2.5 bg-white text-ink-900 text-xs font-bold rounded-xl hover:scale-105 transition-all flex items-center justify-center gap-2"
+                            >
+                               Approve & Release <CheckCircle2 size={14} />
+                            </button>
+                          ) : (
+                            <div className="text-[10px] font-mono text-slate uppercase italic flex items-center gap-1.5 opacity-60 px-4">
+                              <AlertCircle size={12} /> Waiting for buyer approval
+                            </div>
+                          )
                         ) : m.status === 'Pending' ? (
                           <div className="text-[10px] font-mono text-slate uppercase italic flex items-center gap-1.5 opacity-50 px-4">
                              <AlertCircle size={12} /> Locked until previous stage
@@ -127,9 +238,13 @@ const ActiveDeal = () => {
            </div>
         </div>
 
+        {txStatus && (
+          <div className="text-xs text-slate text-center">{txStatus}</div>
+        )}
+
         {/* Final CTA if all done */}
         <AnimatePresence>
-           {completedCount === milestones.length && (
+        {completedCount === milestones.length && milestones.length > 0 && (
              <motion.div 
                initial={{ y: 20, opacity: 0 }}
                animate={{ y: 0, opacity: 1 }}
@@ -140,12 +255,26 @@ const ActiveDeal = () => {
                    <h3 className="text-xl font-bold text-white font-display italic">All Milestones Fulfilled!</h3>
                    <p className="text-slate text-xs italic">Review the final audit before completing the lifecycle.</p>
                 </div>
-                <button 
-                  onClick={() => navigate('/completion')}
-                  className="px-10 py-4 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all shadow-soft flex items-center gap-2 z-10"
-                >
-                   Finalize Deal <ArrowRight size={20} />
-                </button>
+                {isBuyer ? (
+                  <button 
+                    onClick={async () => {
+                      try {
+                        await completeDeal(dealId);
+                      } catch (err) {
+                        setTxStatus(err.message || 'Failed to finalize deal');
+                        return;
+                      }
+                      navigate('/completion', { state: { dealId } });
+                    }}
+                    className="px-10 py-4 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all shadow-soft flex items-center justify-center gap-2 z-10"
+                  >
+                     Finalize Deal <ArrowRight size={20} />
+                  </button>
+                ) : (
+                  <div className="text-xs font-mono text-slate uppercase italic">
+                    Waiting for buyer to finalize
+                  </div>
+                )}
              </motion.div>
            )}
         </AnimatePresence>

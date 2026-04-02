@@ -31,12 +31,7 @@ def main() -> None:
     load_dotenv()
 
     parser = argparse.ArgumentParser(description="Deploy escrow contract to Algorand TestNet")
-    parser.add_argument("--total", required=True, type=int, help="Total escrow amount")
-    parser.add_argument(
-        "--milestones",
-        required=True,
-        help="Comma-separated milestone amounts, e.g. 150,230",
-    )
+    # No deal-specific args needed; deals are created on-chain via boxes.
     parser.add_argument(
         "--creator-mnemonic",
         default=os.getenv("CREATOR_MNEMONIC"),
@@ -70,27 +65,9 @@ def main() -> None:
     approval_program = compile_program(client, approval_teal)
     clear_program = compile_program(client, clear_teal)
 
-    milestones = [int(x.strip()) for x in args.milestones.split(",") if x.strip()]
-    milestone_count = len(milestones)
-
-    if milestone_count == 0:
-        raise SystemExit("Milestones list cannot be empty")
-    if milestone_count > 5:
-        raise SystemExit("Milestone count exceeds MAX_MILESTONES (5)")
-
-    if sum(milestones) != args.total:
-        raise SystemExit("Sum of milestones must equal total amount")
-
-    # 4 base uints + 2 per milestone (amount + released) for MAX_MILESTONES=5 -> 14
-    global_schema = StateSchema(num_uints=14, num_byte_slices=2)
+    # No global state needed; everything is stored in boxes per deal.
+    global_schema = StateSchema(num_uints=0, num_byte_slices=0)
     local_schema = StateSchema(num_uints=0, num_byte_slices=0)
-
-    app_args = [b"create"]
-    app_args.append(args.total.to_bytes(8, "big"))
-    app_args.append(milestone_count.to_bytes(8, "big"))
-
-    for m in milestones:
-        app_args.append(m.to_bytes(8, "big"))
 
     params = client.suggested_params()
 
@@ -102,7 +79,6 @@ def main() -> None:
         clear_program=clear_program,
         global_schema=global_schema,
         local_schema=local_schema,
-        app_args=app_args,
     )
 
     signed = txn.sign(creator_sk)

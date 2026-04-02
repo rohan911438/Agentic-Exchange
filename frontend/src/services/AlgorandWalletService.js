@@ -140,6 +140,46 @@ class AlgorandWalletService {
     if (!address || typeof address !== 'string') return "";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }
+
+  /**
+   * Sign one or more base64-encoded unsigned transactions.
+   */
+  async signTransactions(unsignedTxns, ledger = "TestNet") {
+    const txns = Array.isArray(unsignedTxns) ? unsignedTxns : [unsignedTxns];
+
+    const toBytes = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    const toBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
+    const toTxn = (b64) => algosdk.decodeUnsignedTransaction(toBytes(b64));
+
+    if (this.selectedWallet === "pera") {
+      const signerTxns = txns.map((t) => ({ txn: toTxn(t) }));
+      // Pera expects an array of transaction groups (each group is an array)
+      const signed = await this.peraWallet.signTransaction([signerTxns]);
+      const signedArray = Array.isArray(signed)
+        ? (Array.isArray(signed[0]) ? signed.flat() : signed)
+        : [signed];
+      return signedArray.map((s) => toBase64(s));
+    }
+
+    if (this.selectedWallet === "defly") {
+      const signerTxns = txns.map((t) => ({ txn: toTxn(t) }));
+      // Defly follows the same grouped transaction format
+      const signed = await this.deflyWallet.signTransaction([signerTxns]);
+      const signedArray = Array.isArray(signed)
+        ? (Array.isArray(signed[0]) ? signed.flat() : signed)
+        : [signed];
+      return signedArray.map((s) => toBase64(s));
+    }
+
+    if (this.selectedWallet === "algosigner") {
+      const signerTxns = txns.map((t) => ({ txn: t, ledger }));
+      const signed = await window.AlgoSigner.signTxn(signerTxns);
+      const signedArray = Array.isArray(signed) ? signed : [signed];
+      return signedArray.map((s) => s.blob);
+    }
+
+    throw new Error("No wallet connected");
+  }
 }
 
 export const walletService = new AlgorandWalletService();

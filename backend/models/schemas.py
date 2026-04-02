@@ -6,10 +6,12 @@ from pydantic import BaseModel, Field
 
 
 class DealCreateRequest(BaseModel):
+    title: Optional[str] = None
     budget: float = Field(..., gt=0)
     min_price: float = Field(..., gt=0)
     deadline: str
     description: str
+    buyer_wallet: Optional[str] = None
 
 
 class DealCreateResponse(BaseModel):

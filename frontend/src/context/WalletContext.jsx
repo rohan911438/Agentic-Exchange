@@ -27,9 +27,16 @@ export const WalletProvider = ({ children }) => {
       setConnected(true);
       setProvider(savedProvider);
       // Attempt to silently reconnect SDK session in background
-      walletService.reconnect(savedProvider).catch(err => {
-        console.warn("Background reconnect failed", err);
-      });
+      walletService.reconnect(savedProvider)
+        .then((addr) => {
+          if (addr && addr !== savedAccount) {
+            setAccount(addr);
+            localStorage.setItem("wallet_account", addr);
+          }
+        })
+        .catch(err => {
+          console.warn("Background reconnect failed", err);
+        });
     }
   }, []);
 

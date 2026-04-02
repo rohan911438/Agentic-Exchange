@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, FileText, IndianRupee, Calendar, ShieldCheck, Zap, Star } from 'lucide-react';
+import { createDeal } from '../services/DealService';
+import { useWallet } from '../context/WalletContext';
 
 const CreateDeal = () => {
   const navigate = useNavigate();
+  const { account, connected } = useWallet();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -12,22 +15,40 @@ const CreateDeal = () => {
     deadline: '',
     priority: 'Quality'
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Starting Negotiation with Data:", formData);
-    // Navigate to NegotiationRoom with state
-    navigate('/negotiation-room', { state: formData });
+    setSubmitting(true);
+    setError('');
+
+    try {
+      const payload = {
+        title: formData.title,
+        budget: Number(formData.maxBudget),
+        min_price: Number(formData.minBudget),
+        deadline: formData.deadline,
+        description: formData.description,
+        buyer_wallet: connected ? account : null,
+      };
+
+      const result = await createDeal(payload);
+      navigate('/negotiation-room', { state: { dealId: result.deal_id } });
+    } catch (err) {
+      setError(err.message || 'Failed to create deal');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="pt-32 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-aqua/5 blur-[100px] rounded-full -z-10" />
       <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-blush/5 blur-[100px] rounded-full -z-10" />
 
@@ -42,8 +63,6 @@ const CreateDeal = () => {
 
       <div className="w-full max-w-2xl bg-ink-800/50 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-3xl shadow-soft animate-fadeInUp delay-200">
         <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Task Title */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
               <Briefcase size={16} className="text-aqua" />
@@ -60,7 +79,6 @@ const CreateDeal = () => {
             />
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
               <FileText size={16} className="text-aqua" />
@@ -77,7 +95,6 @@ const CreateDeal = () => {
             />
           </div>
 
-          {/* Budget Range */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
@@ -111,7 +128,6 @@ const CreateDeal = () => {
              </div>
           </div>
 
-          {/* Deadline & Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
@@ -153,11 +169,16 @@ const CreateDeal = () => {
              </div>
           </div>
 
+          {error && (
+            <div className="text-sm text-blush">{error}</div>
+          )}
+
           <button 
             type="submit"
+            disabled={submitting}
             className="w-full py-4 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-2xl transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(94,240,255,0.3)] flex items-center justify-center gap-2 mt-4"
           >
-            Start AI Negotiation
+            {submitting ? 'Creating...' : 'Start AI Negotiation'}
           </button>
 
         </form>
