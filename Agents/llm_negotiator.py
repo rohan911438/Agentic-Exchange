@@ -1,9 +1,13 @@
 import os
 import re
+from dotenv import load_dotenv
 import google.generativeai as genai
 
-# Setup Gemini API
-api_key = os.getenv("GEMINI_API_KEY")
+# Ensure .env is loaded even if this module is imported early
+load_dotenv()
+
+# Setup Gemini API (support both env var names)
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
@@ -12,7 +16,7 @@ if api_key:
 try:
     model = genai.GenerativeModel('gemini-2.5-flash')
 except Exception:
-    pass
+    model = None
 
 BUYER_PROMPT = """You are a buyer negotiating a freelance deal.
 
@@ -79,6 +83,14 @@ def parse_llm_response(text: str) -> tuple[str, float]:
 def call_gemini(prompt: str) -> str:
     """Calls Gemini API with the given prompt."""
     try:
+        # Lazy-configure in case env was loaded after import
+        global model
+        if not api_key:
+            key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if key:
+                genai.configure(api_key=key)
+        if model is None:
+            model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         if response and response.text:
             return response.text
