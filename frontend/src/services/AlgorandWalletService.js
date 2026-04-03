@@ -1,6 +1,7 @@
 import { PeraWalletConnect } from "@perawallet/connect";
 import { DeflyWalletConnect } from "@blockshake/defly-connect";
 import algosdk from "algosdk";
+import { Buffer } from "buffer";
 
 class AlgorandWalletService {
   constructor() {

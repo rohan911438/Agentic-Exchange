@@ -24,13 +24,8 @@ export default defineConfig({
     },
   },
   define: {
-    // Explicitly inject globals at the transformer-level for Vite 8/Oxc compatibility
+    // Standard polyfill for libraries expecting Node globals
     global: 'globalThis',
-    'globalThis.Buffer': 'Buffer',
-    Buffer: 'Buffer',
-    'process.env': '{}',
-    'process.browser': 'true',
-    process: 'process',
   },
   optimizeDeps: {
     include: ['buffer', 'process', 'algosdk'],
