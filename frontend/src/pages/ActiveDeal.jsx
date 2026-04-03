@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Clock, CheckCircle2, Circle, ArrowRight, AlertCircle } from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
@@ -10,17 +10,37 @@ import { getDeal, recordRelease, completeDeal } from '../services/DealService';
 const ActiveDeal = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dealId = location.state?.dealId || null;
+  const [searchParams] = useSearchParams();
+  const dealId = location.state?.dealId || searchParams.get('dealId') || null;
   const { account, connected } = useWallet();
   const [milestones, setMilestones] = useState([]);
   const [contractInfo, setContractInfo] = useState(null);
   const [dealRecord, setDealRecord] = useState(null);
   const [txStatus, setTxStatus] = useState('');
   const [loadingData, setLoadingData] = useState(true);
+  const [loadingId, setLoadingId] = useState(null);
 
   useEffect(() => {
     getContractInfo().then(setContractInfo).catch(() => {});
   }, []);
+
+  if (!dealId) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+           <ShieldCheck size={40} className="text-slate/20" />
+        </div>
+        <h1 className="text-3xl font-display font-bold text-white italic">No Active Deal Selected</h1>
+        <p className="text-slate text-sm max-w-xs mx-auto">Open an active deal from your dashboard to view escrow progress.</p>
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="px-8 py-3 bg-white text-ink-900 font-bold rounded-xl hover:scale-105 transition-all"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!dealId) {

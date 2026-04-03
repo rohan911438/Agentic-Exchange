@@ -16,6 +16,7 @@ export const WalletProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [initialized, setInitialized] = useState(false);
 
   // Sync with localStorage on mount
   useEffect(() => {
@@ -36,8 +37,13 @@ export const WalletProvider = ({ children }) => {
         })
         .catch(err => {
           console.warn("Background reconnect failed", err);
+        })
+        .finally(() => {
+          setInitialized(true);
         });
+      return;
     }
+    setInitialized(true);
   }, []);
 
   const connect = async (walletType) => {
@@ -89,6 +95,7 @@ export const WalletProvider = ({ children }) => {
     provider,
     error,
     isModalOpen,
+    initialized,
     connect,
     disconnect,
     toggleModal,

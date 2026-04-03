@@ -57,7 +57,12 @@ const DealSummary = () => {
       setLoadingData(false);
       return;
     }
+    setDealRecord(null);
     setLoadingData(true);
+  }, [dealId]);
+
+  useEffect(() => {
+    if (!dealId) return;
     getDeal(dealId)
       .then((res) => {
         setDealRecord(res);
@@ -83,7 +88,13 @@ const DealSummary = () => {
   const isSeller = useMemo(() => {
     if (!account) return false;
     const sAddr = dealRecord?.data?.seller_wallet || requestData?.seller_wallet;
-    return sAddr && account.toLowerCase() === sAddr.toLowerCase();
+    if (sAddr) {
+      return account.toLowerCase() === sAddr.toLowerCase();
+    }
+    // Fallback: if seller wallet is missing, allow any non-buyer wallet to act as seller.
+    const bAddr = requestData?.buyer_wallet || dealRecord?.data?.buyer_wallet;
+    if (bAddr && account.toLowerCase() === bAddr.toLowerCase()) return false;
+    return true;
   }, [account, dealRecord, requestData]);
 
   const handleAccept = async () => {
@@ -108,7 +119,7 @@ const DealSummary = () => {
         const signed = await walletService.signTransactions(txn, 'TestNet');
         setTxStatus('🚀 Submitting acceptance to Algorand...');
         const { txids } = await submitSignedTxns(signed);
-        await recordOnchainAccept(dealId, 'seller', txids[0]);
+        await recordOnchainAccept(dealId, 'seller', txids[0], account);
         setTxStatus('✅ Accepted successfully!');
       } else if (isBuyer) {
         if (approvals.buyer && onchainAccepts.buyer) {
@@ -122,7 +133,7 @@ const DealSummary = () => {
           const signed = await walletService.signTransactions(txns, 'TestNet');
           setTxStatus('🚀 Deploying Smart Contract to Algorand...');
           const { txids } = await submitSignedTxns(signed);
-          await recordOnchainAccept(dealId, 'buyer', txids[0]);
+          await recordOnchainAccept(dealId, 'buyer', txids[0], account);
         }
 
         // Try to fund if not funded yet
@@ -144,7 +155,7 @@ const DealSummary = () => {
       const updated = await getDeal(dealId);
       setDealRecord(updated);
       if (updated.data.funded && updated.data.onchain_accepts.buyer && updated.data.onchain_accepts.seller) {
-        setTimeout(() => navigate('/active-deal', { state: { dealId } }), 2000);
+        setTimeout(() => navigate(`/active-deal?dealId=${dealId}`, { state: { dealId } }), 2000);
       }
     } catch (err) {
       console.error('Acceptance error:', err);
@@ -183,7 +194,7 @@ const DealSummary = () => {
       await getDeal(dealId).then(setDealRecord).catch(() => {});
       setTxStatus(`Escrow funded. TxID: ${txids[0]}`);
       if (readyForActive) {
-        navigate('/active-deal', { state: { dealId } });
+        navigate(`/active-deal?dealId=${dealId}`, { state: { dealId } });
       }
     } catch (err) {
       setTxStatus(err.message || 'Deposit failed');
@@ -330,7 +341,7 @@ const DealSummary = () => {
                   )}
                   {funded && (
                     <button
-                      onClick={() => navigate('/active-deal', { state: { dealId } })}
+                      onClick={() => navigate(`/active-deal?dealId=${dealId}`, { state: { dealId } })}
                       className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                     >
                       View Active Deal

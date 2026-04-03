@@ -1,57 +1,157 @@
 # Agentic Exchange
 
-An autonomous agent negotiation platform built on Algorand. This project consists of a FastAPI backend and a React (Vite) frontend.
+Agentic Exchange is an autonomous negotiation marketplace built on Algorand. Buyers create tasks, sellers accept them, AI agents negotiate the deal, and escrow is handled on‑chain with milestone releases.
+
+This repo contains:
+- **FastAPI backend** for negotiation orchestration, storage, and Algorand transaction building
+- **React (Vite) frontend** for user flows and wallet interactions
+- **PyTeal smart contract** for escrow + milestone release
+
+## Deployed Smart Contract (TestNet)
+
+- **App ID:** `758126516`
+- **App Address:** `JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A`
+
+## Core Flow (End‑to‑End)
+
+1. **Buyer creates task** (off‑chain, stored in DB)
+2. **Seller accepts task** (off‑chain)
+3. **Negotiation starts** (AI agents)
+4. **Both parties approve** (off‑chain)
+5. **Buyer creates escrow on‑chain**
+6. **Buyer deposits funds on‑chain**
+7. **Seller accepts on‑chain**
+8. **Buyer releases milestone payments on‑chain**
+9. **Buyer finalizes deal** → status becomes **Completed**
+
+## Key Features
+
+- AI‑driven buyer/seller negotiation engine
+- Off‑chain task lifecycle + approvals
+- Algorand escrow with milestones
+- On‑chain accept + release
+- Dashboard for deal tracking
+
+## Tech Stack
+
+- **Backend:** FastAPI, Python
+- **Frontend:** React + Vite + Tailwind
+- **Blockchain:** Algorand TestNet
+- **Contracts:** PyTeal
+- **Database:** MongoDB
 
 ## Prerequisites
 
-- **Python 3.8+**
+- **Python 3.10+**
 - **Node.js 18+**
-- **npm** (comes with Node.js)
+- **npm**
+- Algorand wallet (Pera / Defly) on **TestNet**
 
-## Getting Started
+## Setup
 
-### 1. Backend Setup
+### 1) Backend
 
-The backend handles the core logic, agent negotiations, and data persistence.
+```bash
+pip install -r requirements.txt
+```
 
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Create `.env` in project root:
 
-2. **Environment Variables**:
-   Create a `.env` file in the root directory (parent of `backend/`) if needed for API keys or database connections.
+```bash
+GEMINI_API_KEY=your_gemini_key
+MONGODB_URI=your_mongo_uri
+MONGODB_DB=agentic_exchange
+ALGOD_ADDRESS=https://testnet-api.algonode.cloud
+ALGOD_TOKEN=
+APP_ID=758126516
+CONTRACT_BOX_FUNDING=160000
+```
 
-3. **Run the server**:
-   From the project root directory, run:
-   ```bash
-   python -m backend.main
-   ```
-   The backend will be available at `http://127.0.0.1:8000`.
+Run:
 
-### 2. Frontend Setup
+```bash
+uvicorn backend.main:app --reload
+```
 
-The frontend provides the user interface for interacting with the platform.
+Backend URL: `http://127.0.0.1:8000`
 
-1. **Navigate to the frontend directory**:
-   ```bash
-   cd frontend
-   ```
+### 2) Frontend
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-   The frontend will be available at the URL provided in the console (usually `http://localhost:5173`).
+Frontend URL: `http://localhost:5173`
+
+## API Overview
+
+### Deals
+- `POST /create-deal`
+- `POST /deal/{id}/accept`
+- `POST /start-negotiation`
+- `POST /deal/{id}/approve`
+- `POST /deal/{id}/onchain-accept`
+- `POST /deal/{id}/fund`
+- `POST /deal/{id}/release`
+- `POST /deal/{id}/complete`
+- `GET /deal/{id}`
+- `GET /deals`
+
+### Contract Helpers
+- `GET /contract/info`
+- `POST /contract/create-txn`
+- `POST /contract/accept-txn`
+- `POST /contract/deposit-txn`
+- `POST /contract/release-txn`
+- `POST /contract/submit`
+- `GET /wallet/balance`
+
+## Smart Contract (PyTeal)
+
+Location: `smart_contract/escrow_contract.py`
+
+Supports:
+- Multi‑deal storage using **boxes**
+- On‑chain accept for buyer/seller
+- Escrow deposit
+- Milestone release
+- Completion after all releases
+
+To compile:
+```bash
+python smart_contract/compile.py
+```
+
+To deploy new app (optional):
+```bash
+python smart_contract/deploy_testnet.py
+```
 
 ## Project Structure
 
-- `backend/`: FastAPI application containing routes, models, and services.
-- `frontend/`: React application built with Vite and Tailwind CSS.
-- `smart_contract/`: Algorand smart contracts (PyTeal).
-- `Agents/`: Agent-specific logic and configurations.
+- `backend/` — FastAPI routes + services
+- `frontend/` — React UI
+- `smart_contract/` — PyTeal escrow contract
+- `Agents/` — AI negotiation agents
+
+## Troubleshooting
+
+**1) Negotiation won’t start**
+- Ensure `GEMINI_API_KEY` is set in `.env`
+
+**2) Seller accept fails / release fails**
+- Ensure seller wallet is captured (on‑chain accept stores it automatically)
+
+**3) Buyer can’t create escrow**
+- Check wallet min balance; Algorand requires minimum balance for accounts
+- Box funding is configurable via `CONTRACT_BOX_FUNDING`
+
+**4) Page refresh redirects to home**
+- Wallet reconnect runs on load; wait 1–2 seconds for session restore
+
+## Notes
+
+- Currency in UI uses INR, but escrow uses **microAlgos** (1:1 for demo)
+- TestNet only for development

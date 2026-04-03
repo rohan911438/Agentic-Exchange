@@ -37,10 +37,10 @@ const NegotiationRoom = () => {
   }, [dealId]);
 
   useEffect(() => {
-    if (dealId && dealStatus === 'created' && messages.length === 0 && !loading && !isTyping) {
+    if (dealId && dealStatus === 'accepted' && messages.length === 0 && !loading && !isTyping) {
       handleStart();
     }
-  }, [dealId, dealStatus, messages.length]);
+  }, [dealId, dealStatus, messages.length, loading, isTyping]);
 
   useEffect(() => {
     if (scrollRef.current) {

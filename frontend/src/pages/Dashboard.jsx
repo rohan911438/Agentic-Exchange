@@ -126,7 +126,7 @@ const Dashboard = () => {
         const { txn } = await getAcceptTxnForDeal(account, deal.id);
         const signed = await walletService.signTransactions(txn, 'TestNet');
         const { txids } = await submitSignedTxns(signed);
-        await recordOnchainAccept(deal.id, 'seller', txids[0]);
+        await recordOnchainAccept(deal.id, 'seller', txids[0], account);
         setActionStatus(`Seller accepted on-chain. TxID: ${txids[0]}`);
       } else {
         const amount = Math.max(Math.round(deal.price || 0), 0);
@@ -141,7 +141,7 @@ const Dashboard = () => {
         const { txns } = await getCreateDealTxn(account, deal.id, amount, milestones);
         const signed = await walletService.signTransactions(txns, 'TestNet');
         const { txids } = await submitSignedTxns(signed);
-        await recordOnchainAccept(deal.id, 'buyer', txids[0]);
+        await recordOnchainAccept(deal.id, 'buyer', txids[0], account);
         const { txns: depositTxns } = await getDepositTxns(account, deal.id, amount);
         const signedDeposit = await walletService.signTransactions(depositTxns, 'TestNet');
         const { txids: depositTxids } = await submitSignedTxns(signedDeposit);
@@ -209,7 +209,7 @@ const Dashboard = () => {
                       <div className="text-xs text-slate/70">Awaiting buyer funding</div>
                     </div>
                     <button
-                      onClick={() => navigate('/active-deal', { state: { dealId: deal.id } })}
+                      onClick={() => navigate(`/active-deal?dealId=${deal.id}`, { state: { dealId: deal.id } })}
                       className="px-4 py-2 rounded-xl bg-aqua/10 border border-aqua/30 text-aqua text-xs font-bold"
                     >
                       View Active Deal
@@ -230,7 +230,7 @@ const Dashboard = () => {
                       <div className="text-sm text-slate">{deal.price} ALGO</div>
                     </div>
                     <button
-                      onClick={() => navigate('/active-deal', { state: { dealId: deal.id } })}
+                      onClick={() => navigate(`/active-deal?dealId=${deal.id}`, { state: { dealId: deal.id } })}
                       className="px-4 py-2 rounded-xl bg-aqua/10 border border-aqua/30 text-aqua text-xs font-bold"
                     >
                       View Active Deal
@@ -330,7 +330,7 @@ const Dashboard = () => {
 
                   <div className="pt-6 flex justify-between items-center bg-ink-800/50">
                     <button 
-                      onClick={() => navigate(deal.route, { state: { dealId: deal.id } })}
+                      onClick={() => navigate(`${deal.route}?dealId=${deal.id}`, { state: { dealId: deal.id } })}
                       className="px-6 py-2.5 rounded-xl bg-white text-ink-900 text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-2 group/btn"
                     >
                       {deal.actionLabel} <ArrowRight size={12} className="group-hover/btn:translate-x-1" />

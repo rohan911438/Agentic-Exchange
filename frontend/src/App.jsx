@@ -15,7 +15,15 @@ import ActiveDeal from './pages/ActiveDeal';
 import Completion from './pages/Completion';
 
 function AppContent() {
-  const { connected } = useWallet();
+  const { connected, initialized } = useWallet();
+
+  if (!initialized) {
+    return (
+      <div className="min-h-screen bg-ink-900 font-body flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-aqua/20 border-t-aqua animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-ink-900 font-body selection:bg-aqua/30 selection:text-aqua flex flex-col">
