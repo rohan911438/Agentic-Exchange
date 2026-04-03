@@ -63,10 +63,10 @@ export async function rejectDeal(deal_id, role) {
   })
 }
 
-export async function recordOnchainAccept(deal_id, role, txid) {
+export async function recordOnchainAccept(deal_id, role, txid, sender) {
   return request(`/deal/${deal_id}/onchain-accept`, {
     method: 'POST',
-    body: JSON.stringify({ role, txid }),
+    body: JSON.stringify({ role, txid, sender }),
   })
 }
 
