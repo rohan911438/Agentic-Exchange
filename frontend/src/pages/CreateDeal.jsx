@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, FileText, IndianRupee, Calendar, ShieldCheck, Zap, Star } from 'lucide-react';
+import { Briefcase, FileText, Coins, Calendar, ShieldCheck, Zap, Star } from 'lucide-react';
 import { createDeal } from '../services/DealService';
 import { useWallet } from '../context/WalletContext';
 
@@ -98,8 +98,8 @@ const CreateDeal = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
-                  <IndianRupee size={16} className="text-aqua" />
-                  Min Budget (₹)
+                  <Coins size={16} className="text-aqua" />
+                  Min Budget (ALGO)
                 </label>
                 <input 
                   type="number"
@@ -113,8 +113,8 @@ const CreateDeal = () => {
              </div>
              <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
-                  <IndianRupee size={16} className="text-aqua" />
-                  Max Budget (₹)
+                  <Coins size={16} className="text-aqua" />
+                  Max Budget (ALGO)
                 </label>
                 <input 
                   type="number"

@@ -22,6 +22,9 @@ const Navbar = () => {
           <span className="text-xl font-display font-bold text-white tracking-tight">
             Agentic <span className="text-aqua">Exchange</span>
           </span>
+          <div className="px-2 py-0.5 rounded-md bg-aqua/10 border border-aqua/30 text-[10px] font-mono font-bold text-aqua uppercase tracking-widest">
+            TestNet
+          </div>
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

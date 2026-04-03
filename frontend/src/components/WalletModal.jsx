@@ -109,7 +109,7 @@ const WalletModal = () => {
                 
                 <div className="flex-grow text-left">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-white Montserrat">{wallet.name}</span>
+                    <span className="font-bold text-white uppercase tracking-tight">{wallet.name}</span>
                     {!wallet.installed && (
                       <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5 text-slate font-mono">
                         Not Installed

@@ -207,7 +207,7 @@ const DealSummary = () => {
                     Final Price
                  </div>
                  <div className="text-4xl font-display font-bold text-white">
-                    ₹{finalPrice || 0}
+                    {finalPrice || 0} ALGO
                  </div>
               </div>
               <div className="space-y-1 text-right">
@@ -233,7 +233,7 @@ const DealSummary = () => {
                  {milestones.map((m, i) => (
                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-white/10 transition-colors">
                       <span className="text-sm text-slate group-hover:text-white transition-colors">{m.task}</span>
-                      <span className="text-sm font-bold text-white font-mono">₹{m.amount}</span>
+                      <span className="text-sm font-bold text-white font-mono">{m.amount} ALGO</span>
                    </div>
                  ))}
               </div>

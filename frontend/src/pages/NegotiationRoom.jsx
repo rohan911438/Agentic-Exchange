@@ -158,7 +158,7 @@ const NegotiationRoom = () => {
                     <div className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
                       msg.role === 'buyer' ? 'bg-aqua text-ink-900' : 'bg-blush text-ink-900'
                     }`}>
-                      Offer: ₹{msg.price}
+                      Offer: {msg.price} ALGO
                     </div>
                   )}
                 </div>

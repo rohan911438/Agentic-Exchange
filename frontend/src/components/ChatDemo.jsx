@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Coins } from 'lucide-react';
 
 const messages = [
-  { role: 'buyer', text: "Hey, I can do this project for ₹300 considering the scope.", delay: 1000 },
-  { role: 'seller', text: "I understand, but given the complexity, I’d need at least ₹450.", delay: 2000 },
-  { role: 'buyer', text: "If we adjust the timeline, can we settle at ₹350?", delay: 2500 },
-  { role: 'seller', text: "Alright, ₹380 works if milestones are defined.", delay: 2000 },
-  { role: 'system', text: "🤝 DEAL CLOSED at ₹380", delay: 1500 }
+  { role: 'buyer', text: "Hey, I can do this project for 300 ALGO considering the scope.", delay: 1000 },
+  { role: 'seller', text: "I understand, but given the complexity, I’d need at least 450 ALGO.", delay: 2000 },
+  { role: 'buyer', text: "If we adjust the timeline, can we settle at 350 ALGO?", delay: 2500 },
+  { role: 'seller', text: "Alright, 380 ALGO works if milestones are defined.", delay: 2000 },
+  { role: 'system', text: "🤝 DEAL CLOSED at 380 ALGO", delay: 1500 }
 ];
 
 const ChatDemo = () => {
@@ -70,6 +71,10 @@ const ChatDemo = () => {
         ))}
         {index < messages.length && (
             <div className="flex gap-1 items-center animate-pulse">
+                <label className="flex items-center gap-2 text-sm font-medium text-slate ml-1">
+                  <Coins size={16} className="text-aqua" />
+                  Min Budget (ALGO)
+                </label>
                 <div className="w-1.5 h-1.5 rounded-full bg-slate" />
                 <div className="w-1.5 h-1.5 rounded-full bg-slate" />
                 <div className="w-1.5 h-1.5 rounded-full bg-slate" />

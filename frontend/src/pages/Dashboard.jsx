@@ -190,7 +190,7 @@ const Dashboard = () => {
                   <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
                     <div>
                       <div className="text-lg font-bold text-white">{deal.title}</div>
-                      <div className="text-sm text-slate">₹{deal.price}</div>
+                      <div className="text-sm text-slate">{deal.price} ALGO</div>
                       <div className="text-xs text-slate/70">Awaiting buyer funding</div>
                     </div>
                     <button
@@ -212,7 +212,7 @@ const Dashboard = () => {
                   <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
                     <div>
                       <div className="text-lg font-bold text-white">{deal.title}</div>
-                      <div className="text-sm text-slate">₹{deal.price}</div>
+                      <div className="text-sm text-slate">{deal.price} ALGO</div>
                     </div>
                     <button
                       onClick={() => navigate('/active-deal', { state: { dealId: deal.id } })}
@@ -246,7 +246,7 @@ const Dashboard = () => {
                   <div key={deal.id} className="p-6 rounded-2xl bg-ink-800/40 border border-white/10 flex flex-col gap-4">
                     <div>
                       <div className="text-lg font-bold text-white">{deal.title}</div>
-                      <div className="text-sm text-slate">₹{deal.price}</div>
+                      <div className="text-sm text-slate">{deal.price} ALGO</div>
                     </div>
                     <div className="flex gap-3">
                       <button
@@ -310,7 +310,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2 group-hover:text-aqua transition-colors">{deal.title}</h3>
-                    <div className="text-2xl font-display font-bold text-white/90">₹{deal.price}</div>
+                    <div className="text-2xl font-display font-bold text-white/90">{deal.price} ALGO</div>
                   </div>
 
                   <div className="pt-6 flex justify-between items-center bg-ink-800/50">

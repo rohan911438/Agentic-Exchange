@@ -66,7 +66,7 @@ const Completion = () => {
            <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
               <div className="text-center md:text-left">
                  <div className="text-[10px] uppercase font-mono text-slate tracking-widest mb-1">Final Settlement</div>
-                 <div className="text-4xl font-display font-bold text-white">₹{finalDeal.price}.00</div>
+                 <div className="text-4xl font-display font-bold text-white">{finalDeal.price}.00 ALGO</div>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
                  <Trophy size={16} className="text-aqua" />
