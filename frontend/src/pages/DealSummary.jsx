@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, Calendar, ListChecks, ArrowRight, ShieldCheck } from 'lucide-react';
@@ -27,13 +27,11 @@ const DealSummary = () => {
   const funded = Boolean(dealRecord?.data?.funded);
   const buyerWallet = requestData?.buyer_wallet || '';
   const sellerWallet = dealRecord?.data?.seller_wallet || '';
-  const isBuyer = account && buyerWallet && account.toLowerCase() === buyerWallet.toLowerCase();
-  const isSeller = account && sellerWallet && account.toLowerCase() === sellerWallet.toLowerCase();
   const bothApproved = approvals.buyer && approvals.seller;
   const readyForActive = funded && onchainAccepts.buyer && onchainAccepts.seller;
   const isCompleted = (dealRecord?.status || '').toLowerCase() === 'completed';
 
-  const computedMilestones = (() => {
+  const computedMilestones = useMemo(() => {
     if (dealRecord?.data?.result?.milestones?.length) return dealRecord.data.result.milestones;
     if (finalPrice > 0) {
       const first = Math.round(finalPrice * 0.4);
@@ -41,12 +39,12 @@ const DealSummary = () => {
       return [first, second].filter((v) => v > 0);
     }
     return [];
-  })();
+  }, [dealRecord, finalPrice]);
 
-  const milestones = computedMilestones.map((amt, idx) => ({
+  const milestones = useMemo(() => computedMilestones.map((amt, idx) => ({
     task: `Milestone ${idx + 1}`,
     amount: amt
-  }));
+  })), [computedMilestones]);
 
   useEffect(() => {
     getContractInfo()
@@ -75,65 +73,82 @@ const DealSummary = () => {
     return () => clearInterval(id);
   }, []);
 
+  // Enhanced role detection supporting multiple data formats
+  const isBuyer = useMemo(() => {
+    if (!account) return false;
+    const bAddr = requestData?.buyer_wallet || dealRecord?.data?.buyer_wallet;
+    return bAddr && account.toLowerCase() === bAddr.toLowerCase();
+  }, [account, requestData, dealRecord]);
+
+  const isSeller = useMemo(() => {
+    if (!account) return false;
+    const sAddr = dealRecord?.data?.seller_wallet || requestData?.seller_wallet;
+    return sAddr && account.toLowerCase() === sAddr.toLowerCase();
+  }, [account, dealRecord, requestData]);
+
   const handleAccept = async () => {
     if (!connected || !account) {
-      setTxStatus('Connect a wallet to accept on-chain.');
+      setTxStatus('⚠️ Connect your wallet to accept on-chain.');
       return;
     }
     setLoading(true);
-    setTxStatus('Preparing accept transaction...');
+    setTxStatus('🔄 Preparing on-chain agreement...');
     try {
       if (!dealId) return;
+      
       if (isSeller) {
         if (!onchainAccepts.buyer) {
-          setTxStatus('Waiting for buyer to create escrow on-chain.');
+          setTxStatus('⏳ Waiting for buyer to initiate the escrow on-chain.');
+          setLoading(false);
           return;
         }
-        if (approvals.seller) {
-          setTxStatus('Seller already accepted.');
-          return;
-        }
+        setTxStatus('📝 Requesting signature for Seller Acceptance...');
         await approveDeal(dealId, 'seller');
         const { txn } = await getAcceptTxnForDeal(account, dealId);
         const signed = await walletService.signTransactions(txn, 'TestNet');
+        setTxStatus('🚀 Submitting acceptance to Algorand...');
         const { txids } = await submitSignedTxns(signed);
         await recordOnchainAccept(dealId, 'seller', txids[0]);
-        await getDeal(dealId).then(setDealRecord).catch(() => {});
-        setTxStatus(`Seller accepted on-chain. TxID: ${txids[0]}`);
-        if (readyForActive) {
-          navigate('/active-deal', { state: { dealId } });
-        }
+        setTxStatus('✅ Accepted successfully!');
       } else if (isBuyer) {
-        if (approvals.buyer) {
-          setTxStatus('Buyer already accepted.');
-          return;
+        if (approvals.buyer && onchainAccepts.buyer) {
+          setTxStatus('⚡ Escrow already created. Proceeding to funding...');
+        } else {
+          setTxStatus('📝 Requesting signature to create Escrow...');
+          await approveDeal(dealId, 'buyer');
+          const amount = Math.max(Math.round(finalPrice || 0), 0);
+          const milestoneValues = computedMilestones.length ? computedMilestones : [amount];
+          const { txns } = await getCreateDealTxn(account, dealId, amount, milestoneValues);
+          const signed = await walletService.signTransactions(txns, 'TestNet');
+          setTxStatus('🚀 Deploying Smart Contract to Algorand...');
+          const { txids } = await submitSignedTxns(signed);
+          await recordOnchainAccept(dealId, 'buyer', txids[0]);
         }
-        await approveDeal(dealId, 'buyer');
-        const amount = Math.max(Math.round(finalPrice || 0), 0);
-        if (!amount) {
-          setTxStatus('Final price is missing. Cannot create escrow.');
-          return;
-        }
-        const milestoneValues = computedMilestones.length ? computedMilestones : [amount];
-        const { txns } = await getCreateDealTxn(account, dealId, amount, milestoneValues);
-        const signed = await walletService.signTransactions(txns, 'TestNet');
-        const { txids } = await submitSignedTxns(signed);
-        await recordOnchainAccept(dealId, 'buyer', txids[0]);
-        // Immediately fund escrow in the same flow
-        const { txns: depositTxns } = await getDepositTxns(account, dealId, amount);
-        const signedDeposit = await walletService.signTransactions(depositTxns, 'TestNet');
-        const { txids: depositTxids } = await submitSignedTxns(signedDeposit);
-        await fundDeal(dealId, depositTxids[0]);
-        await getDeal(dealId).then(setDealRecord).catch(() => {});
-        setTxStatus('Buyer created escrow and funded it on-chain.');
-        if (readyForActive) {
-          navigate('/active-deal', { state: { dealId } });
+
+        // Try to fund if not funded yet
+        if (!funded) {
+          setTxStatus('💰 Creating Escrow funded! Requesting deposit signature...');
+          const amount = Math.max(Math.round(finalPrice || 0), 0);
+          const { txns: depTxns } = await getDepositTxns(account, dealId, amount);
+          const signedDep = await walletService.signTransactions(depTxns, 'TestNet');
+          setTxStatus('📡 Funding escrow on-chain...');
+          const { txids: depIds } = await submitSignedTxns(signedDep);
+          await fundDeal(dealId, depIds[0]);
+          setTxStatus('✅ Escrow created and funded!');
         }
       } else {
-        setTxStatus('Only buyer or seller can accept.');
+        setTxStatus('❌ Unauthorized: Only the buyer or seller can accept this deal.');
+      }
+      
+      // Final data refresh
+      const updated = await getDeal(dealId);
+      setDealRecord(updated);
+      if (updated.data.funded && updated.data.onchain_accepts.buyer && updated.data.onchain_accepts.seller) {
+        setTimeout(() => navigate('/active-deal', { state: { dealId } }), 2000);
       }
     } catch (err) {
-      setTxStatus(err.message || 'Accept transaction failed');
+      console.error('Acceptance error:', err);
+      setTxStatus(`❌ Error: ${err.message || 'Transaction failed. Check console for details.'}`);
     } finally {
       setLoading(false);
     }
@@ -292,10 +307,10 @@ const DealSummary = () => {
                 <>
                   <button 
                     onClick={handleAccept}
-                    disabled={loading || !(isBuyer || isSeller) || (isBuyer && approvals.buyer) || (isSeller && approvals.seller)}
+                    disabled={loading || !(isBuyer || isSeller) || (isBuyer && onchainAccepts.buyer && funded) || (isSeller && onchainAccepts.seller)}
                     className="w-full py-5 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-2xl hover:scale-[1.02] transition-all shadow-soft flex items-center justify-center gap-2 group"
                   >
-                     {isBuyer && approvals.buyer ? 'Buyer Accepted' : isSeller && approvals.seller ? 'Seller Accepted' : 'Accept Offer'} <ArrowRight size={20} className="group-hover:translate-x-1" />
+                     {isBuyer ? (onchainAccepts.buyer && funded ? 'Buyer Accepted' : 'Accept & Create Escrow') : (onchainAccepts.seller ? 'Seller Accepted' : 'Accept Offer')} <ArrowRight size={20} className="group-hover:translate-x-1" />
                   </button>
                   <button 
                     onClick={handleReject}
@@ -304,13 +319,13 @@ const DealSummary = () => {
                   >
                      Reject Offer
                   </button>
-                  {bothApproved && isBuyer && !funded && (
+                  {bothApproved && isBuyer && onchainAccepts.buyer && !funded && (
                     <button 
                       onClick={handleFund}
                       disabled={loading}
-                      className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-4 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-lg"
                     >
-                       Deposit to Escrow
+                       💰 Finalize Escrow Funding
                     </button>
                   )}
                   {funded && (

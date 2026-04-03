@@ -73,7 +73,17 @@ const NegotiationRoom = () => {
     try {
       const result = await startNegotiation(dealId);
       const convo = result.conversation || [];
-      setMessages(mapConversation(convo));
+      const mappedMessages = mapConversation(convo);
+      
+      // Simulate real-time discussion by adding messages one by one
+      setMessages([]); 
+      for (const msg of mappedMessages) {
+        setIsTyping(true);
+        // Random typing delay between 1-2.5 seconds
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500));
+        setMessages(prev => [...prev, msg]);
+        setIsTyping(false);
+      }
       setIsComplete(true);
     } catch (err) {
       setError(err.message || 'Negotiation failed');

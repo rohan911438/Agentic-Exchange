@@ -8,7 +8,6 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      // Manual Node.js polyfills to avoid Vite 8 / node-polyfills plugin deprecation warnings
       buffer: 'buffer',
       process: 'process/browser',
       stream: 'stream-browserify',
@@ -16,13 +15,15 @@ export default defineConfig({
     },
   },
   define: {
-    // Explicitly define global variables to avoid the deprecated esbuild banner warning
-    global: 'window',
-    'process.env': {},
+    global: 'globalThis',
+    process: {
+      env: {},
+      browser: true,
+    },
   },
   optimizeDeps: {
+    include: ['buffer'],
     esbuildOptions: {
-      // Any specific esbuild legacy options can be cleared here
       define: {
         global: 'globalThis',
       },
