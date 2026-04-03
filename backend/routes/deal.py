@@ -175,6 +175,7 @@ def onchain_accept(id: str, payload: dict):
         raise HTTPException(status_code=404, detail="Deal ID not found")
     role = payload.get("role")
     txid = payload.get("txid")
+    sender = payload.get("sender")
     if role not in ("buyer", "seller"):
         raise HTTPException(status_code=400, detail="Invalid role")
     if not txid:
@@ -187,6 +188,15 @@ def onchain_accept(id: str, payload: dict):
     txids[role] = txid
     deal_data["onchain_accepts"] = onchain
     deal_data["txids"] = txids
+    # Ensure seller_wallet is captured when seller accepts on-chain
+    if role == "seller" and sender and not deal_data.get("seller_wallet"):
+        deal_data["seller_wallet"] = sender
+    # Ensure buyer_wallet is captured if missing
+    if role == "buyer" and sender:
+        request = deal_data.get("request") or {}
+        if not request.get("buyer_wallet"):
+            request["buyer_wallet"] = sender
+            deal_data["request"] = request
 
     # On-chain acceptance alone does not make the deal active (funding is required).
     status = deal_record.get("status", "negotiated")
