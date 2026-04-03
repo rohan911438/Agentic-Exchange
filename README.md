@@ -153,5 +153,5 @@ python smart_contract/deploy_testnet.py
 
 ## Notes
 
-- Currency in UI uses INR, but escrow uses **microAlgos** (1:1 for demo)
+- Currency in UI uses ALGO, but escrow uses **microAlgos** (1:1 for demo)
 - TestNet only for development
