@@ -7,21 +7,32 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      // Whether to polyfill `node:` protocol imports.
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
       protocolImports: true,
     }),
   ],
   resolve: {
     alias: {
+      buffer: 'buffer',
+      process: 'process/browser',
       stream: 'stream-browserify',
       util: 'util',
     },
   },
   define: {
-    // Explicitly define global for libraries that expect it
+    // Explicitly inject globals at the transformer-level for Vite 8/Oxc compatibility
     global: 'globalThis',
+    'globalThis.Buffer': 'Buffer',
+    Buffer: 'Buffer',
+    'process.env': '{}',
+    'process.browser': 'true',
+    process: 'process',
   },
   optimizeDeps: {
-    include: ['buffer', 'process'],
+    include: ['buffer', 'process', 'algosdk'],
   },
 })
