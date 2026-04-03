@@ -37,6 +37,12 @@ const NegotiationRoom = () => {
   }, [dealId]);
 
   useEffect(() => {
+    if (dealId && dealStatus === 'created' && messages.length === 0 && !loading && !isTyping) {
+      handleStart();
+    }
+  }, [dealId, dealStatus, messages.length]);
+
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
@@ -61,10 +67,6 @@ const NegotiationRoom = () => {
 
   const handleStart = async () => {
     if (!dealId) return;
-    if (dealStatus !== 'accepted' && dealStatus !== 'success') {
-      setError('Waiting for seller to accept.');
-      return;
-    }
     setLoading(true);
     setError('');
     setIsTyping(true);
@@ -136,6 +138,27 @@ const NegotiationRoom = () => {
 
       <div className="flex-1 w-full max-w-3xl overflow-y-auto px-6 py-10 space-y-8 no-scrollbar scroll-smooth mb-28" ref={scrollRef}>
         <AnimatePresence mode="popLayout">
+          {messages.length === 0 && dealData && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center gap-4 py-10 text-center"
+            >
+              <div className="p-6 rounded-[2rem] bg-ink-800/40 border border-white/10 max-w-lg">
+                <div className="text-[10px] uppercase font-mono text-aqua/60 tracking-widest mb-3">Initial Request</div>
+                <p className="text-white/80 italic leading-relaxed">
+                  "{dealData?.data?.request?.description || dealData?.data?.description}"
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-12 w-px bg-gradient-to-b from-white/10 to-transparent" />
+                <p className="text-[10px] uppercase font-mono text-slate tracking-[0.2em] animate-pulse">
+                  {dealStatus === 'created' ? 'Waiting for seller to accept before negotiation begins...' : 'AI agents are initializing...'}
+                </p>
+              </div>
+            </motion.div>
+          )}
+
           {messages.map((msg, i) => (
             <motion.div
               key={i}
@@ -185,59 +208,73 @@ const NegotiationRoom = () => {
       </div>
 
       <AnimatePresence>
-        {!isComplete && (
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="fixed bottom-10 left-6 right-6 z-50 flex justify-center"
-          >
-            <div className="max-w-xl w-full p-1.5 rounded-[2rem] bg-gradient-to-r from-aqua to-blush shadow-[0_0_50px_rgba(94,240,255,0.3)]">
-               <div className="bg-ink-900 rounded-[1.8rem] px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-4 text-center sm:text-left">
-                     <div className="w-14 h-14 rounded-full bg-lime/20 border border-lime/30 flex items-center justify-center">
-                        <CheckCircle2 size={32} className="text-lime" />
-                     </div>
-                     <div>
-                        <div className="text-xs uppercase tracking-[0.3em] font-mono text-slate mb-1">
-                          {dealStatus === 'accepted' ? 'Seller Accepted' : 'Awaiting Seller'}
-                        </div>
-                        <div className="text-2xl font-bold text-white font-display">
-                          {dealStatus === 'accepted' ? 'Start Negotiation' : 'Locked'}
-                        </div>
-                     </div>
-                  </div>
-                  <button 
-                    onClick={handleStart}
-                    disabled={loading || (dealStatus !== 'accepted' && dealStatus !== 'success')}
-                    className="px-8 py-4 bg-white text-ink-900 font-bold rounded-2xl flex items-center gap-2 hover:bg-mist transition-all group"
-                  >
-                    {loading ? 'Running...' : dealStatus === 'accepted' ? 'Run Agents' : 'Waiting'} <ArrowRight size={20} className="group-hover:translate-x-1" />
-                  </button>
-                  {dealStatus !== 'accepted' && !isBuyer && (
-                    <button
-                      onClick={handleAccept}
-                      disabled={accepting}
-                      className="px-6 py-3 rounded-2xl border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition-all"
-                    >
-                      {accepting ? 'Accepting…' : 'Accept Task'}
-                    </button>
-                  )}
-               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <motion.div 
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed bottom-10 left-6 right-6 z-50 flex justify-center"
+        >
+          <div className="max-w-2xl w-full p-1 rounded-[2rem] bg-gradient-to-r from-aqua/50 via-blush/50 to-aqua/50 shadow-[0_0_50px_rgba(94,240,255,0.2)] backdrop-blur-xl">
+             <div className="bg-ink-900/90 rounded-[1.9rem] px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-6 border border-white/5">
+                <div className="flex items-center gap-4">
+                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all ${
+                     isComplete ? 'bg-lime/20 border-lime/30' : 
+                     dealStatus === 'accepted' ? 'bg-aqua/20 border-aqua/30' : 'bg-white/5 border-white/10'
+                   }`}>
+                      {isComplete ? <CheckCircle2 size={24} className="text-lime" /> : <Zap size={24} className={dealStatus === 'accepted' ? 'text-aqua' : 'text-slate'} />}
+                   </div>
+                   <div>
+                      <div className="text-[10px] uppercase tracking-[0.2em] font-mono text-slate mb-0.5">
+                        {isComplete ? 'Final Agreement' : (dealStatus === 'accepted' ? 'Agents Ready' : 'Deal Status')}
+                      </div>
+                      <div className="text-lg font-bold text-white font-display">
+                        {isComplete ? 'Negotiation Finished' : (dealStatus === 'accepted' ? 'Start Negotiation' : 'Awaiting Seller')}
+                      </div>
+                   </div>
+                </div>
 
-      {isComplete && (
-        <div className="fixed bottom-10 left-6 right-6 z-50 flex justify-center">
-          <button
-            onClick={() => navigate('/summary', { state: { dealId } })}
-            className="px-10 py-4 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all shadow-soft"
-          >
-            View Summary
-          </button>
-        </div>
-      )}
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  {/* Primary Action Button */}
+                  {isComplete ? (
+                    <button
+                      onClick={() => navigate('/summary', { state: { dealId } })}
+                      className="w-full sm:w-auto px-10 py-3.5 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      View Summary <ArrowRight size={18} />
+                    </button>
+                  ) : (
+                    <>
+                      {dealStatus === 'created' && !isBuyer && (
+                         <button
+                            onClick={handleAccept}
+                            disabled={accepting}
+                            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2"
+                         >
+                            {accepting ? 'Accepting...' : 'Accept & Start'} <Zap size={18} />
+                         </button>
+                      )}
+                      
+                      {dealStatus === 'accepted' && (
+                        <button 
+                          onClick={handleStart}
+                          disabled={loading}
+                          className="w-full sm:w-auto px-8 py-3.5 bg-white text-ink-900 font-bold rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2"
+                        >
+                          {loading ? 'Running agents...' : 'Start Agents'} <ArrowRight size={18} />
+                        </button>
+                      )}
+
+                      {dealStatus === 'created' && isBuyer && (
+                        <div className="px-8 py-3.5 bg-white/5 border border-white/10 text-slate font-bold rounded-2xl cursor-not-allowed flex items-center gap-2">
+                           Waiting for Seller <MoreHorizontal size={18} className="animate-pulse" />
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+             </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       {error && (
         <div className="text-xs text-blush mb-10">{error}</div>

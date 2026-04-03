@@ -13,9 +13,22 @@ const Completion = () => {
 
   const dealId = location.state?.dealId || null;
 
+  const [loadingData, setLoadingData] = useState(true);
+
   useEffect(() => {
-    if (!dealId) return;
-    getDeal(dealId).then(setDealRecord).catch(() => {});
+    if (!dealId) {
+      setLoadingData(false);
+      return;
+    }
+    setLoadingData(true);
+    getDeal(dealId)
+      .then((res) => {
+        setDealRecord(res);
+        setLoadingData(false);
+      })
+      .catch(() => {
+        setLoadingData(false);
+      });
   }, [dealId]);
 
   const finalPrice = dealRecord?.data?.result?.final_price || 0;
@@ -26,6 +39,33 @@ const Completion = () => {
     price: finalPrice,
     summary
   };
+
+  if (loadingData) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-aqua/20 border-t-aqua animate-spin" />
+        <p className="mt-4 text-slate font-mono text-xs uppercase tracking-widest">Loading completion data...</p>
+      </div>
+    );
+  }
+
+  if (!dealId || !dealRecord) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+           <Trophy size={40} className="text-slate/20" />
+        </div>
+        <h1 className="text-3xl font-display font-bold text-white italic">No Completion Found</h1>
+        <p className="text-slate text-sm max-w-xs mx-auto">Please select a completed deal from your dashboard to view its final settlement and certificate.</p>
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="px-8 py-3 bg-white text-ink-900 font-bold rounded-xl hover:scale-105 transition-all"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">

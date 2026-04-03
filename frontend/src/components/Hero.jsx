@@ -1,7 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useWallet } from '../context/WalletContext';
 import ChatDemo from './ChatDemo';
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const { connected, toggleModal } = useWallet();
   return (
     <section className="relative min-h-screen pt-32 pb-20 px-6 flex items-center justify-center overflow-hidden bg-grid-fade">
       {/* Background Glows */}
@@ -25,8 +29,11 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fadeInUp delay-300">
-            <button className="px-8 py-4 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-xl transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(94,240,255,0.3)]">
-              Start a Deal
+            <button 
+              onClick={() => connected ? navigate('/dashboard') : toggleModal()}
+              className="px-8 py-4 bg-gradient-to-r from-aqua to-blush text-ink-900 font-bold rounded-xl transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(94,240,255,0.3)]"
+            >
+              {connected ? 'Go to Dashboard' : 'Start a Deal'}
             </button>
             <button className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-colors">
               Watch Demo

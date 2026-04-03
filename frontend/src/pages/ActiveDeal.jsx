@@ -16,16 +16,29 @@ const ActiveDeal = () => {
   const [contractInfo, setContractInfo] = useState(null);
   const [dealRecord, setDealRecord] = useState(null);
   const [txStatus, setTxStatus] = useState('');
-  const [loadingId, setLoadingId] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     getContractInfo().then(setContractInfo).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (!dealId) return;
+    if (!dealId) {
+      setLoadingData(false);
+      return;
+    }
+    setLoadingData(true);
     let mounted = true;
-    const fetchDeal = () => getDeal(dealId).then((data) => mounted && setDealRecord(data)).catch(() => {});
+    const fetchDeal = () => getDeal(dealId)
+      .then((data) => {
+        if(mounted) {
+          setDealRecord(data);
+          setLoadingData(false);
+        }
+      })
+      .catch(() => {
+        if(mounted) setLoadingData(false);
+      });
     fetchDeal();
     const timer = setInterval(fetchDeal, 4000);
     return () => {
@@ -126,6 +139,33 @@ const ActiveDeal = () => {
 
   const completedCount = milestones.filter(m => m.status === 'Completed').length;
   const progressPercent = milestones.length ? (completedCount / milestones.length) * 100 : 0;
+
+  if (loadingData) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-aqua/20 border-t-aqua animate-spin" />
+        <p className="mt-4 text-slate font-mono text-xs uppercase tracking-widest">Loading escrow data...</p>
+      </div>
+    );
+  }
+
+  if (!dealId || !dealRecord) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+           <ShieldCheck size={40} className="text-slate/20" />
+        </div>
+        <h1 className="text-3xl font-display font-bold text-white italic">No Escrow Found</h1>
+        <p className="text-slate text-sm max-w-xs mx-auto">Please select an active deal from your dashboard to track its milestones and release payments.</p>
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="px-8 py-3 bg-white text-ink-900 font-bold rounded-xl hover:scale-105 transition-all"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">

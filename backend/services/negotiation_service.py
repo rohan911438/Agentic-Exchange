@@ -38,9 +38,9 @@ def run_negotiation(task_data: dict[str, Any]) -> dict[str, Any]:
     buyer = BuyerAgent(
         budget=budget,
         initial_offer=initial_offer,
-        max_rounds=5, # Default max rounds
-        increase_pct=0.10,
-        threshold=20.0,
+        max_rounds=3, # Reduced rounds for faster performance
+        increase_pct=0.15, # More aggressive increases
+        threshold=30.0, # Higher threshold for faster closing
         personality="neutral",
         randomness=0.02,
     )
@@ -48,11 +48,11 @@ def run_negotiation(task_data: dict[str, Any]) -> dict[str, Any]:
     seller = SellerAgent(
         min_price=min_price,
         initial_price=initial_price,
-        max_rounds=5,
-        decrease_pct=0.10,
-        threshold=20.0,
+        max_rounds=3,
+        decrease_pct=0.15,
+        threshold=30.0,
         personality="neutral",
-        randomness=0.02,
+        randomness=0.01,
     )
 
     engine = NegotiationEngine(buyer=buyer, seller=seller, threshold=20.0)

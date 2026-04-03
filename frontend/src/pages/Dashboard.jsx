@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, TrendingUp, CheckCircle2, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, CheckCircle2, ExternalLink, ArrowRight, Circle } from 'lucide-react';
 import { listDeals, approveDeal, rejectDeal, recordOnchainAccept, fundDeal } from '../services/DealService';
 import { useWallet } from '../context/WalletContext';
 import { getCreateDealTxn, getAcceptTxnForDeal, getContractInfo, getDepositTxns, submitSignedTxns } from '../services/ContractService';
@@ -44,22 +44,37 @@ const Dashboard = () => {
     const title = request?.title || request?.description?.split('—')[0]?.trim() || request?.description || 'Deal';
     const finalPrice = deal.data?.result?.final_price || deal.data?.final_price || request?.budget || 0;
     const statusKey = (deal.status || '').toLowerCase();
-    const status = statusKey === 'rejected'
-      ? 'Rejected'
-      : statusKey === 'negotiated'
-        ? 'Negotiated'
-        : statusKey === 'active'
-          ? 'Active'
-          : statusKey === 'completed'
-            ? 'Completed'
-            : statusKey === 'success'
-              ? 'Completed'
-              : 'Negotiating';
+    
+    // Mapping internal status to display status and route
+    let displayStatus = 'Negotiating';
+    let route = '/negotiation-room';
+    let actionLabel = 'Resume';
+
+    if (statusKey === 'rejected') {
+      displayStatus = 'Rejected';
+      route = '/dashboard';
+      actionLabel = 'Dismiss';
+    } else if (statusKey === 'negotiated' || statusKey === 'success') {
+      displayStatus = 'Negotiated';
+      route = '/summary';
+      actionLabel = 'Review Offer';
+    } else if (statusKey === 'active') {
+      displayStatus = 'Active';
+      route = '/active-deal';
+      actionLabel = 'Track Escrow';
+    } else if (statusKey === 'completed') {
+      displayStatus = 'Completed';
+      route = '/completion';
+      actionLabel = 'View Settlement';
+    }
+
     return {
       id: deal.id,
       title,
       price: Math.round(finalPrice),
-      status,
+      status: displayStatus,
+      route,
+      actionLabel,
       data: deal.data,
     };
   }), [deals]);
@@ -315,10 +330,10 @@ const Dashboard = () => {
 
                   <div className="pt-6 flex justify-between items-center bg-ink-800/50">
                     <button 
-                      onClick={() => navigate(deal.status === 'Completed' ? '/summary' : '/negotiation-room', { state: { dealId: deal.id } })}
-                      className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 group/btn"
+                      onClick={() => navigate(deal.route, { state: { dealId: deal.id } })}
+                      className="px-6 py-2.5 rounded-xl bg-white text-ink-900 text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-2 group/btn"
                     >
-                      View <ExternalLink size={12} className="group-hover/btn:scale-110 transition-transform" />
+                      {deal.actionLabel} <ArrowRight size={12} className="group-hover/btn:translate-x-1" />
                     </button>
                   </div>
                 </motion.div>

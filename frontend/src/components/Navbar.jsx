@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { LogOut, Wallet } from 'lucide-react';
 import { getWalletBalance } from '../services/ContractService';
@@ -15,7 +15,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-900/80 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link to={connected ? "/dashboard" : "/"} className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-aqua to-blush flex items-center justify-center">
              <div className="w-4 h-4 rounded-full border-2 border-white/20" />
           </div>
@@ -29,12 +29,29 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-6">
           {!connected ? (
-            <Link to="/" className="text-slate hover:text-white transition-colors">Home</Link>
+            <NavLink 
+              to="/" 
+              className={({ isActive }) => `text-sm font-medium transition-all duration-300 ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
+            >
+              Home
+            </NavLink>
           ) : (
-            <>
-              <Link to="/dashboard" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Dashboard</Link>
-              <Link to="/create-deal" className="text-slate hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">Create Deal</Link>
-            </>
+            <div className="flex items-center gap-8">
+              <NavLink 
+                to="/dashboard" 
+                className={({ isActive }) => `text-sm font-medium transition-all duration-300 relative group ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
+              >
+                Dashboard
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-aqua transition-all duration-300 group-hover:w-full opacity-50"></span>
+              </NavLink>
+              <NavLink 
+                to="/create-deal" 
+                className={({ isActive }) => `text-sm font-medium transition-all duration-300 relative group ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
+              >
+                Create Deal
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-aqua transition-all duration-300 group-hover:w-full opacity-50"></span>
+              </NavLink>
+            </div>
           )}
           
           <div className="flex items-center gap-2 relative">

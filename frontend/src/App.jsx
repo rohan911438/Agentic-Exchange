@@ -24,7 +24,7 @@ function AppContent() {
       
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={connected ? <Navigate to="/dashboard" /> : <Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
           <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
           <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />

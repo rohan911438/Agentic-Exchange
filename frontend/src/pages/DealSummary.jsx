@@ -14,18 +14,14 @@ const DealSummary = () => {
   const [contractInfo, setContractInfo] = useState(null);
   const [txStatus, setTxStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [refreshTick, setRefreshTick] = useState(0);
   
   const dealId = location.state?.dealId || null;
   const [dealRecord, setDealRecord] = useState(null);
 
-  const requestData = dealRecord?.data?.request || dealRecord?.data || location.state || {
-    title: "Mobile App Development",
-    finalPrice: 450,
-    deadline: "2026-04-15",
-    priority: "Quality"
-  };
-  const finalPrice = dealRecord?.data?.result?.final_price || requestData.finalPrice || 0;
+  const requestData = dealRecord?.data?.request || dealRecord?.data || location.state || {};
+  const finalPrice = dealRecord?.data?.result?.final_price || 0;
   const approvals = dealRecord?.data?.approvals || { buyer: false, seller: false };
   const onchainAccepts = dealRecord?.data?.onchain_accepts || { buyer: false, seller: false };
   const funded = Boolean(dealRecord?.data?.funded);
@@ -59,10 +55,19 @@ const DealSummary = () => {
   }, []);
 
   useEffect(() => {
-    if (!dealId) return;
+    if (!dealId) {
+      setLoadingData(false);
+      return;
+    }
+    setLoadingData(true);
     getDeal(dealId)
-      .then(setDealRecord)
-      .catch(() => {});
+      .then((res) => {
+        setDealRecord(res);
+        setLoadingData(false);
+      })
+      .catch(() => {
+        setLoadingData(false);
+      });
   }, [dealId, refreshTick]);
 
   useEffect(() => {
@@ -178,6 +183,33 @@ const DealSummary = () => {
     await rejectDeal(dealId, role);
     navigate('/dashboard');
   };
+
+  if (loadingData) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-aqua/20 border-t-aqua animate-spin" />
+        <p className="mt-4 text-slate font-mono text-xs uppercase tracking-widest">Loading deal data...</p>
+      </div>
+    );
+  }
+
+  if (!dealId || !dealRecord) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+           <ShieldCheck size={40} className="text-slate/20" />
+        </div>
+        <h1 className="text-3xl font-display font-bold text-white italic">No Deal Selected</h1>
+        <p className="text-slate text-sm max-w-xs mx-auto">Please select a deal from your dashboard to view its summary and escrow status.</p>
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="px-8 py-3 bg-white text-ink-900 font-bold rounded-xl hover:scale-105 transition-all"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-20 px-6 min-h-screen bg-ink-900 flex flex-col items-center relative overflow-hidden">
