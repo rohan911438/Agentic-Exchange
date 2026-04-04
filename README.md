@@ -1,63 +1,138 @@
 # Agentic Exchange
 
-Agentic Exchange is an autonomous negotiation marketplace built on Algorand. Buyers create tasks, sellers accept them, AI agents negotiate the deal, and escrow is handled on‑chain with milestone releases.
+## 1. 🔥 Project Title & Tagline
+### Agentic Exchange
+AI agents negotiate. Algorand secures. Commerce executes itself.
 
-This repo contains:
-- **FastAPI backend** for negotiation orchestration, storage, and Algorand transaction building
-- **React (Vite) frontend** for user flows and wallet interactions
-- **PyTeal smart contract** for escrow + milestone release
+Agentic Exchange is a next-generation marketplace where autonomous buyer and seller agents negotiate deal terms in natural language, then execute payment guarantees through Algorand smart contract escrow.
 
-## Deployed Smart Contract (TestNet)
+Built for AlgoBharat Hack Series 3.0 (Round 2), this project demonstrates a production-style core flow:
 
-- **App ID:** `758126516`
-- **App Address:** `JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A`
+UI -> AI negotiation -> smart contract escrow -> milestone-based execution
 
-## Core Flow (End‑to‑End)
+## 2. 👥 Team Information
+- Team Name: BROTHERHOOD
+- Team Members:
+	- Rohan Kumar
+	- Abhishek Singh
+- Hackathon: AlgoBharat Hack Series 3.0 (Round 2)
+- Track: Agentic Commerce (AI + Blockchain)
 
-1. **Buyer creates task** (off‑chain, stored in DB)
-2. **Seller accepts task** (off‑chain)
-3. **Negotiation starts** (AI agents)
-4. **Both parties approve** (off‑chain)
-5. **Buyer creates escrow on‑chain**
-6. **Buyer deposits funds on‑chain**
-7. **Seller accepts on‑chain**
-8. **Buyer releases milestone payments on‑chain**
-9. **Buyer finalizes deal** → status becomes **Completed**
+## 3. 🚀 Problem Statement
+Freelance and service marketplaces still depend on manual negotiation, trust assumptions, and delayed enforcement.
 
-## Key Features
+Key pain points:
+- Time lost in repetitive price and scope discussions.
+- Lack of trust between unknown parties.
+- Payment disputes due to weak milestone enforcement.
+- Poor transparency in multi-step service delivery.
 
-- AI‑driven buyer/seller negotiation engine
-- Off‑chain task lifecycle + approvals
-- Algorand escrow with milestones
-- On‑chain accept + release
-- Dashboard for deal tracking
+## 4. 💡 Solution Overview
+Agentic Exchange automates the complete deal lifecycle:
+- Users submit intent (task, budget preference, timelines, milestones).
+- AI buyer and seller agents negotiate like humans and converge on fair terms.
+- Approved terms are translated into blockchain-backed escrow logic.
+- Funds are released only when milestones are confirmed.
 
-## Tech Stack
+Result: faster deal closure, trustless execution, and reduced dispute friction.
 
-- **Backend:** FastAPI, Python
-- **Frontend:** React + Vite + Tailwind
-- **Blockchain:** Algorand TestNet
-- **Contracts:** PyTeal
-- **Database:** MongoDB
+## 5. 🧠 Core Innovation
+- Autonomous Negotiation Engine:
+	Buyer and seller AI agents optimize for outcome quality, fairness, and closure probability.
+- Conversational Deal Structuring:
+	Agents negotiate price, delivery windows, and milestone breakups in human-like exchanges.
+- On-Chain Trust Layer:
+	Algorand smart contract escrow enforces milestone releases and completion state transitions.
+- Agentic Commerce Focus:
+	A single, clear core flow is prioritized and fully implemented end-to-end.
 
-## Prerequisites
+## 6. ⚙️ How It Works (Step-by-step flow)
+1. Buyer creates a deal request in the frontend.
+2. Seller accepts and enters negotiation.
+3. AI buyer and seller agents run multi-turn negotiation.
+4. Both sides approve the negotiated terms.
+5. Backend generates escrow transaction payloads.
+6. Buyer signs and submits on-chain escrow creation and funding.
+7. Seller performs on-chain acceptance.
+8. Buyer releases milestone payments as work is validated.
+9. Deal is marked complete after final milestone settlement.
 
-- **Python 3.10+**
-- **Node.js 18+**
-- **npm**
-- Algorand wallet (Pera / Defly) on **TestNet**
+## 7. 🏗️ System Architecture
+```text
+Frontend (React)
+		|
+		| REST API + Wallet Actions
+		v
+Backend (FastAPI)
+		|-- Negotiation Service
+		|     |-- Buyer Agent
+		|     |-- Seller Agent
+		|
+		|-- Deal Store (state + lifecycle)
+		|
+		|-- Algorand Service
+					 |
+					 v
+	 Smart Contract Escrow (Algorand)
+					 |
+					 v
+	 Milestone Settlement + Final Completion
+```
 
-## Setup
+## 8. 🧩 Tech Stack
+- Frontend: React, Vite, Tailwind CSS
+- Backend: FastAPI, Python
+- AI Layer: Agent-based negotiation orchestration
+- Blockchain: Algorand TestNet
+- Smart Contracts: PyTeal
+- Storage: MongoDB
 
-### 1) Backend
+## 9. 🔗 Algorand Integration
+Why Algorand:
+- Low transaction fees make milestone-level payments practical.
+- Fast finality improves user trust and UX for settlement-critical actions.
+- High reliability is ideal for automated agentic commerce workflows.
 
+How Algorand is used:
+- Smart contract escrow secures funds for negotiated deals.
+- Milestone release logic ensures payment only after agreed progress.
+- On-chain acceptance and completion states reduce disputes and ambiguity.
+
+Wallet-based authentication and signing:
+- Users connect wallets from the frontend.
+- Sensitive financial actions are signed client-side by the user.
+- Backend coordinates transaction creation and submission workflow.
+
+Current TestNet deployment:
+- App ID: 758126516
+- App Address: JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A
+
+## 10. 🎯 Hackathon Requirement Alignment
+This submission explicitly satisfies the track expectations:
+
+- Full-stack implementation:
+	Frontend UI + FastAPI backend + Algorand smart contract integration.
+- End-to-end working flow:
+	UI -> AI negotiation -> smart contract -> execution.
+- Real blockchain integration:
+	Escrow and milestone flow run on Algorand TestNet.
+- Single core flow execution:
+	Autonomous negotiation + escrow deal execution is fully demonstrated.
+
+## 11. 🧪 Demo Instructions (How to run locally)
+Prerequisites:
+- Python 3.10+
+- Node.js 18+
+- npm
+- Algorand TestNet wallet
+
+### A) Run Backend
 ```bash
 pip install -r requirements.txt
 ```
 
-Create `.env` in project root:
-
-```bash
+Create a .env file in project root:
+```env
 GEMINI_API_KEY=your_gemini_key
 MONGODB_URI=your_mongo_uri
 MONGODB_DB=agentic_exchange
@@ -67,91 +142,73 @@ APP_ID=758126516
 CONTRACT_BOX_FUNDING=160000
 ```
 
-Run:
-
+Start backend:
 ```bash
 uvicorn backend.main:app --reload
 ```
 
-Backend URL: `http://127.0.0.1:8000`
+Backend runs at: http://127.0.0.1:8000
 
-### 2) Frontend
-
+### B) Run Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend URL: `http://localhost:5173`
+Frontend runs at: http://localhost:5173
 
-## API Overview
+### C) Test Negotiation API
+Use the backend docs or call endpoints directly:
+- Start with creating a deal and seller acceptance.
+- Trigger negotiation using:
+	- POST /start-negotiation
+- Inspect negotiated messages and proposed final terms.
 
-### Deals
-- `POST /create-deal`
-- `POST /deal/{id}/accept`
-- `POST /start-negotiation`
-- `POST /deal/{id}/approve`
-- `POST /deal/{id}/onchain-accept`
-- `POST /deal/{id}/fund`
-- `POST /deal/{id}/release`
-- `POST /deal/{id}/complete`
-- `GET /deal/{id}`
-- `GET /deals`
-
-### Contract Helpers
-- `GET /contract/info`
-- `POST /contract/create-txn`
-- `POST /contract/accept-txn`
-- `POST /contract/deposit-txn`
-- `POST /contract/release-txn`
-- `POST /contract/submit`
-- `GET /wallet/balance`
-
-## Smart Contract (PyTeal)
-
-Location: `smart_contract/escrow_contract.py`
-
-Supports:
-- Multi‑deal storage using **boxes**
-- On‑chain accept for buyer/seller
-- Escrow deposit
-- Milestone release
-- Completion after all releases
-
-To compile:
+Example (replace values as needed):
 ```bash
-python smart_contract/compile.py
+curl -X POST http://127.0.0.1:8000/start-negotiation \
+	-H "Content-Type: application/json" \
+	-d "{\"deal_id\":\"<deal_id>\"}"
 ```
 
-To deploy new app (optional):
-```bash
-python smart_contract/deploy_testnet.py
+### D) Simulate Full Deal Flow
+1. Create deal from UI.
+2. Accept deal as seller.
+3. Run AI negotiation and approvals.
+4. Connect buyer wallet and create escrow transaction.
+5. Fund escrow from buyer wallet.
+6. Perform seller on-chain accept.
+7. Release milestone payments from buyer side.
+8. Mark deal completed after all milestones.
+
+## 12. 🎥 Demo Video (placeholder link)
+- Demo Video: https://youtu.be/your-demo-link
+
+## 13. 📂 Project Structure
+```text
+frontend/         # React application (UI, pages, wallet context, services)
+backend/          # FastAPI APIs, routing, services, schemas
+Agents/           # AI buyer/seller agents and negotiation engine
+smart_contract/   # Algorand smart contract, compile and deploy scripts
 ```
 
-## Project Structure
+Note:
+- agents/ in documentation maps to Agents/ in this repository.
+- contracts/ in documentation maps to smart_contract/ in this repository.
 
-- `backend/` — FastAPI routes + services
-- `frontend/` — React UI
-- `smart_contract/` — PyTeal escrow contract
-- `Agents/` — AI negotiation agents
+## 14. 🚀 Future Scope
+- Fully autonomous agents with adaptive long-term reputation memory.
+- DAO-based dispute resolution for contested milestones.
+- Multi-agent marketplaces with specialist subcontractor agents.
+- Cross-chain settlement rails while retaining Algorand escrow as anchor layer.
+- Risk scoring and fraud detection using behavioral agent analytics.
 
-## Troubleshooting
+## 15. 🏆 Why This Project Matters
+Agentic Exchange demonstrates how AI and blockchain can jointly unlock real autonomous commerce:
+- AI removes negotiation overhead and accelerates deal closure.
+- Algorand escrow enforces trust without centralized intermediaries.
+- Milestone-based settlement protects both buyer and seller interests.
+- The architecture is practical, extensible, and aligned with real market needs.
 
-**1) Negotiation won’t start**
-- Ensure `GEMINI_API_KEY` is set in `.env`
-
-**2) Seller accept fails / release fails**
-- Ensure seller wallet is captured (on‑chain accept stores it automatically)
-
-**3) Buyer can’t create escrow**
-- Check wallet min balance; Algorand requires minimum balance for accounts
-- Box funding is configurable via `CONTRACT_BOX_FUNDING`
-
-**4) Page refresh redirects to home**
-- Wallet reconnect runs on load; wait 1–2 seconds for session restore
-
-## Notes
-
-- Currency in UI uses ALGO, but escrow uses **microAlgos** (1:1 for demo)
-- TestNet only for development
+This is not just a concept demo. It is a functional foundation for machine-to-machine and human-to-agent economic coordination in the next era of digital marketplaces.
