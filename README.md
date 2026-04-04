@@ -80,15 +80,19 @@ Wallet usage:
 - Users keep custody while the app coordinates transaction creation.
 
 Verify on-chain deployment:
-- Pera Explorer Application: https://explorer.perawallet.app/application/758126516/
-- Pera Explorer Application Address: https://explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
+- Pera Explorer TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
+- Pera Explorer TestNet Application Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
 - AlgoExplorer TestNet Application: https://testnet.algoexplorer.io/application/758126516
 - AlgoExplorer TestNet Address: https://testnet.algoexplorer.io/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A
 
+Demo wallet/account used (TestNet):
+- Pera Explorer TestNet Account: https://testnet.explorer.perawallet.app/address/NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA/
+- Pera Explorer TestNet Transactions: https://testnet.explorer.perawallet.app/transactions/?transaction_list_address=NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA
+
 ## Product Screenshots
-![Landing Page](docs/images/landing.png)
-![Feature Highlights](docs/images/features.png)
-![Create Deal Flow](docs/images/create-deal.png)
+(docs/images/landing.png)
+(docs/images/features.png)
+(docs/images/create-deal.png)
 
 Add your provided images to docs/images using these names:
 - landing.png
