@@ -1,20 +1,37 @@
 import os
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
-from ..models import (
-    DealCreateRequest, 
-    DealCreateResponse, 
-    NegotiationRequest, 
-    NegotiationResponse, 
-    DealDetailsResponse
-)
-from ..services import (
-    create_deal, 
-    get_deal, 
-    update_deal, 
-    list_deals, 
-    run_negotiation
-)
+
+if __package__ and __package__.startswith("backend"):
+    from backend.models import (
+        DealCreateRequest,
+        DealCreateResponse,
+        NegotiationRequest,
+        NegotiationResponse,
+        DealDetailsResponse,
+    )
+    from backend.services import (
+        create_deal,
+        get_deal,
+        update_deal,
+        list_deals,
+        run_negotiation,
+    )
+else:
+    from models import (
+        DealCreateRequest,
+        DealCreateResponse,
+        NegotiationRequest,
+        NegotiationResponse,
+        DealDetailsResponse,
+    )
+    from services import (
+        create_deal,
+        get_deal,
+        update_deal,
+        list_deals,
+        run_negotiation,
+    )
 
 router = APIRouter()
 

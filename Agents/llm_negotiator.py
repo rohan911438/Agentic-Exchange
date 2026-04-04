@@ -1,6 +1,14 @@
 import os
 import re
+import warnings
 from dotenv import load_dotenv
+
+warnings.filterwarnings(
+    "ignore",
+    message=r"All support for the `google\.generativeai` package has ended.*",
+    category=FutureWarning,
+)
+
 import google.generativeai as genai
 
 # Ensure .env is loaded even if this module is imported early

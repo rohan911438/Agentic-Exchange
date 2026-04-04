@@ -4,16 +4,29 @@ from typing import List
 
 from algosdk.error import AlgodHTTPError
 from fastapi import HTTPException
-from ..services.algorand_service import (
-    get_app_address,
-    get_app_id,
-    build_create_deal_group,
-    build_accept_txn,
-    build_deposit_group,
-    build_release_txn,
-    submit_signed_transactions,
-    get_account_balance,
-)
+
+if __package__ and __package__.startswith("backend"):
+    from backend.services.algorand_service import (
+        get_app_address,
+        get_app_id,
+        build_create_deal_group,
+        build_accept_txn,
+        build_deposit_group,
+        build_release_txn,
+        submit_signed_transactions,
+        get_account_balance,
+    )
+else:
+    from services.algorand_service import (
+        get_app_address,
+        get_app_id,
+        build_create_deal_group,
+        build_accept_txn,
+        build_deposit_group,
+        build_release_txn,
+        submit_signed_transactions,
+        get_account_balance,
+    )
 
 router = APIRouter()
 

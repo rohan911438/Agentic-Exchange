@@ -115,7 +115,7 @@ All on-chain proof screenshots are loaded from the same folder path: docs/images
 
 ## Local Demo
 Prerequisites:
-- Python 3.10+
+- Python 3.11 or 3.12
 - Node.js 18+
 - npm
 - Pera Wallet on Algorand TestNet
@@ -125,6 +125,12 @@ Backend:
 pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
+
+Recommended setup on Windows:
+- Install Python 3.12 or 3.11 from python.org.
+- Reopen the terminal so the new interpreter is on PATH.
+- Verify with `python --version` before installing dependencies.
+- If multiple versions are installed, use `py -3.12` or `py -3.11` explicitly.
 
 Frontend:
 ```bash

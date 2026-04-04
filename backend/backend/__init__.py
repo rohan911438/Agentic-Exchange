@@ -1,0 +1,1 @@
+"""Compatibility shim so python -m backend.main works from inside backend/."""
