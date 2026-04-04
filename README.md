@@ -92,11 +92,20 @@ Demo wallet/account used (TestNet):
 ## Product Screenshots
 All screenshots are loaded from one path: docs/images
 
-!(docs/images/landing.png)
+![Landing Page](docs/images/landing.png)
 
 ![Features Section](docs/images/features.png)
 
 ![Create Deal Screen](docs/images/create-deal.png)
+
+## Testnet Transaction Screenshots
+All on-chain proof screenshots are loaded from the same folder path: docs/images
+
+![Testnet Wallet Transaction](docs/images/testnet-transaction-1.png)
+
+![Testnet App Confirmation](docs/images/testnet-transaction-2.png)
+
+![Testnet Explorer Verification](docs/images/testnet-transaction-3.png)
 
 ## Hackathon Alignment
 - Full-stack implementation: frontend + backend + blockchain.
