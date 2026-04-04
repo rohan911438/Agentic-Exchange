@@ -21,6 +21,14 @@ try:
 except ImportError:
     load_dotenv = None
 
+
+def _parse_cors_origins(value: str | None) -> list[str]:
+    if not value:
+        return ["*"]
+
+    cleaned = [origin.strip() for origin in value.split(",") if origin.strip()]
+    return cleaned or ["*"]
+
 if load_dotenv is not None:
     load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -33,8 +41,8 @@ app = FastAPI(
 # Enable CORS (allowing all origins as per Stage 1 requirements)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_parse_cors_origins(os.getenv("CORS_ORIGINS")),
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -44,4 +52,10 @@ app.include_router(api_router)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app" if __package__ and __package__.startswith("backend") else "main:app", host="127.0.0.1", port=8000, reload=True)
+
+    uvicorn.run(
+        app,
+        host=os.getenv("HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", "8000")),
+        reload=os.getenv("UVICORN_RELOAD", "false").lower() == "true",
+    )

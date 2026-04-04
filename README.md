@@ -142,6 +142,24 @@ curl -X POST http://127.0.0.1:8000/start-negotiation \
   -d "{\"deal_id\":\"<deal_id>\"}"
 ```
 
+## Deployment
+Frontend hosting:
+- Deploy the `frontend/` app to Netlify.
+- Set `VITE_API_BASE` in Netlify to your backend URL, for example `https://agentic-exchange-backend.onrender.com`.
+- The included Netlify config handles the Vite build and SPA fallback routing.
+
+Backend hosting:
+- Deploy the FastAPI backend to Render.
+- Use the provided `render.yaml` blueprint or create a web service with:
+  - Build command: `pip install -r requirements.txt`
+  - Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- Set `GEMINI_API_KEY`, `GOOGLE_API_KEY`, and `CORS_ORIGINS` in the backend environment.
+- `CORS_ORIGINS` should include your Netlify site URL.
+
+Environment files:
+- `.env.example` shows the backend variables used locally and in deployment.
+- `frontend/.env.example` shows the frontend API base URL variable.
+
 Simulate deal lifecycle:
 - Create deal in UI.
 - Seller accepts.
