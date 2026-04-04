@@ -154,6 +154,7 @@ Backend hosting:
   - Build command: `pip install -r requirements.txt`
   - Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 - Set all backend environment variables listed below in Render.
+- Ensure Python runtime is `3.12.x` (configured via `.python-version` and `PYTHON_VERSION` in `render.yaml`).
 
 ### Render Backend Configuration (Copy Checklist)
 
@@ -201,6 +202,10 @@ Environment files:
 Security note:
 - Never commit live secrets (API keys, DB URIs, wallet secrets) into the repository.
 - If a key or URI has been shared publicly, rotate it immediately and update Render/Netlify env variables.
+
+Render troubleshooting:
+- If build fails on `pydantic-core` with Rust/maturin errors, your runtime is likely too new (for example Python 3.14).
+- Fix by setting Render Python version to `3.12.8`, then redeploy.
 
 Simulate deal lifecycle:
 - Create deal in UI.
