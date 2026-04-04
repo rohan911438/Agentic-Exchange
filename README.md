@@ -14,6 +14,10 @@ Agentic Exchange is a full-stack agentic commerce platform where users do not ma
 Core execution flow:
 UI -> AI negotiation -> on-chain escrow -> milestone release -> completion
 
+## Live Deployment
+- Frontend (Netlify): https://agenticex.netlify.app/
+- Backend (Render): https://agentic-exchange.onrender.com
+
 ## The Problem We Are Solving
 Digital service marketplaces are still inefficient and trust-heavy.
 
