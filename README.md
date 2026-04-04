@@ -90,14 +90,13 @@ Demo wallet/account used (TestNet):
 - Pera Explorer TestNet Transactions: https://testnet.explorer.perawallet.app/transactions/?transaction_list_address=NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA
 
 ## Product Screenshots
-(docs/images/landing.png)
-(docs/images/features.png)
-(docs/images/create-deal.png)
+All screenshots are loaded from one path: docs/images
 
-Add your provided images to docs/images using these names:
-- landing.png
-- features.png
-- create-deal.png
+![Landing Page](docs/images/landing.png)
+
+![Features Section](docs/images/features.png)
+
+![Create Deal Screen](docs/images/create-deal.png)
 
 ## Hackathon Alignment
 - Full-stack implementation: frontend + backend + blockchain.
