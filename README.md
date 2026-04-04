@@ -194,6 +194,7 @@ Algorand contract references:
 Netlify to Render connection:
 - In Netlify frontend env, set `VITE_API_BASE` to your Render backend URL.
 - Example: `VITE_API_BASE=https://agentic-exchange-backend.onrender.com`
+- For your current frontend deployment, set backend `CORS_ORIGINS` to include `https://agenticex.netlify.app`.
 
 Environment files:
 - `.env.example` shows full backend variables for local and Render deployment.
@@ -206,6 +207,8 @@ Security note:
 Render troubleshooting:
 - If build fails on `pydantic-core` with Rust/maturin errors, your runtime is likely too new (for example Python 3.14).
 - Fix by setting Render Python version to `3.12.8`, then redeploy.
+- If deploy logs show `Running 'uvicorn'` and `Missing argument 'APP'`, your Render start command is incorrect.
+- Fix start command to `bash ./start_backend.sh` (or `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`) and redeploy.
 
 Simulate deal lifecycle:
 - Create deal in UI.
