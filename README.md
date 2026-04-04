@@ -153,12 +153,54 @@ Backend hosting:
 - Use the provided `render.yaml` blueprint or create a web service with:
   - Build command: `pip install -r requirements.txt`
   - Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-- Set `GEMINI_API_KEY`, `GOOGLE_API_KEY`, and `CORS_ORIGINS` in the backend environment.
-- `CORS_ORIGINS` should include your Netlify site URL.
+- Set all backend environment variables listed below in Render.
+
+### Render Backend Configuration (Copy Checklist)
+
+Service settings:
+- Runtime: Python
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- Health check path: `/`
+
+Required environment variables:
+
+| Variable | Example Value | Required | Purpose |
+|---|---|---|---|
+| `GEMINI_API_KEY` | `your_gemini_api_key` | Yes | Enables AI negotiation in `/start-negotiation`. |
+| `GOOGLE_API_KEY` | `your_google_api_key` | Optional | Alternate key path used by agent modules. |
+| `CORS_ORIGINS` | `https://your-site.netlify.app` | Yes | Allowed frontend origins (comma-separated supported). |
+| `ALGOD_ADDRESS` | `https://testnet-api.algonode.cloud` | Yes | Algorand node endpoint. |
+| `ALGOD_TOKEN` | `` | Usually empty | Token for public Algonode endpoint (blank for Algonode). |
+| `CONTRACT_APP_ID` | `758126516` | Yes | Deployed escrow smart contract app ID. |
+| `CONTRACT_BOX_FUNDING` | `160000` | Recommended | Min microAlgos used to fund app boxes during create flow. |
+| `MONGODB_DB` | `agentic_exchange` | Yes | Mongo database name used by the deal store. |
+| `MONGODB_URI` | `mongodb+srv://<user>:<pass>@...` | Yes | MongoDB connection string. |
+
+Optional variables:
+
+| Variable | Example Value | Purpose |
+|---|---|---|
+| `HOST` | `0.0.0.0` | Uvicorn host override. |
+| `UVICORN_RELOAD` | `false` | Keep disabled in production. |
+| `CONTRACT_TOTAL` | `380` | Convenience value for scripts/tools. |
+| `CONTRACT_MILESTONES` | `150,230` | Convenience value for scripts/tools. |
+
+Algorand contract references:
+- TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
+- TestNet App Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
+
+Netlify to Render connection:
+- In Netlify frontend env, set `VITE_API_BASE` to your Render backend URL.
+- Example: `VITE_API_BASE=https://agentic-exchange-backend.onrender.com`
 
 Environment files:
-- `.env.example` shows the backend variables used locally and in deployment.
+- `.env.example` shows full backend variables for local and Render deployment.
 - `frontend/.env.example` shows the frontend API base URL variable.
+
+Security note:
+- Never commit live secrets (API keys, DB URIs, wallet secrets) into the repository.
+- If a key or URI has been shared publicly, rotate it immediately and update Render/Netlify env variables.
 
 Simulate deal lifecycle:
 - Create deal in UI.

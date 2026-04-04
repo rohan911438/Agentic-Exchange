@@ -9,6 +9,18 @@ services:
         sync: false
       - key: GOOGLE_API_KEY
         sync: false
+      - key: ALGOD_ADDRESS
+        value: https://testnet-api.algonode.cloud
+      - key: ALGOD_TOKEN
+        value: ""
+      - key: CONTRACT_APP_ID
+        value: "758126516"
+      - key: CONTRACT_BOX_FUNDING
+        value: "160000"
+      - key: MONGODB_DB
+        value: agentic_exchange
+      - key: MONGODB_URI
+        sync: false
       - key: CORS_ORIGINS
         sync: false
         value: https://your-netlify-site.netlify.app
