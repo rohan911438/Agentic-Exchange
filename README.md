@@ -92,7 +92,7 @@ Demo wallet/account used (TestNet):
 ## Product Screenshots
 All screenshots are loaded from one path: docs/images
 
-![Landing Page](docs/images/landing.png)
+!(docs/images/landing.png)
 
 ![Features Section](docs/images/features.png)
 
