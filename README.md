@@ -82,30 +82,26 @@ Wallet usage:
 Verify on-chain deployment:
 - Pera Explorer TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
 - Pera Explorer TestNet Application Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
-- AlgoExplorer TestNet Application: https://testnet.algoexplorer.io/application/758126516
-- AlgoExplorer TestNet Address: https://testnet.algoexplorer.io/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A
 
 Demo wallet/account used (TestNet):
 - Pera Explorer TestNet Account: https://testnet.explorer.perawallet.app/address/NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA/
 - Pera Explorer TestNet Transactions: https://testnet.explorer.perawallet.app/transactions/?transaction_list_address=NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA
 
 ## Product Screenshots
-All screenshots are loaded from one path: docs/images
 
 ![Landing Page](docs/images/landing.png)
 
-![Features Section](docs/images/features.png)
+![Features Section](docs/images/dashboard.png)
 
 ![Create Deal Screen](docs/images/create-deal.png)
 
 ## Testnet Transaction Screenshots
-All on-chain proof screenshots are loaded from the same folder path: docs/images
 
-![Testnet Wallet Transaction](docs/images/testnet-transaction-1.png)
+![Testnet Wallet Transaction](docs/images/testnet-transaction-1.jpg)
 
-![Testnet App Confirmation](docs/images/testnet-transaction-2.png)
+![Testnet App Confirmation](docs/images/testnet-transaction-2.jpg)
 
-![Testnet Explorer Verification](docs/images/testnet-transaction-3.png)
+![Testnet Explorer Verification](docs/images/testnet-transaction-3.jpg)
 
 ## Hackathon Alignment
 - Full-stack implementation: frontend + backend + blockchain.
