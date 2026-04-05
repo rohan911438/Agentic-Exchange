@@ -17,6 +17,7 @@ UI -> AI negotiation -> on-chain escrow -> milestone release -> completion
 ## Live Deployment
 - Frontend (Netlify): https://agenticex.netlify.app/
 - Backend (Render): https://agentic-exchange.onrender.com
+- Demo Video:  https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
 
 ## The Problem We Are Solving
 Digital service marketplaces are still inefficient and trust-heavy.
@@ -224,7 +225,7 @@ Simulate deal lifecycle:
 - Complete deal.
 
 ## Demo Video
-- Link: https://youtu.be/your-demo-link
+- Link: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
 
 ## Repository Structure
 ```text
