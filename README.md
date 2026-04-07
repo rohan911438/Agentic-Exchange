@@ -18,6 +18,8 @@ UI -> AI negotiation -> on-chain escrow -> milestone release -> completion
 - Frontend (Netlify): https://agenticex.netlify.app/
 - Backend (Render): https://agentic-exchange.onrender.com
 - Demo Video:  https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
+- Presentation :- https://drive.google.com/file/d/1QLcaG2JUbkMqCdo8t4e_RRt4PQV05bmb/view?usp=drivesdk
+
 
 ## The Problem We Are Solving
 Digital service marketplaces are still inefficient and trust-heavy.
