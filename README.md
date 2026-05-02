@@ -113,24 +113,25 @@ Demo wallet/account used (TestNet):
 - Real Algorand smart contract escrow integration.
 - Clear focus on one core flow: autonomous negotiation and escrow deal execution.
 
-## Local Demo
+### Local Demo
 Prerequisites:
-- Python 3.11 or 3.12
+- Python 3.11
 - Node.js 18+
 - npm
 - Pera Wallet on Algorand TestNet
 
 Backend:
 ```bash
-pip install -r requirements.txt
-uvicorn backend.main:app --reload
+py -3.11 -m pip install -r requirements.txt
+$env:PORT = "8000"
+py -3.11 -m uvicorn backend.main:app --host 0.0.0.0 --port $env:PORT --reload
 ```
 
 Recommended setup on Windows:
-- Install Python 3.12 or 3.11 from python.org.
+- Install Python 3.11 from python.org.
 - Reopen the terminal so the new interpreter is on PATH.
-- Verify with `python --version` before installing dependencies.
-- If multiple versions are installed, use `py -3.12` or `py -3.11` explicitly.
+- Verify with `py -3.11 --version` before installing dependencies.
+- Use `py -3.11 -m uvicorn` to avoid command recognition issues.
 
 Frontend:
 ```bash
@@ -147,26 +148,28 @@ curl -X POST http://127.0.0.1:8000/start-negotiation \
 ```
 
 ## Deployment
-Frontend hosting:
+
+### Frontend hosting:
 - Deploy the `frontend/` app to Netlify.
 - Set `VITE_API_BASE` in Netlify to your backend URL, for example `https://agentic-exchange-backend.onrender.com`.
 - The included Netlify config handles the Vite build and SPA fallback routing.
 
-Backend hosting:
-- Deploy the FastAPI backend to Render.
-- Use the provided `render.yaml` blueprint or create a web service with:
-  - Build command: `pip install -r requirements.txt`
-  - Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-- Set all backend environment variables listed below in Render.
-- Ensure Python runtime is `3.12.x` (configured via `.python-version` and `PYTHON_VERSION` in `render.yaml`).
+### Backend hosting:
+
+1. Deploy the FastAPI backend to Render.
+2. Use the provided `render.yaml` blueprint or create a web service with:
+   - **Build command:** `pip install -r requirements.txt`
+   - **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+3. Set all backend environment variables listed below in Render.
+4. Ensure Python runtime is `3.11.x` (configured via `.python-version` and `PYTHON_VERSION` in `render.yaml`).
 
 ### Render Backend Configuration (Copy Checklist)
 
-Service settings:
-- Runtime: Python
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-- Health check path: `/`
+**Service settings:**
+- **Runtime:** Python
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- **Health check path:** `/`
 
 Required environment variables:
 
