@@ -1,9 +1,8 @@
-"""Compatibility package for the Agentic Exchange SDK.
+"""Agentic Exchange Python SDK public package.
 
-This project stores the implementation in `agentic_exchange_sdk`, but the
-public import path used by tests and users is `agentic_exchange`.
+This is the canonical import surface for the published SDK.
 """
 
-from agentic_exchange_sdk import AgenticClient
+from .client import AgenticClient
 
 __all__ = ["AgenticClient"]

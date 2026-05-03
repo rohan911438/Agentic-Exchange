@@ -1,17 +1,25 @@
-"""Compatibility wrapper for the public exceptions module."""
+"""SDK exception types."""
 
-from agentic_exchange_sdk.exceptions import (
-    AgenticExchangeError,
-    AuthenticationError,
-    NetworkError,
-    RateLimitError,
-    ValidationError,
-)
+from typing import Optional
 
-__all__ = [
-    "AgenticExchangeError",
-    "AuthenticationError",
-    "NetworkError",
-    "RateLimitError",
-    "ValidationError",
-]
+
+class AgenticExchangeError(Exception):
+    """Base SDK error."""
+
+
+class AuthenticationError(AgenticExchangeError):
+    pass
+
+
+class RateLimitError(AgenticExchangeError):
+    pass
+
+
+class ValidationError(AgenticExchangeError):
+    pass
+
+
+class NetworkError(AgenticExchangeError):
+    def __init__(self, message: str, inner: Optional[Exception] = None):
+        super().__init__(message)
+        self.inner = inner
