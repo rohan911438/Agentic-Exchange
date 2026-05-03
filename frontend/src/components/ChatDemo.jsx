@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Coins, Sparkles, Terminal } from 'lucide-react';
+import { Coins, Sparkles, Terminal, Activity } from 'lucide-react';
 
 const messages = [
-  { role: 'buyer', text: "Proposal: 5,000 USDC for Q3 Infrastructure setup.", delay: 1000 },
-  { role: 'seller', text: "Analyzing market rates. Current volatility suggests 5,500 USDC.", delay: 2000 },
-  { role: 'buyer', text: "Counter: 5,200 USDC with immediate settlement.", delay: 2500 },
-  { role: 'seller', text: "Acceptable. Initializing smart contract terms...", delay: 2000 },
-  { role: 'system', text: "DEAL VERIFIED: 5,200 USDC ESCROWED", delay: 1500 }
+  { role: 'buyer', text: "Proposal: 1,500 ALGO for smart contract auditing service.", delay: 1000 },
+  { role: 'seller', text: "Current network demand is high. I can secure a slot for 1,850 ALGO.", delay: 2000 },
+  { role: 'buyer', text: "Counter: 1,700 ALGO with 48-hour delivery guarantee.", delay: 2500 },
+  { role: 'seller', text: "Terms accepted. Initializing on-chain settlement...", delay: 2000 },
+  { role: 'system', text: "DEAL VERIFIED: 1,700 ALGO SECURED IN ESCROW", delay: 1500 }
 ];
 
 const ChatDemo = () => {
@@ -30,65 +30,82 @@ const ChatDemo = () => {
   }, [index]);
 
   return (
-    <div className="w-full bg-surface border border-border rounded-2xl shadow-premium overflow-hidden backdrop-blur-sm">
+    <div className="w-full bg-surface border border-border rounded-3xl shadow-premium overflow-hidden backdrop-blur-xl relative group transition-all duration-500 hover:border-accent/20">
+      {/* Animated background glow */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+      
       {/* Chat header */}
-      <div className="px-5 py-3.5 border-b border-border flex items-center justify-between bg-background-secondary/50">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-background-secondary/50 relative z-10">
         <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-background-primary border border-border flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-background-primary border border-border flex items-center justify-center shadow-inner">
                 <Terminal className="w-4 h-4 text-accent" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-text-primary uppercase tracking-widest">Negotiation Console</span>
-              <span className="text-[9px] text-text-muted">v2.0.4 - SECURE CHANNEL</span>
+              <span className="text-[11px] font-bold text-text-primary uppercase tracking-[0.15em]">Negotiation Console</span>
+              <span className="text-[9px] text-text-muted flex items-center gap-1.5 font-medium">
+                <Activity className="w-3 h-3 text-green-500/70" />
+                SECURE CHANNEL STABLE
+              </span>
             </div>
         </div>
-        <div className="flex items-center gap-2">
-            <span className="text-[9px] text-accent font-bold animate-pulse">ENCRYPTED</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-accent/40" />
+        <div className="flex items-center gap-3">
+            <div className="flex -space-x-1.5">
+              <div className="w-5 h-5 rounded-full border border-border bg-background-primary overflow-hidden">
+                <div className="w-full h-full bg-accent/20 animate-pulse" />
+              </div>
+              <div className="w-5 h-5 rounded-full border border-border bg-background-primary overflow-hidden">
+                <div className="w-full h-full bg-purple-500/20 animate-pulse [animation-delay:0.5s]" />
+              </div>
+            </div>
+            <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
         </div>
       </div>
 
       {/* Chat messages */}
-      <div className="p-6 h-[380px] overflow-y-auto space-y-6 no-scrollbar flex flex-col">
+      <div className="p-7 h-[420px] overflow-y-auto space-y-7 no-scrollbar flex flex-col relative z-10 bg-gradient-to-b from-transparent to-background-primary/20">
         {visibleMessages.map((msg, i) => (
           <div 
             key={i} 
             className={`flex flex-col ${msg.role === 'buyer' ? 'items-start' : msg.role === 'seller' ? 'items-end' : 'items-center'} animate-fade-in-up`}
           >
             <div className={`
-              max-w-[85%] px-4 py-3 rounded-xl text-xs leading-relaxed tracking-wide
+              max-w-[85%] px-5 py-3.5 rounded-2xl text-[13px] leading-relaxed tracking-wide shadow-sm
               ${msg.role === 'buyer' 
-                ? 'bg-background-secondary text-text-primary border border-border' 
+                ? 'bg-background-secondary text-text-primary border border-border rounded-tl-none' 
                 : msg.role === 'seller' 
-                ? 'bg-accent/5 text-accent border border-accent/20' 
-                : 'bg-accent text-white border border-accent/20 text-center font-bold shadow-glow mt-4'}
+                ? 'bg-accent/10 text-accent border border-accent/20 rounded-tr-none' 
+                : 'bg-accent text-white border border-accent/30 text-center font-bold shadow-glow mt-6 px-8 py-4 rounded-xl'}
             `}>
               {msg.text}
             </div>
             {msg.role !== 'system' && (
-                <span className="text-[9px] mt-1.5 text-text-muted uppercase font-bold tracking-[0.15em] px-1">
+                <span className="text-[10px] mt-2 text-text-muted uppercase font-bold tracking-[0.2em] px-1 opacity-70">
                     {msg.role === 'buyer' ? 'Agent Alpha' : 'Agent Sigma'}
                 </span>
             )}
           </div>
         ))}
         {index < messages.length && (
-            <div className="flex gap-1.5 items-center px-1">
-                <div className="w-1 h-1 rounded-full bg-accent/40 animate-bounce" />
-                <div className="w-1 h-1 rounded-full bg-accent/40 animate-bounce [animation-delay:0.2s]" />
-                <div className="w-1 h-1 rounded-full bg-accent/40 animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[10px] text-text-muted font-medium ml-1">Analyzing transaction...</span>
+            <div className="flex gap-2 items-center px-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce" />
+                <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce [animation-delay:0.2s]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[11px] text-text-muted font-medium ml-2 tracking-wide">Agents calculating equilibrium...</span>
             </div>
         )}
       </div>
       
       {/* Footer Decoration */}
-      <div className="px-6 py-4 border-t border-border bg-background-secondary/30 flex items-center justify-between">
-         <div className="flex gap-2">
-            <div className="w-4 h-1 rounded-full bg-border" />
-            <div className="w-12 h-1 rounded-full bg-border" />
+      <div className="px-6 py-4 border-t border-border bg-background-secondary/30 flex items-center justify-between relative z-10">
+         <div className="flex gap-2.5">
+            <div className="w-5 h-1.5 rounded-full bg-border/50" />
+            <div className="w-16 h-1.5 rounded-full bg-border/50" />
+            <div className="w-8 h-1.5 rounded-full bg-border/50" />
          </div>
-         <Sparkles className="w-3 h-3 text-text-muted" />
+         <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">ALGO Native</span>
+            <Sparkles className="w-3.5 h-3.5 text-accent/50" />
+         </div>
       </div>
     </div>
   );

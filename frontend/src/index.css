@@ -36,7 +36,19 @@
   .card-noir {
     @apply bg-surface border border-border rounded-2xl p-6 transition-all duration-300 hover:border-accent/30 hover:-translate-y-1 hover:shadow-premium;
   }
+
+  .mesh-bg {
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(234, 89%, 74%, 0.1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.05) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(234, 89%, 74%, 0.1) 0, transparent 50%);
+  }
+
+  .spotlight {
+    @apply relative before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_var(--x)_var(--y),rgba(99,102,241,0.1),transparent_40%)] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500;
+  }
 }
+
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
