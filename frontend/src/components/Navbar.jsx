@@ -1,33 +1,45 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
-import { LogOut, Wallet, Shield } from 'lucide-react';
+import { LogOut, Wallet, Shield, Menu } from 'lucide-react';
 import { getWalletBalance } from '../services/ContractService';
+import SideMenu from './SideMenu';
 
 const Navbar = () => {
   const { account, connected, toggleModal, disconnect, formatAddress } = useWallet();
   const [balance, setBalance] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background-primary/70 backdrop-blur-xl border-b border-border">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center group-hover:border-accent/50 transition-colors duration-500">
-             <Shield className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-500" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-bold text-text-primary tracking-premium leading-none">
-              Agentic <span className="text-accent">Exchange</span>
-            </span>
-            <span className="text-[10px] font-medium text-text-muted uppercase tracking-[0.2em] mt-1">
-              Autonomous Infrastructure
-            </span>
-          </div>
-        </Link>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setIsMenuOpen(true)}
+            className="p-2.5 rounded-xl border border-border bg-surface text-text-primary hover:border-accent/50 transition-all active:scale-90"
+          >
+            <Menu size={20} />
+          </button>
 
-        <div className="hidden md:flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center group-hover:border-accent/50 transition-colors duration-500">
+               <Shield className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-500" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-text-primary tracking-premium leading-none">
+                Agentic <span className="text-accent">Exchange</span>
+              </span>
+              <span className="text-[10px] font-medium text-text-muted uppercase tracking-[0.2em] mt-1">
+                Autonomous Infrastructure
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center gap-8">
           <div className="flex items-center gap-8 mr-4">
             {connected && (
               <>
@@ -73,8 +85,8 @@ const Navbar = () => {
               className={`btn-premium flex items-center gap-2.5 relative ${connected ? 'border-accent/20 text-accent bg-accent/5' : ''}`}
             >
               <Wallet className="w-4 h-4" />
-              <span className="tracking-tight">
-                {connected ? formatAddress(account) : 'Connect Wallet'}
+              <span className="tracking-tight text-xs">
+                {connected ? formatAddress(account) : 'Connect'}
               </span>
               
               {connected && showBalance && (
@@ -99,20 +111,38 @@ const Navbar = () => {
                 className="p-2.5 rounded-xl border border-border bg-surface text-text-secondary hover:text-red-400 hover:border-red-400/30 transition-all duration-300 active:scale-95"
                 title="Disconnect"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
 
-        <button className="md:hidden p-2 text-text-secondary">
-          <div className="w-6 h-0.5 bg-current mb-1.5" />
-          <div className="w-6 h-0.5 bg-current" />
-        </button>
+        {/* Mobile Wallet Icon Only */}
+        <div className="lg:hidden flex items-center gap-3">
+          {!connected && (
+            <button 
+              onClick={toggleModal}
+              className="p-2 rounded-xl border border-border bg-surface text-accent hover:bg-accent/5 transition-all"
+            >
+              <Wallet size={20} />
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Side Menu Integration */}
+      <SideMenu 
+        isOpen={isMenuOpen} 
+        onClose={() => setIsMenuOpen(false)}
+        connected={connected}
+        account={account}
+        disconnect={disconnect}
+        formatAddress={formatAddress}
+      />
     </nav>
   );
 };
 
 export default Navbar;
+
 
