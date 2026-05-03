@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-exchange"
+version = "0.1.0"
+description = "Agentic Exchange Python SDK — autonomous agent negotiation and on-chain execution"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [ { name = "Agentic Exchange" } ]
+dependencies = [
+    "requests>=2.28"
+]
+
+[project.optional-dependencies]
+http = ["httpx>=0.24"]
+retry = ["tenacity>=8.0"]
+dev = ["pytest>=7.0", "pytest-cov"]

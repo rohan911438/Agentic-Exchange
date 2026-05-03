@@ -7,3 +7,7 @@ pyteal>=0.26.1
 py-algorand-sdk>=2.6.1
 pymongo>=4.10.1
 
+# Development / testing
+pytest>=7.0
+pytest-cov>=4.0
+
