@@ -11,51 +11,47 @@ const Hero = () => {
   
   return (
     <section className="relative min-h-screen pt-32 pb-20 px-6 flex items-center justify-center overflow-hidden bg-background-primary mesh-bg">
-      {/* Decorative Blur Orbs with Animation */}
+      {/* Optimized Background Orbs */}
       <motion.div 
         animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-          x: [0, 50, 0],
-          y: [0, -30, 0]
+          x: [0, 30, 0],
+          y: [0, -20, 0]
         }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" 
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-accent/5 blur-[100px] rounded-full pointer-events-none animate-gpu" 
       />
       <motion.div 
         animate={{ 
-          scale: [1.2, 1, 1.2],
-          opacity: [0.2, 0.4, 0.2],
-          x: [0, -50, 0],
-          y: [0, 30, 0]
+          x: [0, -30, 0],
+          y: [0, 20, 0]
         }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" 
+        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none animate-gpu" 
       />
 
-      {/* Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(#EDEDED 0.5px, transparent 0.5px)', backgroundSize: '32px 32px' }}>
+      {/* Static Grid Pattern for zero rendering cost */}
+      <div className="absolute inset-0 opacity-[0.015] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(#EDEDED 0.5px, transparent 0.5px)', backgroundSize: '40px 40px' }}>
       </div>
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
         {/* Left Content */}
         <div className="lg:col-span-7 space-y-10 text-center lg:text-left">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface/50 border border-border text-[11px] font-bold uppercase tracking-[0.25em] text-text-muted backdrop-blur-sm"
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface/50 border border-border text-[11px] font-bold uppercase tracking-[0.25em] text-text-muted backdrop-blur-sm animate-gpu"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(99,102,241,1)]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
             Empowering the Agentic Economy
           </motion.div>
           
           <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl lg:text-[84px] font-bold text-text-primary leading-[0.95] tracking-tighter"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl lg:text-[84px] font-bold text-text-primary leading-[0.95] tracking-tighter animate-gpu"
           >
             Autonomous AI <br />
             <span className="text-gradient">Agents for Real</span> <br />
@@ -63,19 +59,19 @@ const Hero = () => {
           </motion.h1>
           
           <motion.p 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg lg:text-xl text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg lg:text-xl text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed animate-gpu"
           >
             From negotiation to settlement — executed seamlessly on the Algorand blockchain. Let AI handle the complexity while you scale your vision.
           </motion.p>
           
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 animate-gpu"
           >
             <button 
               onClick={() => connected ? navigate('/dashboard') : toggleModal()}
@@ -93,8 +89,8 @@ const Hero = () => {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="pt-12 flex flex-wrap items-center justify-center lg:justify-start gap-12 opacity-50"
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="pt-12 flex flex-wrap items-center justify-center lg:justify-start gap-12 opacity-50 animate-gpu"
           >
              <div className="flex flex-col gap-1">
                 <span className="text-3xl font-bold text-text-primary tracking-tight">1.2M+</span>
@@ -115,15 +111,13 @@ const Hero = () => {
 
         {/* Right Content - Chat Demo */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9, x: 20 }}
+          initial={{ opacity: 0, scale: 0.98, x: 10 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="lg:col-span-5 flex justify-center lg:justify-end"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="lg:col-span-5 flex justify-center lg:justify-end animate-gpu"
         >
           <div className="relative w-full max-w-[520px]">
-            {/* Decorative background for the chat */}
-            <div className="absolute -inset-10 bg-accent/10 blur-[100px] rounded-full opacity-30" />
-            <div className="absolute inset-0 bg-accent/5 rounded-3xl blur-2xl rotate-3" />
+            <div className="absolute -inset-10 bg-accent/5 blur-[80px] rounded-full opacity-20 pointer-events-none" />
             <ChatDemo />
           </div>
         </motion.div>
@@ -131,6 +125,7 @@ const Hero = () => {
     </section>
   );
 };
+
 
 
 export default Hero;

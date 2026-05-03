@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Coins, Sparkles, Terminal, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const messages = [
   { role: 'buyer', text: "Proposal: 1,500 ALGO for smart contract auditing service.", delay: 1000 },
@@ -30,51 +31,51 @@ const ChatDemo = () => {
   }, [index]);
 
   return (
-    <div className="w-full bg-surface border border-border rounded-3xl shadow-premium overflow-hidden backdrop-blur-xl relative group transition-all duration-500 hover:border-accent/20">
-      {/* Animated background glow */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+    <div className="w-full bg-surface border border-border rounded-3xl shadow-lg overflow-hidden relative group transition-all duration-300 hover:border-accent/20 animate-gpu">
+      {/* Optimized background glow - single simple gradient */}
+      <div className="absolute inset-0 bg-accent/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
       {/* Chat header */}
       <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-background-secondary/50 relative z-10">
         <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-background-primary border border-border flex items-center justify-center shadow-inner">
+            <div className="w-9 h-9 rounded-xl bg-background-primary border border-border flex items-center justify-center">
                 <Terminal className="w-4 h-4 text-accent" />
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] font-bold text-text-primary uppercase tracking-[0.15em]">Negotiation Console</span>
               <span className="text-[9px] text-text-muted flex items-center gap-1.5 font-medium">
                 <Activity className="w-3 h-3 text-green-500/70" />
-                SECURE CHANNEL STABLE
+                SECURE CHANNEL
               </span>
             </div>
         </div>
         <div className="flex items-center gap-3">
             <div className="flex -space-x-1.5">
               <div className="w-5 h-5 rounded-full border border-border bg-background-primary overflow-hidden">
-                <div className="w-full h-full bg-accent/20 animate-pulse" />
-              </div>
-              <div className="w-5 h-5 rounded-full border border-border bg-background-primary overflow-hidden">
-                <div className="w-full h-full bg-purple-500/20 animate-pulse [animation-delay:0.5s]" />
+                <div className="w-full h-full bg-accent/20" />
               </div>
             </div>
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+            <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.4)]" />
         </div>
       </div>
 
       {/* Chat messages */}
-      <div className="p-7 h-[420px] overflow-y-auto space-y-7 no-scrollbar flex flex-col relative z-10 bg-gradient-to-b from-transparent to-background-primary/20">
+      <div className="p-7 h-[420px] overflow-y-auto space-y-7 no-scrollbar flex flex-col relative z-10">
         {visibleMessages.map((msg, i) => (
-          <div 
+          <motion.div 
             key={i} 
-            className={`flex flex-col ${msg.role === 'buyer' ? 'items-start' : msg.role === 'seller' ? 'items-end' : 'items-center'} animate-fade-in-up`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`flex flex-col ${msg.role === 'buyer' ? 'items-start' : msg.role === 'seller' ? 'items-end' : 'items-center'} animate-gpu`}
           >
             <div className={`
-              max-w-[85%] px-5 py-3.5 rounded-2xl text-[13px] leading-relaxed tracking-wide shadow-sm
+              max-w-[85%] px-5 py-3.5 rounded-2xl text-[13px] leading-relaxed tracking-wide
               ${msg.role === 'buyer' 
                 ? 'bg-background-secondary text-text-primary border border-border rounded-tl-none' 
                 : msg.role === 'seller' 
                 ? 'bg-accent/10 text-accent border border-accent/20 rounded-tr-none' 
-                : 'bg-accent text-white border border-accent/30 text-center font-bold shadow-glow mt-6 px-8 py-4 rounded-xl'}
+                : 'bg-accent text-white border border-accent/30 text-center font-bold mt-6 px-8 py-4 rounded-xl shadow-glow'}
             `}>
               {msg.text}
             </div>
@@ -83,14 +84,14 @@ const ChatDemo = () => {
                     {msg.role === 'buyer' ? 'Agent Alpha' : 'Agent Sigma'}
                 </span>
             )}
-          </div>
+          </motion.div>
         ))}
         {index < messages.length && (
-            <div className="flex gap-2 items-center px-1">
+            <div className="flex gap-2 items-center px-1 animate-gpu">
                 <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce" />
                 <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce [animation-delay:0.2s]" />
                 <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[11px] text-text-muted font-medium ml-2 tracking-wide">Agents calculating equilibrium...</span>
+                <span className="text-[11px] text-text-muted font-medium ml-2 tracking-wide">Syncing...</span>
             </div>
         )}
       </div>
@@ -98,17 +99,17 @@ const ChatDemo = () => {
       {/* Footer Decoration */}
       <div className="px-6 py-4 border-t border-border bg-background-secondary/30 flex items-center justify-between relative z-10">
          <div className="flex gap-2.5">
-            <div className="w-5 h-1.5 rounded-full bg-border/50" />
             <div className="w-16 h-1.5 rounded-full bg-border/50" />
             <div className="w-8 h-1.5 rounded-full bg-border/50" />
          </div>
          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">ALGO Native</span>
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">ALGO</span>
             <Sparkles className="w-3.5 h-3.5 text-accent/50" />
          </div>
       </div>
     </div>
   );
 };
+
 
 export default ChatDemo;

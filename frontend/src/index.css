@@ -13,6 +13,7 @@
   body {
     @apply bg-background-primary text-text-primary antialiased;
     font-feature-settings: "cv02", "cv05", "cv08", "cv11";
+    text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -22,32 +23,40 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-surface/80 backdrop-blur-md border border-border;
+    @apply bg-surface/90 border border-border;
+    /* Reduced blur for performance */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   
   .btn-premium {
-    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 border border-border bg-surface hover:bg-background-secondary hover:border-accent/50 hover:shadow-glow active:scale-95;
+    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 border border-border bg-surface hover:bg-background-secondary hover:border-accent/50 active:scale-95 will-change-transform;
   }
 
   .btn-primary {
-    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 bg-accent text-white hover:bg-accent/90 hover:shadow-glow active:scale-95;
+    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 bg-accent text-white hover:bg-accent/90 active:scale-95 will-change-transform;
   }
 
   .card-noir {
-    @apply bg-surface border border-border rounded-2xl p-6 transition-all duration-300 hover:border-accent/30 hover:-translate-y-1 hover:shadow-premium;
+    @apply bg-surface border border-border rounded-2xl p-6 transition-all duration-300 hover:border-accent/30 active:scale-[0.98] will-change-transform;
   }
 
   .mesh-bg {
+    @apply relative overflow-hidden;
+    background-color: #0A0A0A;
     background-image: 
-      radial-gradient(at 0% 0%, hsla(234, 89%, 74%, 0.1) 0, transparent 50%), 
-      radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.05) 0, transparent 50%), 
-      radial-gradient(at 100% 0%, hsla(234, 89%, 74%, 0.1) 0, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(234, 89%, 74%, 0.05) 0, transparent 40%), 
+      radial-gradient(at 100% 0%, hsla(234, 89%, 74%, 0.05) 0, transparent 40%);
   }
 
-  .spotlight {
-    @apply relative before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_var(--x)_var(--y),rgba(99,102,241,0.1),transparent_40%)] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500;
+  .animate-gpu {
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translate3d(0,0,0);
+    will-change: transform, opacity;
   }
 }
+
 
 
 @layer utilities {
