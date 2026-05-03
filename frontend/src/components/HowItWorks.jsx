@@ -1,5 +1,6 @@
 import React from 'react';
 import { Target, MessageSquare, Zap, ShieldCheck, Briefcase, FileText, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const valueProps = [
   {
@@ -46,12 +47,36 @@ const steps = [
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
+
 const HowItWorks = () => {
   return (
     <section id="how-it-works" className="py-24 lg:py-32 px-6 bg-background-primary relative">
       <div className="max-w-7xl mx-auto">
         {/* Value Propositions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32"
+        >
           {valueProps.map((prop, i) => (
             <div key={i} className="flex flex-col gap-4 p-2">
               <div className="w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center shadow-premium">
@@ -63,10 +88,16 @@ const HowItWorks = () => {
               </p>
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center mb-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="flex flex-col items-center text-center mb-20"
+        >
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-6">
             The Workflow
           </div>
@@ -76,13 +107,21 @@ const HowItWorks = () => {
           <p className="text-text-muted max-w-2xl text-lg">
             A sophisticated layer of abstraction that translates human intent into immutable on-chain actions.
           </p>
-        </div>
+        </motion.div>
 
         {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {steps.map((step, i) => (
-            <div 
+            <motion.div 
               key={i} 
+              variants={itemVariants}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className="card-noir relative overflow-hidden group"
             >
               {/* Step Number Decoration */}
@@ -100,13 +139,14 @@ const HowItWorks = () => {
                   {step.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
 export default HowItWorks;
+
 

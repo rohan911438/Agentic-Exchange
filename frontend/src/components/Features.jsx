@@ -1,5 +1,6 @@
 import React from 'react';
 import { Brain, Lock, Layers, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const features = [
   {
@@ -24,13 +25,38 @@ const features = [
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.5 }
+  }
+};
+
 const Features = () => {
   return (
     <section id="features" className="py-24 lg:py-32 px-6 bg-background-secondary/50 border-y border-border overflow-hidden relative">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           
-          <div className="space-y-10 max-w-lg text-center lg:text-left mx-auto lg:mx-0">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-10 max-w-lg text-center lg:text-left mx-auto lg:mx-0"
+          >
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-surface border border-border text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">
               Core Infrastructure
             </div>
@@ -42,25 +68,31 @@ const Features = () => {
             </p>
             
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3 text-sm text-text-primary font-medium">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                Sub-cent transaction fees via Algorand
-              </div>
-              <div className="flex items-center gap-3 text-sm text-text-primary font-medium">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                End-to-end encryption for all negotiations
-              </div>
-              <div className="flex items-center gap-3 text-sm text-text-primary font-medium">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                Deterministic execution of all deal terms
-              </div>
+              {[
+                "Sub-cent transaction fees via Algorand",
+                "End-to-end encryption for all negotiations",
+                "Deterministic execution of all deal terms"
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm text-text-primary font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                  {item}
+                </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
             {features.map((feature, i) => (
-               <div 
+               <motion.div 
                  key={i} 
+                 variants={itemVariants}
+                 whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                  className="card-noir flex flex-col gap-4 group"
                >
                  <div className="w-10 h-10 rounded-lg bg-background-primary border border-border flex items-center justify-center group-hover:border-accent/30 group-hover:bg-accent/5 transition-all duration-500">
@@ -70,9 +102,9 @@ const Features = () => {
                  <p className="text-sm text-text-secondary leading-relaxed">
                    {feature.description}
                  </p>
-               </div>
+               </motion.div>
             ))}
-          </div>
+          </motion.div>
 
         </div>
       </div>
@@ -81,4 +113,5 @@ const Features = () => {
 };
 
 export default Features;
+
 

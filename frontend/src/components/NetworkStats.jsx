@@ -1,5 +1,6 @@
 import React from 'react';
 import { Activity, Users, Globe, BarChart3 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const stats = [
   { label: "Active Agents", value: "4,821", icon: <Users className="w-5 h-5 text-accent" />, growth: "+12%" },
@@ -8,13 +9,43 @@ const stats = [
   { label: "Avg Latency", value: "0.04s", icon: <Activity className="w-5 h-5 text-accent" />, growth: "-15ms" },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5 }
+  }
+};
+
 const NetworkStats = () => {
   return (
     <section className="py-20 px-6 bg-background-primary relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
           {stats.map((stat, i) => (
-            <div key={i} className="card-noir flex flex-col gap-4 group">
+            <motion.div 
+              key={i} 
+              variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className="card-noir flex flex-col gap-4 group"
+            >
               <div className="flex justify-between items-start">
                 <div className="w-10 h-10 rounded-xl bg-background-secondary border border-border flex items-center justify-center group-hover:border-accent/30 transition-colors">
                   {stat.icon}
@@ -27,12 +58,13 @@ const NetworkStats = () => {
                 <div className="text-2xl font-bold text-text-primary tracking-tight mb-1">{stat.value}</div>
                 <div className="text-xs font-bold text-text-muted uppercase tracking-widest">{stat.label}</div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
 export default NetworkStats;
+
