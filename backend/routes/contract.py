@@ -106,5 +106,8 @@ def contract_submit(payload: SubmitRequest):
 
 @router.get("/wallet/balance")
 def wallet_balance(address: str = Query(..., description="Wallet address")):
-    amount = get_account_balance(address)
-    return {"address": address, "microalgos": amount}
+    try:
+        amount = get_account_balance(address)
+        return {"address": address, "microalgos": amount}
+    except Exception:
+        return {"address": address, "microalgos": 0}

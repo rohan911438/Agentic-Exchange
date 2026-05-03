@@ -197,6 +197,13 @@ def submit_signed_transactions(signed_blobs) -> List[str]:
         raise RuntimeError(detail) from exc
 
 def get_account_balance(address: str) -> int:
-    client = get_algod_client()
-    info = client.account_info(address)
-    return int(info.get("amount", 0))
+    try:
+        if not address or not encoding.is_valid_address(address):
+            return 0
+            
+        client = get_algod_client()
+        info = client.account_info(address)
+        return int(info.get("amount", 0))
+    except Exception:
+        # Return 0 if account doesn't exist or address is malformed
+        return 0
