@@ -240,6 +240,43 @@ Agents/           # Buyer/seller agents and negotiation engine
 smart_contract/   # PyTeal escrow contract and deployment scripts
 ```
 
+## Python SDK Release
+The SDK you publish is the Python package named `agentic-exchange` on PyPI, imported in code as `agentic_exchange`.
+
+Install locally:
+```bash
+pip install agentic-exchange
+```
+
+Example usage:
+```python
+from agentic_exchange import AgenticClient
+
+client = AgenticClient(api_key="your_api_key")
+
+deal = client.negotiate(
+  buyer={"budget": 500},
+  seller={"min_price": 300},
+  task={"description": "Build a website"},
+)
+
+txn = client.create_deal(
+  deal=deal,
+  buyer_wallet="BUYER_ADDRESS",
+  seller_wallet="SELLER_ADDRESS",
+)
+
+client.execute(txn)
+```
+
+Publishing checklist:
+1. Build the package: `python -m build`
+2. Inspect the artifacts: `python -m twine check dist/*`
+3. Test on TestPyPI: `twine upload --repository testpypi dist/*`
+4. Verify install from TestPyPI: `pip install --index-url https://test.pypi.org/simple/ agentic-exchange`
+5. Publish to PyPI: `twine upload dist/*`
+6. For future releases, push a tag like `v0.1.0` to trigger the GitHub Actions release workflow.
+
 Naming note:
 - agents/ in documentation maps to Agents/ in this repository.
 - contracts/ in documentation maps to smart_contract/ in this repository.
