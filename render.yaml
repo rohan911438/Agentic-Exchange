@@ -6,7 +6,9 @@ services:
     startCommand: bash ./start_backend.sh
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.1
+        value: 3.12
+      - key: CARGO_HOME
+        value: /opt/render/project/src/.cargo
       - key: GEMINI_API_KEY
         sync: false
       - key: GOOGLE_API_KEY
