@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
-import { LogOut, Wallet } from 'lucide-react';
+import { LogOut, Wallet, Shield } from 'lucide-react';
 import { getWalletBalance } from '../services/ContractService';
 
 const Navbar = () => {
@@ -10,51 +10,49 @@ const Navbar = () => {
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
 
-  // Using real address from context
-
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-900/80 backdrop-blur-md border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background-primary/70 backdrop-blur-xl border-b border-border">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-aqua to-blush flex items-center justify-center">
-             <div className="w-4 h-4 rounded-full border-2 border-white/20" />
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center group-hover:border-accent/50 transition-colors duration-500">
+             <Shield className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-500" />
           </div>
-          <span className="text-xl font-display font-bold text-white tracking-tight">
-            Agentic <span className="text-aqua">Exchange</span>
-          </span>
-          <div className="px-2 py-0.5 rounded-md bg-aqua/10 border border-aqua/30 text-[10px] font-mono font-bold text-aqua uppercase tracking-widest">
-            TestNet
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-text-primary tracking-premium leading-none">
+              Agentic <span className="text-accent">Exchange</span>
+            </span>
+            <span className="text-[10px] font-medium text-text-muted uppercase tracking-[0.2em] mt-1">
+              Autonomous Infrastructure
+            </span>
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
-          {!connected ? (
-            <NavLink 
-              to="/" 
-              className={({ isActive }) => `text-sm font-medium transition-all duration-300 ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
-            >
-              Home
-            </NavLink>
-          ) : (
-            <div className="flex items-center gap-8">
-              <NavLink 
-                to="/dashboard" 
-                className={({ isActive }) => `text-sm font-medium transition-all duration-300 relative group ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
-              >
-                Dashboard
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-aqua transition-all duration-300 group-hover:w-full opacity-50"></span>
-              </NavLink>
-              <NavLink 
-                to="/create-deal" 
-                className={({ isActive }) => `text-sm font-medium transition-all duration-300 relative group ${isActive ? 'text-aqua' : 'text-slate hover:text-white'}`}
-              >
-                Create Deal
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-aqua transition-all duration-300 group-hover:w-full opacity-50"></span>
-              </NavLink>
-            </div>
-          )}
+        <div className="hidden md:flex items-center gap-8">
+          <div className="flex items-center gap-8 mr-4">
+            {connected && (
+              <>
+                <NavLink 
+                  to="/dashboard" 
+                  className={({ isActive }) => `text-sm font-medium transition-all duration-300 ${isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                  Dashboard
+                </NavLink>
+                <NavLink 
+                  to="/create-deal" 
+                  className={({ isActive }) => `text-sm font-medium transition-all duration-300 ${isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                  Create Deal
+                </NavLink>
+              </>
+            )}
+            {!connected && (
+              <a href="#how-it-works" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                How it Works
+              </a>
+            )}
+          </div>
           
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-3">
             <button
               onClick={connected ? undefined : toggleModal}
               onMouseEnter={async () => {
@@ -72,28 +70,34 @@ const Navbar = () => {
                 }
               }}
               onMouseLeave={() => setShowBalance(false)}
-              className={`px-6 py-2.5 rounded-full font-medium shadow-soft transition-all duration-300 flex items-center gap-2 ${
-                connected 
-                ? 'bg-ink-700 text-aqua border border-aqua/30 cursor-default' 
-                : 'bg-gradient-to-r from-aqua to-blush text-ink-900 hover:shadow-[0_0_20px_rgba(94,240,255,0.4)]'
-              }`}
+              className={`btn-premium flex items-center gap-2.5 relative ${connected ? 'border-accent/20 text-accent bg-accent/5' : ''}`}
             >
               <Wallet className="w-4 h-4" />
-              {connected ? `Connected: ${formatAddress(account)}` : 'Connect Wallet'}
+              <span className="tracking-tight">
+                {connected ? formatAddress(account) : 'Connect Wallet'}
+              </span>
+              
+              {connected && showBalance && (
+                <div className="absolute top-full mt-3 right-0 z-50 min-w-[200px] p-4 rounded-2xl bg-surface border border-border shadow-premium animate-fade-in-up">
+                  <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1">Available Balance</div>
+                  <div className="text-sm font-bold text-text-primary">
+                    {balanceLoading ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : balance !== null ? (
+                      `${(balance / 1_000_000).toFixed(3)} ALGO`
+                    ) : (
+                      'Unavailable'
+                    )}
+                  </div>
+                </div>
+              )}
             </button>
-            {connected && showBalance && (
-              <div className="absolute top-12 right-0 z-50 rounded-xl bg-ink-800/90 border border-white/10 px-4 py-2 text-xs text-slate backdrop-blur-md">
-                {balanceLoading && 'Loading balance...'}
-                {!balanceLoading && balance !== null && `TestNet Balance: ${(balance / 1_000_000).toFixed(3)} ALGO`}
-                {!balanceLoading && balance === null && 'Balance unavailable'}
-              </div>
-            )}
 
             {connected && (
               <button
                 onClick={disconnect}
-                className="p-2.5 rounded-full bg-ink-700 border border-white/10 text-slate hover:text-blush hover:border-blush/30 transition-all duration-300"
-                title="Disconnect Wallet"
+                className="p-2.5 rounded-xl border border-border bg-surface text-text-secondary hover:text-red-400 hover:border-red-400/30 transition-all duration-300 active:scale-95"
+                title="Disconnect"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -101,10 +105,14 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile menu button could go here */}
+        <button className="md:hidden p-2 text-text-secondary">
+          <div className="w-6 h-0.5 bg-current mb-1.5" />
+          <div className="w-6 h-0.5 bg-current" />
+        </button>
       </div>
     </nav>
   );
 };
 
 export default Navbar;
+

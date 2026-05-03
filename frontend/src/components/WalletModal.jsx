@@ -26,25 +26,22 @@ const WalletModal = () => {
     {
       id: "pera",
       name: "Pera Wallet",
-      icon: <Smartphone className="w-6 h-6 text-lime" />,
+      icon: <Smartphone className="w-6 h-6 text-accent" />,
       description: "Connect via mobile app or extension",
-      color: "bg-lime/10 border-lime/20 hover:border-lime/50",
       installed: availableWallets.pera.installed
     },
     {
       id: "defly",
       name: "Defly Wallet",
-      icon: <Layers className="w-6 h-6 text-aqua" />,
+      icon: <Layers className="w-6 h-6 text-accent" />,
       description: "Algorand's DeFi wallet",
-      color: "bg-aqua/10 border-aqua/20 hover:border-aqua/50",
       installed: availableWallets.defly.installed
     },
     {
       id: "algosigner",
       name: "AlgoSigner",
-      icon: <ShieldCheck className="w-6 h-6 text-blush" />,
+      icon: <ShieldCheck className="w-6 h-6 text-accent" />,
       description: "Browser extension wallet",
-      color: "bg-blush/10 border-blush/20 hover:border-blush/50",
       installed: availableWallets.algosigner.installed,
       installLink: "https://puresake.io/algosigner/"
     }
@@ -61,7 +58,7 @@ const WalletModal = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={toggleModal}
-          className="absolute inset-0 bg-ink-900/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-background-primary/80 backdrop-blur-md"
         />
 
         {/* Modal */}
@@ -69,28 +66,28 @@ const WalletModal = () => {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-ink-800 border border-white/10 rounded-3xl shadow-soft overflow-hidden"
+          className="relative w-full max-w-md bg-surface border border-border rounded-3xl shadow-premium overflow-hidden"
         >
-          <div className="p-6 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-xl font-display font-bold text-white">Connect Wallet</h2>
+          <div className="p-6 border-b border-border flex items-center justify-between bg-background-secondary/50">
+            <h2 className="text-xl font-bold text-text-primary tracking-tight">Connect Wallet</h2>
             <button
               onClick={toggleModal}
-              className="p-2 hover:bg-white/5 rounded-full transition-colors text-slate hover:text-white"
+              className="p-2 hover:bg-white/5 rounded-xl transition-colors text-text-muted hover:text-text-primary"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-3">
             {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
-                className="p-3 rounded-xl bg-blush/10 border border-blush/20 flex items-start gap-3"
+                className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3"
               >
-                <AlertCircle className="w-5 h-5 text-blush flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-blush leading-tight">{error}</p>
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-400 leading-tight font-medium">{error}</p>
               </motion.div>
             )}
 
@@ -99,24 +96,24 @@ const WalletModal = () => {
                 key={wallet.id}
                 disabled={connecting}
                 onClick={() => wallet.installed ? connect(wallet.id) : null}
-                className={`w-full group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 ${
-                  wallet.color
-                } ${!wallet.installed ? 'opacity-60 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-95'}`}
+                className={`w-full group relative flex items-center gap-4 p-4 rounded-2xl border border-border bg-background-secondary/30 transition-all duration-300 ${
+                  !wallet.installed ? 'opacity-50 cursor-not-allowed' : 'hover:border-accent/40 hover:bg-surface active:scale-[0.98]'
+                }`}
               >
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-ink-900 flex items-center justify-center border border-white/5 group-hover:border-white/20">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-background-primary border border-border flex items-center justify-center group-hover:border-accent/20 transition-colors">
                   {wallet.icon}
                 </div>
                 
                 <div className="flex-grow text-left">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-white uppercase tracking-tight">{wallet.name}</span>
+                    <span className="font-bold text-text-primary tracking-tight">{wallet.name}</span>
                     {!wallet.installed && (
-                      <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5 text-slate font-mono">
-                        Not Installed
+                      <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-surface border border-border text-text-muted">
+                        Legacy
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate mt-0.5">{wallet.description}</p>
+                  <p className="text-xs text-text-secondary mt-0.5">{wallet.description}</p>
                 </div>
 
                 {!wallet.installed && wallet.installLink && (
@@ -125,25 +122,25 @@ const WalletModal = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2 hover:bg-white/10 rounded-lg text-aqua transition-colors"
+                    className="p-2 hover:bg-accent/10 rounded-lg text-accent transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
 
                 {connecting && (
-                  <div className="absolute inset-0 bg-ink-800/50 flex items-center justify-center rounded-2xl">
-                    <Loader2 className="w-6 h-6 animate-spin text-aqua" />
+                  <div className="absolute inset-0 bg-surface/60 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                    <Loader2 className="w-6 h-6 animate-spin text-accent" />
                   </div>
                 )}
               </button>
             ))}
           </div>
 
-          <div className="p-6 bg-ink-900/50 text-center border-t border-white/5">
-            <p className="text-xs text-slate">
+          <div className="p-6 bg-background-secondary/50 text-center border-t border-border">
+            <p className="text-xs text-text-muted leading-relaxed">
               By connecting, you agree to Agentic Exchange's <br />
-              <span className="text-aqua cursor-pointer hover:underline">Terms of Service</span> and <span className="text-aqua cursor-pointer hover:underline">Privacy Policy</span>.
+              <span className="text-text-primary cursor-pointer hover:text-accent transition-colors">Terms of Service</span> and <span className="text-text-primary cursor-pointer hover:text-accent transition-colors">Privacy Policy</span>.
             </p>
           </div>
         </motion.div>
@@ -153,3 +150,4 @@ const WalletModal = () => {
 };
 
 export default WalletModal;
+

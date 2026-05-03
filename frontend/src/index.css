@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,14 +7,34 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
   
   body {
-    @apply bg-ink-900 text-mist antialiased;
+    @apply bg-background-primary text-text-primary antialiased;
+    font-feature-settings: "cv02", "cv05", "cv08", "cv11";
   }
 
-  h1, h2, h3, h4 {
-    @apply font-display tracking-tight;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-premium;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-border;
+  }
+  
+  .btn-premium {
+    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 border border-border bg-surface hover:bg-background-secondary hover:border-accent/50 hover:shadow-glow active:scale-95;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-300 bg-accent text-white hover:bg-accent/90 hover:shadow-glow active:scale-95;
+  }
+
+  .card-noir {
+    @apply bg-surface border border-border rounded-2xl p-6 transition-all duration-300 hover:border-accent/30 hover:-translate-y-1 hover:shadow-premium;
   }
 }
 
@@ -26,4 +46,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-text-primary to-text-secondary;
+  }
 }
+

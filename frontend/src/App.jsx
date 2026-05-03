@@ -19,14 +19,16 @@ function AppContent() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen bg-ink-900 font-body flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-2 border-aqua/20 border-t-aqua animate-spin" />
+      <div className="min-h-screen bg-background-primary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl border border-border bg-surface flex items-center justify-center animate-pulse shadow-glow">
+          <div className="w-6 h-6 rounded-full border-2 border-accent/20 border-t-accent animate-spin" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-ink-900 font-body selection:bg-aqua/30 selection:text-aqua flex flex-col">
+    <div className="min-h-screen bg-background-primary font-sans selection:bg-accent/30 selection:text-text-primary flex flex-col">
       <Navbar />
       <WalletModal />
       
@@ -46,6 +48,7 @@ function AppContent() {
     </div>
   );
 }
+
 
 function App() {
   return (

@@ -1,24 +1,44 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useWallet } from '../context/WalletContext';
+import { ArrowRight } from 'lucide-react';
 
 const CTA = () => {
-  return (
-    <section className="py-40 px-6 bg-ink-900 overflow-hidden relative">
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-aqua/20 to-blush/20 blur-[100px] rounded-full opacity-50 -z-10" />
+  const navigate = useNavigate();
+  const { connected, toggleModal } = useWallet();
 
-      <div className="max-w-4xl mx-auto text-center space-y-10 animate-fadeInUp">
-        <h2 className="text-5xl lg:text-7xl font-display font-extrabold text-white leading-tight">
-          Let AI Handle <br />Your Deals.
+  return (
+    <section className="py-24 lg:py-48 px-6 bg-background-primary relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h2 className="text-4xl lg:text-6xl font-bold text-text-primary tracking-tighter leading-tight mb-8">
+          Let Agents Handle <br />
+          <span className="text-gradient">the Complexity</span>
         </h2>
-        <p className="text-xl text-slate max-w-xl mx-auto leading-relaxed">
-          Join the first autonomous negotiation marketplace. Secure, verifiable, and intelligent agreements starting now.
+        <p className="text-lg lg:text-xl text-text-secondary max-w-xl mx-auto leading-relaxed mb-12">
+          Step into the future of autonomous commerce. Secure, intelligent, and verifiable agreements are just a few clicks away.
         </p>
-        <button className="px-10 py-5 bg-white text-ink-900 font-bold rounded-2xl hover:bg-mist transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-          Start Your First Deal
-        </button>
+        <div className="flex justify-center">
+          <button 
+            onClick={() => connected ? navigate('/create-deal') : toggleModal()}
+            className="btn-primary flex items-center gap-2.5 px-10 py-5 text-lg"
+          >
+            Create Your First Deal
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <div className="mt-16 pt-8 border-t border-border flex flex-wrap justify-center gap-10 opacity-30 grayscale">
+          <div className="text-xs font-bold uppercase tracking-[0.3em] text-text-muted">Security Audited</div>
+          <div className="text-xs font-bold uppercase tracking-[0.3em] text-text-muted">Algorand Native</div>
+          <div className="text-xs font-bold uppercase tracking-[0.3em] text-text-muted">Open Source</div>
+        </div>
       </div>
     </section>
   );
 };
 
 export default CTA;
+

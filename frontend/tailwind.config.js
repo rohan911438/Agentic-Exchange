@@ -4,45 +4,49 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ["\"Space Grotesk\"", "sans-serif"],
-        body: ["\"Space Grotesk\"", "sans-serif"],
-        mono: ["\"IBM Plex Mono\"", "monospace"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
-        ink: {
-          900: "#0a0b0f",
-          800: "#12141c",
-          700: "#1a1d29",
+        background: {
+          primary: "#0A0A0A",
+          secondary: "#111111",
         },
-        mist: "#f2f3f7",
-        lime: "#c7ff5a",
-        aqua: "#5ef0ff",
-        blush: "#ff7ad9",
-        slate: "#9aa3b2",
+        surface: "#161616",
+        border: "#262626",
+        text: {
+          primary: "#EDEDED",
+          secondary: "#9CA3AF",
+          muted: "#6B7280",
+        },
+        accent: {
+          DEFAULT: "#6366F1",
+          glow: "rgba(99, 102, 241, 0.15)",
+        },
       },
       boxShadow: {
-        soft: "0 20px 60px rgba(9, 12, 26, 0.25)",
-        card: "0 10px 30px rgba(10, 11, 15, 0.18)",
+        glow: "0 0 20px rgba(99, 102, 241, 0.15)",
+        premium: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
       },
       backgroundImage: {
-        "grid-fade": "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)",
-        "hero-sheen": "linear-gradient(120deg, rgba(94, 240, 255, 0.18), rgba(255, 122, 217, 0.14), rgba(199, 255, 90, 0.16))",
+        "radial-gradient": "radial-gradient(circle at top, #1A1A1A, #0A0A0A)",
       },
-      keyframes: {
-        floaty: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        fadeInUp: {
-          "0%": { opacity: 0, transform: "translateY(12px)" },
-          "100%": { opacity: 1, transform: "translateY(0)" },
-        },
+      letterSpacing: {
+        premium: "0.02em",
+        tighter: "-0.04em",
       },
       animation: {
-        floaty: "floaty 6s ease-in-out infinite",
-        fadeInUp: "fadeInUp 0.6s ease-out",
+        "fade-in-up": "fadeInUp 0.8s ease-out forwards",
+        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
     },
   },
   plugins: [],
 }
+
