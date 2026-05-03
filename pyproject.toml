@@ -7,7 +7,7 @@ name = "agentic-exchange"
 version = "0.1.0"
 description = "Agentic Exchange Python SDK — autonomous agent negotiation and on-chain execution"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 authors = [ { name = "Agentic Exchange" } ]
 dependencies = [
     "requests>=2.28"
@@ -17,3 +17,11 @@ dependencies = [
 http = ["httpx>=0.24"]
 retry = ["tenacity>=8.0"]
 dev = ["pytest>=7.0", "pytest-cov"]
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agentic_exchange*", "agentic_exchange_sdk*"]
+exclude = ["Agents*", "backend*", "frontend*", "smart_contract*", "tests*"]
