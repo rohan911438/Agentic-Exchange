@@ -23,6 +23,13 @@ export default {
           DEFAULT: "#6366F1",
           glow: "rgba(99, 102, 241, 0.15)",
         },
+        aqua: "#00E5FF",
+        blush: "#FF2D95",
+        ink: {
+          900: "#000000",
+        },
+        slate: "#94A3B8",
+        lime: "#A3E635",
       },
       boxShadow: {
         glow: "0 0 20px rgba(99, 102, 241, 0.15)",
