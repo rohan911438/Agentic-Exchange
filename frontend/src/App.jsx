@@ -7,6 +7,7 @@ import { WalletProvider, useWallet } from './context/WalletContext';
 
 // Pages
 import Home from './pages/Home';
+import Marketplace from './pages/Marketplace';
 import CreateDeal from './pages/CreateDeal';
 import NegotiationRoom from './pages/NegotiationRoom';
 import DealSummary from './pages/DealSummary';
@@ -35,6 +36,7 @@ function AppContent() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
           <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
           <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />

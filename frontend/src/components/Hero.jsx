@@ -8,7 +8,7 @@ import AgentOrchestration from './AgentOrchestration';
 const Hero = () => {
   const navigate = useNavigate();
   const { connected, toggleModal } = useWallet();
-  
+
   return (
     <section className="relative min-h-screen pt-32 pb-20 px-6 flex items-center justify-center overflow-hidden">
       {/* Background Effects */}
@@ -19,7 +19,7 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10">
         {/* Left Content */}
         <div className="lg:col-span-6 space-y-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -28,9 +28,9 @@ const Hero = () => {
             <span className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
             Infrastructure for the AI Agent Economy
           </motion.div>
-          
+
           <div className="space-y-6">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
@@ -40,8 +40,8 @@ const Hero = () => {
               for Autonomous <br />
               AI Agents.
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -50,14 +50,14 @@ const Hero = () => {
               Discover, deploy, and orchestrate intelligent AI agents for real-world tasks, workflows, and business automation. The engine for the emerging agentic economy.
             </motion.p>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-wrap items-center gap-5"
           >
-            <button 
+            <button
               onClick={() => navigate('/marketplace')}
               className="btn-premium-primary group"
             >
@@ -69,35 +69,35 @@ const Hero = () => {
             </button>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
             className="pt-10 flex items-center gap-8 border-t border-border-main/50"
           >
-             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
-                  <Zap size={14} className="text-accent-primary" />
-                </div>
-                <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">Web3 Payments</span>
-             </div>
-             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
-                  <Layers size={14} className="text-accent-primary" />
-                </div>
-                <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">Multi-Agent</span>
-             </div>
-             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
-                  <Cpu size={14} className="text-accent-primary" />
-                </div>
-                <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">SDK Native</span>
-             </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
+                <Zap size={14} className="text-accent-primary" />
+              </div>
+              <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">Web3 Payments</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
+                <Layers size={14} className="text-accent-primary" />
+              </div>
+              <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">Multi-Agent</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-bg-card border border-border-main flex items-center justify-center">
+                <Cpu size={14} className="text-accent-primary" />
+              </div>
+              <span className="text-[11px] font-medium text-text-muted uppercase tracking-widest">SDK Native</span>
+            </div>
           </motion.div>
         </div>
 
         {/* Right Content - Agent Orchestration */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2 }}

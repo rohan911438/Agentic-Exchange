@@ -13,7 +13,7 @@ const AnalyticsSection = () => {
   return (
     <section className="section-container relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-primary/5 to-transparent pointer-events-none" />
-      
+
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-12 relative z-10">
         {metrics.map((metric, i) => (
           <motion.div

@@ -33,7 +33,7 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8 mr-4">
-            <NavLink to="/" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Marketplace</NavLink>
+            <NavLink to="/marketplace" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Marketplace</NavLink>
             <NavLink to="/dashboard" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Dashboard</NavLink>
             <NavLink to="/docs" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Docs</NavLink>
           </div>

@@ -40,7 +40,7 @@ const AgentOrchestration = () => {
                 r="2"
                 fill="var(--accent-primary)"
                 initial={{ offset: 0 }}
-                animate={{ 
+                animate={{
                   cx: [from.x, to.x],
                   cy: [from.y, to.y]
                 }}
@@ -57,19 +57,19 @@ const AgentOrchestration = () => {
           <motion.div
             key={agent.id}
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ 
-              opacity: 1, 
+            animate={{
+              opacity: 1,
               scale: 1,
               y: [0, -10, 0]
             }}
-            transition={{ 
+            transition={{
               opacity: { duration: 0.5 },
               scale: { duration: 0.5 },
               y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: agent.id * 0.2 }
             }}
             className="absolute p-3 rounded-xl bg-bg-card border border-border-main flex items-center gap-3 shadow-xl backdrop-blur-md"
-            style={{ 
-              left: `${(agent.pos.x / 300) * 100}%`, 
+            style={{
+              left: `${(agent.pos.x / 300) * 100}%`,
               top: `${(agent.pos.y / 300) * 100}%`,
               transform: 'translate(-50%, -50%)'
             }}
