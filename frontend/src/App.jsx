@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import Docs from './pages/Docs';
 import Deals from './pages/Deals';
 import Billing from './pages/Billing';
+import AgentStudio from './pages/AgentStudio';
 import WorkflowBuilder from './pages/WorkflowBuilder';
 import ActiveDeal from './pages/ActiveDeal';
 import Completion from './pages/Completion';
@@ -50,6 +51,7 @@ function AppContent() {
           <Route path="/deals" element={connected ? <Deals /> : <Navigate to="/" />} />
           <Route path="/docs" element={<Docs />} />
           <Route path="/billing" element={connected ? <Billing /> : <Navigate to="/" />} />
+          <Route path="/studio" element={connected ? <AgentStudio /> : <Navigate to="/" />} />
           <Route path="/builder" element={connected ? <WorkflowBuilder /> : <Navigate to="/" />} />
           <Route path="/active-deal" element={connected ? <ActiveDeal /> : <Navigate to="/" />} />
           <Route path="/completion" element={connected ? <Completion /> : <Navigate to="/" />} />
