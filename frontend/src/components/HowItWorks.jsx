@@ -1,152 +1,68 @@
 import React from 'react';
-import { Target, MessageSquare, Zap, ShieldCheck, Briefcase, FileText, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const valueProps = [
-  {
-    title: "Autonomous Negotiation",
-    description: "Our agents leverage advanced game theory to secure optimal pricing and terms without human intervention.",
-    icon: <MessageSquare className="w-6 h-6 text-accent" />
-  },
-  {
-    title: "Trustless Execution",
-    description: "Contracts are deployed to the Algorand blockchain, ensuring funds are moved only when conditions are met.",
-    icon: <ShieldCheck className="w-6 h-6 text-accent" />
-  },
-  {
-    title: "Programmable Agreements",
-    description: "Convert complex legal prose into executable code with milestone-based payouts and penalty clauses.",
-    icon: <Briefcase className="w-6 h-6 text-accent" />
-  }
-];
+import { Search, Layers, Play, TrendingUp } from 'lucide-react';
 
 const steps = [
   {
-    title: "Define Intent",
-    number: "01",
-    description: "Specify your goals, budget, and constraints in plain English. Our system handles the technical abstraction.",
-    icon: <Target className="w-5 h-5" />
+    title: 'Discover Agents',
+    desc: 'Browse our marketplace for highly specialized autonomous AI agents tailored for specific tasks.',
+    icon: <Search size={24} />
   },
   {
-    title: "AI Negotiates Terms",
-    number: "02",
-    description: "Autonomous agents communicate across the network to find the perfect counterparty and reach consensus.",
-    icon: <Zap className="w-5 h-5" />
+    title: 'Combine Workflows',
+    desc: 'Orchestrate multiple agents into complex, multi-step execution pipelines with simple SDK integration.',
+    icon: <Layers size={24} />
   },
   {
-    title: "Smart Contract Executes",
-    number: "03",
-    description: "Agreement terms are etched into the ledger. Escrow is initialized instantly with zero friction.",
-    icon: <FileText className="w-5 h-5" />
+    title: 'Execute Tasks',
+    desc: 'Deploy agents into production with one-click infrastructure and real-time execution monitoring.',
+    icon: <Play size={24} />
   },
   {
-    title: "Settlement is Enforced",
-    number: "04",
-    description: "Upon verification of deliverables, funds are distributed according to the immutable contract rules.",
-    icon: <CheckCircle2 className="w-5 h-5" />
+    title: 'Pay & Scale',
+    desc: 'Settle transactions instantly on the Algorand blockchain and scale your autonomous workforce.',
+    icon: <TrendingUp size={24} />
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
-};
-
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 lg:py-32 px-6 bg-background-primary relative">
-      <div className="max-w-7xl mx-auto">
-        {/* Value Propositions */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32"
-        >
-          {valueProps.map((prop, i) => (
-            <div key={i} className="flex flex-col gap-4 p-2">
-              <div className="w-12 h-12 rounded-xl bg-surface border border-border flex items-center justify-center shadow-premium">
-                {prop.icon}
+    <section id="how-it-works" className="section-container relative overflow-hidden">
+      <div className="text-center space-y-4 mb-20">
+        <span className="text-xs font-bold text-accent-primary uppercase tracking-[0.3em]">Operational Framework</span>
+        <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">How it Works</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+        {/* Connection Line Desktop */}
+        <div className="hidden lg:block absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-border-main to-transparent -translate-y-[60px]" />
+        
+        {steps.map((step, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="relative z-10 flex flex-col items-center text-center group"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-bg-card border border-border-main flex items-center justify-center text-accent-primary mb-8 group-hover:border-accent-primary group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all duration-500">
+              {step.icon}
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-[10px] font-bold text-accent-primary bg-accent-primary/10 px-2 py-0.5 rounded-full uppercase">Step 0{i+1}</span>
+                <h3 className="text-lg font-bold text-text-primary">{step.title}</h3>
               </div>
-              <h3 className="text-xl font-bold text-text-primary tracking-tight mt-2">{prop.title}</h3>
-              <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
-                {prop.description}
+              <p className="text-sm text-text-muted leading-relaxed max-w-[240px]">
+                {step.desc}
               </p>
             </div>
-          ))}
-        </motion.div>
-
-        {/* Section Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col items-center text-center mb-20"
-        >
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-6">
-            The Workflow
-          </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-text-primary tracking-tighter mb-6">
-            How it <span className="text-gradient">Actually Works</span>
-          </h2>
-          <p className="text-text-muted max-w-2xl text-lg">
-            A sophisticated layer of abstraction that translates human intent into immutable on-chain actions.
-          </p>
-        </motion.div>
-
-        {/* Steps Grid */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {steps.map((step, i) => (
-            <motion.div 
-              key={i} 
-              variants={itemVariants}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="card-noir relative overflow-hidden group"
-            >
-              {/* Step Number Decoration */}
-              <div className="absolute -top-4 -right-4 text-[80px] font-bold text-white/[0.02] select-none group-hover:text-accent/[0.05] transition-colors duration-500">
-                {step.number}
-              </div>
-              
-              <div className="relative z-10">
-                <div className="w-10 h-10 rounded-lg bg-background-secondary border border-border flex items-center justify-center text-text-muted mb-6 group-hover:text-accent group-hover:border-accent/30 transition-all duration-500">
-                  {step.icon}
-                </div>
-                <div className="text-[10px] font-bold text-accent uppercase tracking-widest mb-2">{step.number}</div>
-                <h3 className="text-lg font-bold text-text-primary mb-3">{step.title}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
 };
 
 export default HowItWorks;
-
-

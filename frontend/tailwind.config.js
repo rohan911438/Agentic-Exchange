@@ -12,45 +12,40 @@ export default {
           primary: "#0A0A0A",
           secondary: "#111111",
         },
-        surface: "#161616",
-        border: "#262626",
         text: {
           primary: "#EDEDED",
-          secondary: "#9CA3AF",
-          muted: "#6B7280",
+          muted: "#9CA3AF",
         },
         accent: {
+          primary: "#6366F1",
+          secondary: "#007AFF",
           DEFAULT: "#6366F1",
           glow: "rgba(99, 102, 241, 0.15)",
         },
-        aqua: "#00E5FF",
-        blush: "#FF2D95",
-        ink: {
-          900: "#000000",
+        bg: {
+          card: "#161616",
         },
-        slate: "#94A3B8",
-        lime: "#A3E635",
+        border: {
+          main: "#262626",
+          DEFAULT: "#262626",
+        },
+        // Legacy Support
+        surface: "#161616",
+        aqua: "#6366F1",
+        blush: "#007AFF",
+        ink: {
+          900: "#0A0A0A",
+        },
+        slate: "#9CA3AF",
+        lime: "#10B981",
       },
       boxShadow: {
         glow: "0 0 20px rgba(99, 102, 241, 0.15)",
         premium: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
       },
-      backgroundImage: {
-        "radial-gradient": "radial-gradient(circle at top, #1A1A1A, #0A0A0A)",
-      },
       letterSpacing: {
         premium: "0.02em",
         tighter: "-0.04em",
-      },
-      animation: {
-        "fade-in-up": "fadeInUp 0.8s ease-out forwards",
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-      },
-      keyframes: {
-        fadeInUp: {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
       },
     },
   },
