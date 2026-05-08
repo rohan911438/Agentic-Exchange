@@ -8,10 +8,13 @@ import { WalletProvider, useWallet } from './context/WalletContext';
 // Pages
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
+import AgentDetails from './pages/AgentDetails';
 import CreateDeal from './pages/CreateDeal';
 import NegotiationRoom from './pages/NegotiationRoom';
 import DealSummary from './pages/DealSummary';
 import Dashboard from './pages/Dashboard';
+import Docs from './pages/Docs';
+import WorkflowBuilder from './pages/WorkflowBuilder';
 import ActiveDeal from './pages/ActiveDeal';
 import Completion from './pages/Completion';
 
@@ -37,10 +40,13 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/agent/:id" element={<AgentDetails />} />
           <Route path="/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
           <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
           <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />
           <Route path="/dashboard" element={connected ? <Dashboard /> : <Navigate to="/" />} />
+          <Route path="/docs" element={<Docs />} />
+          <Route path="/builder" element={connected ? <WorkflowBuilder /> : <Navigate to="/" />} />
           <Route path="/active-deal" element={connected ? <ActiveDeal /> : <Navigate to="/" />} />
           <Route path="/completion" element={connected ? <Completion /> : <Navigate to="/" />} />
         </Routes>

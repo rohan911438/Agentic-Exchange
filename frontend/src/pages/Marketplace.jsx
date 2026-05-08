@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -264,7 +265,7 @@ const Marketplace = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="premium-card group hover:bg-bg-card/80 flex flex-col"
+                  className="premium-card group hover:bg-bg-card/80 flex flex-col relative"
                 >
                   {/* Card Header */}
                   <div className="flex justify-between items-start mb-8">
@@ -315,14 +316,20 @@ const Marketplace = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-3">
-                    <button className="flex-grow h-12 rounded-xl bg-accent-primary text-white font-bold text-sm hover:filter hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                  <div className="flex items-center gap-3 relative z-10">
+                    <button className="flex-grow h-12 rounded-xl bg-accent-primary text-white font-bold text-sm hover:filter hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-glow">
                       Deploy Agent <Zap size={14} className="fill-current" />
                     </button>
-                    <button className="w-12 h-12 rounded-xl border border-border-main flex items-center justify-center text-text-muted hover:text-text-primary hover:border-text-primary transition-all">
+                    <Link 
+                      to={`/agent/${agent.id}`}
+                      className="w-12 h-12 rounded-xl border border-border-main flex items-center justify-center text-text-muted hover:text-text-primary hover:border-text-primary transition-all bg-bg-card"
+                    >
                       <ExternalLink size={18} />
-                    </button>
+                    </Link>
                   </div>
+                  
+                  {/* Invisible Overlay for whole card click (optional, but requested View Details specifically) */}
+                  <Link to={`/agent/${agent.id}`} className="absolute inset-0 z-0 rounded-[2.5rem]" />
                 </motion.div>
               ))}
             </div>
