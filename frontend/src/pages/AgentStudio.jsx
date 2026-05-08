@@ -23,7 +23,9 @@ import {
   Layers,
   Share2,
   Clock,
-  ExternalLink
+  ExternalLink,
+  User,
+  DollarSign
 } from 'lucide-react';
 
 const STEPS = [

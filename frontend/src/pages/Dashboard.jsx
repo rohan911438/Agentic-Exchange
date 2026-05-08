@@ -250,7 +250,7 @@ const Dashboard = () => {
                     <div className="h-full w-[65%] bg-accent-primary shadow-glow" />
                  </div>
               </div>
-              <button className="w-full h-12 rounded-xl bg-white text-bg-primary text-[10px] font-bold uppercase tracking-widest hover:filter hover:brightness-90 transition-all">
+              <button className="w-full h-12 rounded-xl bg-bg-primary border border-border-main text-text-primary text-[10px] font-bold uppercase tracking-widest hover:bg-bg-secondary transition-all">
                  Manage Billing
               </button>
            </div>

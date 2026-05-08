@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Home, LayoutDashboard, PlusCircle, MessageSquare, Shield, History, LogOut, Layers, Activity } from 'lucide-react';
+import { X, Home, LayoutDashboard, PlusCircle, MessageSquare, Shield, History, LogOut, Layers, Activity, Book, Cpu } from 'lucide-react';
 
 const menuLinks = [
   { name: 'Home', path: '/', icon: <Home size={18} /> },
   { name: 'Marketplace', path: '/marketplace', icon: <PlusCircle size={18} /> },
   { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
-  { name: 'Negotiations', path: '/deals', icon: <Activity size={18} /> },
   { name: 'Workflow Builder', path: '/builder', icon: <Layers size={18} /> },
-  { name: 'Agent Studio', path: '/studio', icon: <Shield size={18} /> },
+  { name: 'Agent Studio', path: '/studio', icon: <Cpu size={18} /> },
   { name: 'Billing', path: '/billing', icon: <History size={18} /> },
-  { name: 'Developer Docs', path: '/docs', icon: <X size={18} /> },
+  { name: 'Developer Docs', path: '/docs', icon: <Book size={18} /> },
 ];
 
 const SideMenu = ({ isOpen, onClose, connected, account, disconnect, formatAddress }) => {

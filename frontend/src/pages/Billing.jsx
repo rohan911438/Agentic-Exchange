@@ -199,7 +199,7 @@ const Billing = () => {
               </div>
 
               <div className="flex flex-col gap-3 relative z-10">
-                 <button className="w-full h-12 rounded-xl bg-white text-bg-primary font-bold text-[10px] uppercase tracking-widest hover:filter hover:brightness-90 transition-all">
+                 <button className="w-full h-12 rounded-xl bg-bg-primary border border-border-main text-text-primary font-bold text-[10px] uppercase tracking-widest hover:bg-bg-secondary transition-all">
                     Upgrade Protocol
                  </button>
                  <button className="w-full h-12 rounded-xl border border-white/10 text-white font-bold text-[10px] uppercase tracking-widest hover:bg-white/5 transition-all">

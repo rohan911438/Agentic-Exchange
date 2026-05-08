@@ -39,7 +39,7 @@ const AgentOrchestration = () => {
               <motion.circle
                 r="2"
                 fill="var(--accent-primary)"
-                initial={{ offset: 0 }}
+                initial={{ cx: from.x, cy: from.y }}
                 animate={{
                   cx: [from.x, to.x],
                   cy: [from.y, to.y]

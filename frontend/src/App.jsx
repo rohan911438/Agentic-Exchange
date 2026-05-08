@@ -14,7 +14,6 @@ import NegotiationRoom from './pages/NegotiationRoom';
 import DealSummary from './pages/DealSummary';
 import Dashboard from './pages/Dashboard';
 import Docs from './pages/Docs';
-import Deals from './pages/Deals';
 import Billing from './pages/Billing';
 import AgentStudio from './pages/AgentStudio';
 import WorkflowBuilder from './pages/WorkflowBuilder';
@@ -48,7 +47,6 @@ function AppContent() {
           <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
           <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />
           <Route path="/dashboard" element={connected ? <Dashboard /> : <Navigate to="/" />} />
-          <Route path="/deals" element={connected ? <Deals /> : <Navigate to="/" />} />
           <Route path="/docs" element={<Docs />} />
           <Route path="/billing" element={connected ? <Billing /> : <Navigate to="/" />} />
           <Route path="/studio" element={connected ? <AgentStudio /> : <Navigate to="/" />} />
