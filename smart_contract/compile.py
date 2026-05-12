@@ -8,7 +8,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
-from escrow_contract import compile_teal
+from marketplace_contract import compile_teal
 
 
 def main() -> None:
@@ -27,7 +27,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-# Deployed app ID: 758126516
-# App address: JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A
