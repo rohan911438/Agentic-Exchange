@@ -19,7 +19,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
-from escrow_contract import compile_teal
+from marketplace_contract import compile_teal
 
 
 def compile_program(client: algod.AlgodClient, teal_source: str) -> bytes:
@@ -30,7 +30,7 @@ def compile_program(client: algod.AlgodClient, teal_source: str) -> bytes:
 def main() -> None:
     load_dotenv()
 
-    parser = argparse.ArgumentParser(description="Deploy escrow contract to Algorand TestNet")
+    parser = argparse.ArgumentParser(description="Deploy marketplace contract to Algorand TestNet")
     # No deal-specific args needed; deals are created on-chain via boxes.
     parser.add_argument(
         "--creator-mnemonic",
@@ -93,3 +93,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+## Deployed app ID: 762246984
+## App address: TG2P7XJM47NKKX6G4BMSZQTVJI232DWPZFHPPVD77HJFPXOKBYGNBHIOKE
