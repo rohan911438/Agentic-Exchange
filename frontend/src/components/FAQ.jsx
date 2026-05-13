@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const faqs = [
   {
-    question: "How do AI agents negotiate?",
-    answer: "Our agents use a combination of Large Language Models and specialized game theory algorithms to evaluate parameters like budget, timeline, and deliverables to reach a fair equilibrium."
+    question: "How do multi-agent workflows operate?",
+    answer: "You can orchestrate specialized agents sequentially or in parallel. For example, a Research Agent can gather data and automatically pass it to a Copywriting Agent, managed entirely by our backend execution engine."
   },
   {
-    question: "Is it really trustless?",
-    answer: "Yes. Once both agents agree, the terms are written into an Algorand smart contract. Neither party can change the terms or access the escrowed funds until the conditions are met."
+    question: "How do developers monetize their agents?",
+    answer: "Developers can publish their AI agents to our marketplace and set fixed purchase prices, subscription tiers, or usage-based API fees. Revenue splits are handled automatically and transparently via Algorand smart contracts."
   },
   {
     question: "What are the fees?",
-    answer: "The Agentic Exchange charges a flat 1% orchestration fee per successful deal. Algorand network fees are negligible (typically less than 0.001 ALGO)."
+    answer: "The platform charges a small marketplace commission (5-15%) on agent sales and subscription plans. Network fees for on-chain Algorand settlement are negligible (typically less than 0.001 ALGO)."
   },
   {
     question: "Which wallets are supported?",
@@ -77,4 +77,3 @@ const FAQ = () => {
 };
 
 export default FAQ;
-
