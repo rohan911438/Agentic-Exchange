@@ -1,281 +1,300 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Cpu, 
-  Zap, 
-  Activity, 
-  Clock, 
-  DollarSign, 
-  Key, 
-  Settings, 
-  CreditCard, 
-  Layers, 
-  User,
-  Bell,
-  Search,
-  ExternalLink,
-  ChevronRight,
-  MoreVertical,
-  Plus,
-  Shield,
-  ArrowUpRight,
-  ArrowDownRight
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useWallet } from '../context/WalletContext';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const { account, connected } = useWallet();
+  const [myAgents, setMyAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Workflow states
+  const [selectedAgents, setSelectedAgents] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [workflowInput, setWorkflowInput] = useState('');
+  const [workflowStatus, setWorkflowStatus] = useState('');
+  const [workflowResult, setWorkflowResult] = useState(null);
+  const [apiModalAgent, setApiModalAgent] = useState(null);
+  const [copiedKey, setCopiedKey] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
 
-  const stats = [
-    { label: 'Total Workflow Runs', value: '42,840', change: '+12.5%', trend: 'up', icon: <Zap size={18} /> },
-    { label: 'AI Agent Deployments', value: '156', change: '+4.2%', trend: 'up', icon: <Cpu size={18} /> },
-    { label: 'Marketplace Spending', value: '2,450 ALGO', change: '-2.1%', trend: 'down', icon: <ArrowDownRight size={18} /> },
-    { label: 'Agent Revenue', value: '8,920 ALGO', change: '+18.7%', trend: 'up', icon: <TrendingUp size={18} /> },
-    { label: 'Success Rate', value: '99.92%', change: '+0.01%', trend: 'up', icon: <Shield size={18} /> },
-  ];
+  useEffect(() => {
+    if (!connected || !account) {
+      setLoading(false);
+      return;
+    }
 
-  const recentActivity = [
-    { type: 'deployment', title: 'Negotiator Pro v4.2 Deployed', time: '2m ago', icon: <Cpu size={14} className="text-accent-primary" /> },
-    { type: 'execution', title: 'Content Pipeline #482 Completed', time: '15m ago', icon: <Zap size={14} className="text-yellow-500" /> },
-    { type: 'settlement', title: 'On-chain Settlement: 150 ALGO', time: '1h ago', icon: <DollarSign size={14} className="text-green-500" /> },
-    { type: 'purchase', title: 'Acquired Sentinel Auditor License', time: '3h ago', icon: <Layers size={14} className="text-blue-500" /> },
-  ];
+    const fetchMyAgents = async () => {
+      try {
+        // Fetch agents purchased by this wallet from your backend
+        const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/my-agents?wallet=${account}`);
+        const data = await response.json();
+        
+        if (data.items) {
+          setMyAgents(data.items);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dashboard agents:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMyAgents();
+  }, [account, connected]);
+
+  // Generate a mock API key unique to their wallet
+  const apiKey = account ? `sk_test_51Nx${account.slice(2, 6).toUpperCase()}${account.slice(-8).toLowerCase()}` : '';
+
+  const getPythonCode = (agent) => {
+    if (!agent) return '';
+    return `from agentic_exchange import AgenticClient\n\nclient = AgenticClient(api_key="${apiKey}")\n\n# Trigger the ${agent.name} programmatically\nresponse = client.run_workflow(\n    steps=["${agent.agent_id || agent.id}"],\n    input={"prompt": "Your task objective here"}\n)\n\nprint(response["final_output"])`;
+  };
+
+  const handleCopy = (text, type) => {
+    navigator.clipboard.writeText(text);
+    if (type === 'key') {
+      setCopiedKey(true);
+      setTimeout(() => setCopiedKey(false), 2000);
+    } else {
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    }
+  };
+
+  const toggleAgentSelection = (agent) => {
+    if (selectedAgents.find(a => a.agent_id === agent.agent_id)) {
+      setSelectedAgents(selectedAgents.filter(a => a.agent_id !== agent.agent_id));
+    } else {
+      setSelectedAgents([...selectedAgents, agent]);
+    }
+  };
+
+  const handleRunWorkflow = async () => {
+    if (!workflowInput.trim()) return;
+    setWorkflowStatus('⏳ Orchestrating workflow with agent...');
+    setWorkflowResult(null);
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/run-workflow`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet: account,
+          steps: selectedAgents.map(a => a.agent_id || a.id),
+          input: { prompt: workflowInput }
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorDetail = data.detail ? JSON.stringify(data.detail) : "Unknown server error";
+        throw new Error(errorDetail);
+      }
+      
+      setWorkflowStatus('✅ Execution Complete!');
+      setWorkflowResult(data.run || data);
+    } catch (err) {
+      console.error(err);
+      setWorkflowStatus(`❌ Error: ${err.message}`);
+    }
+  };
+
+  if (!connected) {
+    return (
+      <div className="pt-32 pb-20 px-6 min-h-screen bg-background-primary flex flex-col items-center justify-center text-center space-y-6">
+        <h1 className="text-3xl font-bold text-text-primary">Connect Your Wallet</h1>
+        <p className="text-text-secondary max-w-xs mx-auto">Please connect your Defly wallet to view your purchased AI agents.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background-primary pt-32 pb-20 px-6 lg:px-12 flex flex-col gap-12 text-text-primary">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-primary/5 blur-[180px] rounded-full pointer-events-none" />
+    <div className="pt-32 pb-20 px-6 min-h-screen bg-background-primary text-text-primary relative">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="space-y-4 mb-12 border-b border-border pb-8">
+          <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter">My <span className="text-gradient">Workforce</span></h1>
+          <p className="text-text-secondary font-mono text-sm">Wallet: {account.slice(0, 8)}...{account.slice(-8)}</p>
+        </div>
+
+        {loading ? (
+          <p className="text-text-muted">Loading your agents...</p>
+        ) : myAgents.length === 0 ? (
+          <div className="p-12 border border-border border-dashed rounded-3xl text-center space-y-6">
+            <h3 className="text-2xl font-bold text-text-primary">No Agents Yet</h3>
+            <p className="text-text-secondary">You haven't purchased any autonomous agents.</p>
+            <Link to="/marketplace" className="inline-block px-6 py-3 bg-accent text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
+              Browse Marketplace
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myAgents.map((agent, index) => (
+              <div key={agent.agent_id || index} className="p-6 bg-surface border border-accent/30 rounded-2xl space-y-4 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4">
+                  <span className="px-2 py-1 bg-accent/10 text-accent text-[10px] font-bold uppercase rounded-md tracking-wider border border-accent/20">Active</span>
+                </div>
+                <h3 className="text-xl font-bold">{agent.name || `Agent ${agent.agent_id}`}</h3>
+                <p className="text-sm text-text-secondary h-12">{agent.description || "Ready for workflow orchestration."}</p>
+                
+                <div className="pt-4 border-t border-border flex gap-2">
+                  <button 
+                    onClick={() => toggleAgentSelection(agent)}
+                    className={`flex-1 px-4 py-2 font-bold rounded-xl transition-colors text-sm ${selectedAgents.find(a => a.agent_id === agent.agent_id) ? 'bg-accent text-white border-accent' : 'bg-background-primary border-border text-text-primary hover:border-accent hover:text-accent'}`}
+                  >
+                    {selectedAgents.find(a => a.agent_id === agent.agent_id) ? 'Added to Pipeline' : 'Select Agent'}
+                  </button>
+                  <button 
+                    onClick={() => setApiModalAgent(agent)}
+                    className="px-4 py-2 bg-background-primary border border-border text-text-primary font-bold rounded-xl hover:border-accent hover:text-accent transition-colors text-sm"
+                  >
+                    API Settings
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       
-      {/* Header & Greeting */}
-      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10">
-        <div className="space-y-4">
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 text-text-muted"
+      {/* Floating Pipeline Action Bar */}
+      {selectedAgents.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface/90 backdrop-blur-xl border border-accent/50 p-4 rounded-2xl shadow-2xl flex items-center gap-6 z-40">
+          <div className="flex flex-col">
+            <span className="font-bold text-accent">{selectedAgents.length} Agents Selected</span>
+            <span className="text-xs text-text-secondary">Ready for orchestration</span>
+          </div>
+          <button 
+            onClick={() => setIsModalOpen(true)} 
+            className="px-6 py-3 bg-accent text-white font-bold rounded-xl hover:opacity-90 shadow-lg shadow-accent/20"
           >
-            <div className="w-10 h-10 rounded-full bg-bg-card border border-border-main flex items-center justify-center overflow-hidden">
-               <User size={20} className="text-text-primary" />
-            </div>
-            <span className="text-sm font-medium">System Operator: <span className="text-text-primary font-bold">Rohan</span></span>
-          </motion.div>
-          <h1 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[0.9]">
-            Enterprise <br />
-            <span className="gradient-text">Control Center.</span>
-          </h1>
-          <p className="text-text-muted font-light">Autonomous infrastructure management and performance analytics.</p>
+            Configure Pipeline ➔
+          </button>
         </div>
-
-        <div className="flex items-center gap-4">
-           <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-              <input 
-                type="text" 
-                placeholder="Search resources..."
-                className="bg-bg-card/50 border border-border-main rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-accent-primary/50 w-64"
+      )}
+      
+      {/* Workflow Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-8 space-y-6 relative shadow-2xl">
+            <button 
+              onClick={() => { setIsModalOpen(false); setWorkflowResult(null); setWorkflowStatus(''); setWorkflowInput(''); }}
+              className="absolute top-6 right-6 text-text-muted hover:text-white font-bold"
+            >
+              Close ✕
+            </button>
+            <h2 className="text-2xl font-bold">Orchestrate Pipeline</h2>
+            
+            <div className="flex flex-wrap items-center gap-2 p-4 bg-background-primary rounded-xl border border-border">
+              <span className="text-xs text-text-muted uppercase tracking-widest font-bold w-full mb-1">Execution Order:</span>
+              {selectedAgents.map((a, i) => (
+                <React.Fragment key={i}>
+                  <div className="px-3 py-1 bg-accent/10 border border-accent/30 text-accent font-bold rounded-lg text-sm">{a.name}</div>
+                  {i < selectedAgents.length - 1 && <span className="text-text-muted font-bold">➔</span>}
+                </React.Fragment>
+              ))}
+            </div>
+            
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-text-secondary">Task Objective / Prompt</label>
+              <textarea 
+                value={workflowInput}
+                onChange={(e) => setWorkflowInput(e.target.value)}
+                placeholder="e.g. Research Algorand consensus mechanism and generate a summary..."
+                className="w-full bg-background-primary border border-border rounded-xl p-4 text-text-primary h-32 focus:border-accent focus:outline-none transition-colors resize-none"
               />
-           </div>
-           <button className="w-12 h-12 rounded-2xl bg-bg-card border border-border-main flex items-center justify-center text-text-muted hover:text-text-primary transition-all relative">
-              <Bell size={20} />
-              <div className="absolute top-3 right-3 w-2 h-2 bg-accent-primary rounded-full border-2 border-bg-card" />
-           </button>
-           <button className="btn-premium-primary h-12 px-6 text-xs font-bold gap-2">
-              <Plus size={16} /> New Workflow
-           </button>
-        </div>
-      </div>
-
-      {/* Analytics Grid */}
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="premium-card p-6 flex flex-col justify-between min-h-[160px] group hover:bg-bg-card/80"
-          >
-            <div className="flex justify-between items-start">
-               <div className="w-10 h-10 rounded-xl bg-bg-primary border border-border-main flex items-center justify-center text-accent-primary group-hover:scale-110 transition-transform">
-                  {stat.icon}
-               </div>
-               <div className={`flex items-center gap-1 text-[10px] font-bold ${stat.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
-                  {stat.trend === 'up' ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                  {stat.change}
-               </div>
-            </div>
-            <div className="space-y-1">
-               <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
-               <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{stat.label}</div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Main Content Layout */}
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-        
-        {/* Middle Column: Performance & Consumption */}
-        <div className="lg:col-span-8 space-y-8">
-           
-           {/* Usage Metrics Visualization Placeholder */}
-           <div className="p-8 rounded-[2.5rem] bg-bg-card border border-border-main relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary/5 blur-[100px] rounded-full" />
-              <div className="flex justify-between items-center mb-10">
-                 <div className="space-y-1">
-                    <h3 className="text-xl font-bold tracking-tight">API Consumption</h3>
-                    <p className="text-xs text-text-muted">Usage distribution across deployed agent clusters.</p>
-                 </div>
-                 <div className="flex items-center gap-2">
-                    {['24H', '7D', '30D', '1Y'].map(t => (
-                      <button key={t} className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${t === '7D' ? 'bg-accent-primary text-white shadow-glow' : 'text-text-muted hover:text-text-primary'}`}>
-                        {t}
-                      </button>
-                    ))}
-                 </div>
-              </div>
-
-              {/* Minimal Chart Placeholder */}
-              <div className="h-64 w-full flex items-end gap-2 px-2">
-                 {[40, 65, 45, 80, 55, 90, 75, 45, 60, 85, 95, 70].map((h, i) => (
-                   <motion.div 
-                    key={i}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: i * 0.05, duration: 1 }}
-                    className="flex-grow bg-gradient-to-t from-accent-primary/10 to-accent-primary/40 rounded-t-lg relative group/bar"
-                   >
-                     <div className="absolute inset-0 bg-accent-primary opacity-0 group-hover/bar:opacity-100 transition-opacity rounded-t-lg shadow-glow" />
-                   </motion.div>
-                 ))}
-              </div>
-              <div className="flex justify-between px-2 mt-6">
-                 {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
-                   <span key={m} className="text-[9px] font-bold text-text-muted uppercase tracking-widest">{m}</span>
-                 ))}
-              </div>
-           </div>
-
-           {/* Running Workflows & Active Agents */}
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                 <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-text-primary flex items-center justify-between">
-                    Saved Workflows
-                    <button className="text-accent-primary hover:underline text-[9px] uppercase">View All</button>
-                 </h3>
-                 <div className="space-y-4">
-                    {['Content_Gen_V2', 'Audit_Pipeline_Final', 'Data_Scraper_Pro'].map(w => (
-                      <div key={w} className="p-5 rounded-2xl bg-bg-card border border-border-main flex items-center justify-between group hover:border-accent-primary/30 transition-all">
-                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-bg-primary border border-border-main flex items-center justify-center text-text-muted group-hover:text-accent-primary transition-colors">
-                               <Layers size={18} />
-                            </div>
-                            <div className="flex flex-col">
-                               <span className="text-sm font-bold text-text-primary">{w}</span>
-                               <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">5 Agents Connected</span>
-                            </div>
-                         </div>
-                         <ChevronRight size={14} className="text-text-muted group-hover:text-accent-primary transition-all" />
-                      </div>
-                    ))}
-                 </div>
-              </div>
-
-              <div className="space-y-6">
-                 <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-text-primary flex items-center justify-between">
-                    Favorite Agents
-                    <button className="text-accent-primary hover:underline text-[9px] uppercase">Browse Store</button>
-                 </h3>
-                 <div className="space-y-4">
-                    {['Negotiator Pro', 'Sentinel Auditor', 'DevSync Engine'].map(a => (
-                      <div key={a} className="p-5 rounded-2xl bg-bg-card border border-border-main flex items-center justify-between group hover:border-accent-primary/30 transition-all">
-                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-bg-primary border border-border-main flex items-center justify-center text-text-muted group-hover:text-accent-primary transition-colors">
-                               <Cpu size={18} />
-                            </div>
-                            <div className="flex flex-col">
-                               <span className="text-sm font-bold text-text-primary">{a}</span>
-                               <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Active License</span>
-                            </div>
-                         </div>
-                         <ChevronRight size={14} className="text-text-muted group-hover:text-accent-primary transition-all" />
-                      </div>
-                    ))}
-                 </div>
-              </div>
-           </div>
-        </div>
-
-        {/* Right Column: Activity, Billing & API */}
-        <div className="lg:col-span-4 space-y-8">
-           
-           {/* Activity Feed */}
-           <div className="p-8 rounded-[2.5rem] bg-bg-card border border-border-main flex flex-col gap-8 h-fit">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-text-primary border-b border-border-main/20 pb-4">Live Activity</h3>
-              <div className="space-y-6">
-                 {recentActivity.map((act, i) => (
-                   <div key={i} className="flex gap-4 group">
-                      <div className="w-8 h-8 rounded-lg bg-bg-primary border border-border-main flex items-center justify-center flex-shrink-0 group-hover:border-accent-primary/30 transition-all">
-                         {act.icon}
-                      </div>
-                      <div className="flex flex-col gap-0.5">
-                         <span className="text-xs font-medium text-text-primary leading-tight">{act.title}</span>
-                         <span className="text-[10px] text-text-muted">{act.time}</span>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-              <button className="w-full h-12 rounded-xl border border-border-main text-[10px] font-bold uppercase tracking-widest text-text-muted hover:text-text-primary hover:border-text-primary transition-all">
-                 View Full Audit Log
+              <button 
+                onClick={handleRunWorkflow}
+                className="w-full py-4 bg-accent text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Execute Task
               </button>
-           </div>
-
-           {/* Subscription & Billing */}
-           <div className="p-8 rounded-[2.5rem] border border-accent-primary/20 bg-gradient-to-br from-accent-primary/5 to-transparent space-y-6">
-              <div className="flex justify-between items-start">
-                 <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-accent-primary uppercase tracking-widest">Premium Plan</h4>
-                    <div className="text-2xl font-bold text-text-primary">Enterprise Pro</div>
-                 </div>
-                 <div className="w-10 h-10 rounded-xl bg-accent-primary text-white flex items-center justify-center shadow-glow">
-                    <Shield size={20} />
-                 </div>
+            </div>
+            
+            {workflowStatus && (
+              <div className="flex items-center gap-3 p-4 bg-accent/10 border border-accent/20 rounded-xl text-sm font-bold text-accent">
+                {workflowStatus.includes('⏳') && <div className="w-4 h-4 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />}
+                {workflowStatus}
               </div>
-              <div className="space-y-2">
-                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-                    <span className="text-text-muted">Renewal in 12 days</span>
-                    <span className="text-text-primary">150 ALGO</span>
-                 </div>
-                 <div className="h-1.5 w-full bg-bg-primary rounded-full overflow-hidden">
-                    <div className="h-full w-[65%] bg-accent-primary shadow-glow" />
-                 </div>
+            )}
+            
+            {workflowResult && (
+              <div className="space-y-4">
+                {workflowResult.final_output?.result && (
+                  <div className="p-6 bg-accent/5 border border-accent/20 rounded-2xl">
+                    <h3 className="text-accent font-bold mb-4 flex items-center gap-2">
+                      ✨ Task Completed
+                    </h3>
+                    <div className="text-text-primary text-sm leading-relaxed prose prose-invert max-w-none">
+                      <ReactMarkdown>{workflowResult.final_output.result}</ReactMarkdown>
+                    </div>
+                  </div>
+                )}
+                <details className="group">
+                  <summary className="cursor-pointer text-xs font-bold text-text-muted hover:text-text-primary transition-colors">
+                    View Execution Trace (JSON)
+                  </summary>
+                  <div className="mt-2 p-4 bg-background-primary border border-border rounded-xl max-h-64 overflow-y-auto font-mono text-xs text-text-secondary">
+                    <pre>{JSON.stringify(workflowResult, null, 2)}</pre>
+                  </div>
+                </details>
               </div>
-              <button className="w-full h-12 rounded-xl bg-bg-primary border border-border-main text-text-primary text-[10px] font-bold uppercase tracking-widest hover:bg-bg-secondary transition-all">
-                 Manage Billing
-              </button>
-           </div>
-
-           {/* API Keys */}
-           <div className="space-y-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-text-primary flex items-center gap-2 px-2">
-                 <Key size={12} className="text-accent-primary" />
-                 API Keys
-              </h3>
-              <div className="p-5 rounded-2xl bg-bg-card border border-border-main flex items-center justify-between group">
-                 <div className="flex flex-col">
-                    <span className="text-[11px] font-mono text-text-muted">ak_live_****************8f2</span>
-                    <span className="text-[8px] font-bold text-green-500 uppercase tracking-widest mt-1">Production Active</span>
-                 </div>
-                 <button className="text-text-muted hover:text-text-primary transition-colors">
-                    <Settings size={16} />
-                 </button>
-              </div>
-           </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* API Settings Modal */}
+      {apiModalAgent && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-8 space-y-6 relative shadow-2xl">
+            <button 
+              onClick={() => setApiModalAgent(null)}
+              className="absolute top-6 right-6 text-text-muted hover:text-white font-bold"
+            >
+              Close ✕
+            </button>
+            <h2 className="text-2xl font-bold">API Integration: {apiModalAgent.name}</h2>
+            <p className="text-text-secondary text-sm">
+              Integrate this agent directly into your own applications. Executions will be billed automatically to your Algorand wallet.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2 block">Your API Key</label>
+                <div className="flex justify-between items-center p-3 bg-background-primary border border-border rounded-xl">
+                  <span className="font-mono text-sm text-accent">{apiKey}</span>
+                  <button onClick={() => handleCopy(apiKey, 'key')} className="text-text-muted hover:text-accent text-xs font-bold px-3 py-1 rounded-lg border border-border bg-surface transition-colors">
+                    {copiedKey ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2 block">Python SDK Example</label>
+                <div className="relative p-4 bg-[#0d1117] border border-border rounded-xl font-mono text-xs overflow-x-auto text-gray-300">
+                  <button onClick={() => handleCopy(getPythonCode(apiModalAgent), 'code')} className="absolute top-4 right-4 text-gray-400 hover:text-white text-xs font-bold px-3 py-1 rounded-lg border border-gray-700 bg-gray-800 transition-colors">
+                    {copiedCode ? 'Copied!' : 'Copy'}
+                  </button>
+                  <pre>
+<span className="text-pink-400">from</span> agentic_exchange <span className="text-pink-400">import</span> AgenticClient{'\n\n'}
+client = AgenticClient(api_key=<span className="text-green-300">"{apiKey}"</span>){'\n\n'}
+<span className="text-gray-500"># Trigger the {apiModalAgent.name} programmatically</span>{'\n'}
+response = client.run_workflow({'\n'}
+    steps=[<span className="text-green-300">"{apiModalAgent.agent_id || apiModalAgent.id}"</span>],{'\n'}
+    input=<span className="text-blue-300">&#123;</span><span className="text-green-300">"prompt"</span>: <span className="text-green-300">"Your task objective here"</span><span className="text-blue-300">&#125;</span>{'\n'}
+){'\n\n'}
+<span className="text-blue-400">print</span>(response[<span className="text-green-300">"final_output"</span>])
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
 };
-
 export default Dashboard;
