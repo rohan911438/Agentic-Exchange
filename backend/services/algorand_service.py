@@ -21,23 +21,17 @@ def get_algod_client() -> algod.AlgodClient:
 
 
 def get_app_id() -> int:
-    return int(os.getenv("CONTRACT_APP_ID", "757913424"))
+    # New marketplace app id (Phase 6)
+    # Backward fallback retained for old envs.
+    return int(os.getenv("MARKETPLACE_APP_ID", os.getenv("CONTRACT_APP_ID", "0")))
 
 
 def get_app_address(app_id: int) -> str:
     return logic.get_application_address(app_id)
 
 
-def _deal_id_bytes(deal_id: str) -> bytes:
-    return deal_id.encode("utf-8")
-
-
-def _meta_box_key(deal_id: str) -> bytes:
-    return b"meta:" + _deal_id_bytes(deal_id)
-
-
-def _milestone_box_key(deal_id: str, index: int) -> bytes:
-    return b"m:" + _deal_id_bytes(deal_id) + index.to_bytes(8, "big")
+def _purchase_key(purchase_id: str) -> bytes:
+    return b"p:" + purchase_id.encode("utf-8")
 
 
 def _encode_txn(txn) -> str:
@@ -60,59 +54,24 @@ def _b64_to_bytes(blob) -> bytes:
     return base64.b64decode(s)
 
 
-def build_create_deal_group(sender: str, deal_id: str, total: int, milestones: List[int]) -> List[str]:
+def build_marketplace_purchase_group(
+    sender: str,
+    purchase_id: str,
+    agent_id: str,
+    amount: int,
+    creator_wallet: str,
+    op: str = "buy",
+) -> List[str]:
+    if op not in ("buy", "subscribe"):
+        raise ValueError("op must be 'buy' or 'subscribe'")
+    if amount <= 0:
+        raise ValueError("amount must be > 0")
+
     client = get_algod_client()
     params = client.suggested_params()
     app_id = get_app_id()
-    app_address = get_app_address(app_id)
-    count = len(milestones)
-
-    app_args = [b"create", _deal_id_bytes(deal_id), total.to_bytes(8, "big"), count.to_bytes(8, "big")]
-    for m in milestones:
-        app_args.append(int(m).to_bytes(8, "big"))
-
-    boxes = [(app_id, _meta_box_key(deal_id))]
-    for idx in range(count):
-        boxes.append((app_id, _milestone_box_key(deal_id, idx)))
-
-    # Minimum balance needed for app account to create boxes.
-    # Base min balance for an account is 100000 microAlgos.
-    # Each box adds 2500 + 400 * size bytes.
-    meta_size = 75  # buyer(32)+seller(32)+total(8)+status(1)+count(1)+released(1)
-    milestone_size = 9  # amount(8)+released(1)
-    box_min = lambda size: 2500 + (400 * size)
-    required = 100000 + box_min(meta_size) + (count * box_min(milestone_size))
-    funding_floor = int(os.getenv("CONTRACT_BOX_FUNDING", "160000"))
-    funding = max(required, funding_floor)
-    pay_txn = PaymentTxn(sender=sender, sp=params, receiver=app_address, amt=funding)
-    app_call = ApplicationNoOpTxn(sender=sender, sp=params, index=app_id, app_args=app_args, boxes=boxes)
-
-    gid = calculate_group_id([pay_txn, app_call])
-    pay_txn.group = gid
-    app_call.group = gid
-
-    return [_encode_txn(pay_txn), _encode_txn(app_call)]
-
-
-def build_accept_txn(sender: str, deal_id: str) -> List[str]:
-    client = get_algod_client()
-    params = client.suggested_params()
-    app_id = get_app_id()
-
-    txn = ApplicationNoOpTxn(
-        sender=sender,
-        sp=params,
-        index=app_id,
-        app_args=[b"accept", _deal_id_bytes(deal_id)],
-        boxes=[(app_id, _meta_box_key(deal_id))],
-    )
-    return [_encode_txn(txn)]
-
-
-def build_deposit_group(sender: str, deal_id: str, amount: int) -> List[str]:
-    client = get_algod_client()
-    params = client.suggested_params()
-    app_id = get_app_id()
+    if app_id <= 0:
+        raise ValueError("MARKETPLACE_APP_ID is not configured")
     app_address = get_app_address(app_id)
 
     pay_txn = PaymentTxn(sender=sender, sp=params, receiver=app_address, amt=amount)
@@ -120,8 +79,9 @@ def build_deposit_group(sender: str, deal_id: str, amount: int) -> List[str]:
         sender=sender,
         sp=params,
         index=app_id,
-        app_args=[b"deposit", _deal_id_bytes(deal_id)],
-        boxes=[(app_id, _meta_box_key(deal_id))],
+        app_args=[op.encode("utf-8"), purchase_id.encode("utf-8"), agent_id.encode("utf-8"), amount.to_bytes(8, "big")],
+        accounts=[creator_wallet],
+        boxes=[(app_id, _purchase_key(purchase_id))],
     )
 
     gid = calculate_group_id([pay_txn, app_call])
@@ -129,30 +89,6 @@ def build_deposit_group(sender: str, deal_id: str, amount: int) -> List[str]:
     app_call.group = gid
 
     return [_encode_txn(pay_txn), _encode_txn(app_call)]
-
-
-def build_release_txn(sender: str, deal_id: str, milestone_index: int, seller: str | None = None) -> List[str]:
-    client = get_algod_client()
-    params = client.suggested_params()
-    app_id = get_app_id()
-    index_bytes = milestone_index.to_bytes(8, "big")
-
-    accounts = None
-    if seller and encoding.is_valid_address(seller):
-        accounts = [seller]
-
-    txn = ApplicationNoOpTxn(
-        sender=sender,
-        sp=params,
-        index=app_id,
-        app_args=[b"release", _deal_id_bytes(deal_id), index_bytes],
-        accounts=accounts,
-        boxes=[
-            (app_id, _meta_box_key(deal_id)),
-            (app_id, _milestone_box_key(deal_id, milestone_index)),
-        ],
-    )
-    return [_encode_txn(txn)]
 
 
 def submit_signed_transactions(signed_blobs) -> List[str]:
