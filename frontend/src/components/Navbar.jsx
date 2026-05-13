@@ -39,6 +39,7 @@ const Navbar = () => {
             <NavLink to="/studio" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Studio</NavLink>
             <NavLink to="/billing" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Billing</NavLink>
             <NavLink to="/docs" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Docs</NavLink>
+            <NavLink to="/legacy" className="text-sm font-medium text-yellow-400/80 hover:text-yellow-300 transition-colors">Legacy</NavLink>
           </div>
 
           <div className="flex items-center gap-4">
@@ -106,5 +107,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
 
