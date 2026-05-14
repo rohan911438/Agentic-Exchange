@@ -75,7 +75,16 @@ def _dynamic_llm_agent(state: dict[str, Any], step: str) -> dict[str, Any]:
     if previous_results:
         context_str = "\n\n--- PREVIOUS AGENT OUTPUT TO BUILD UPON ---\n" + "\n\n".join(previous_results)
     
-    ai_response = call_gemini(f"You are an expert AI agent fulfilling a task. Task: {prompt}{context_str}\nProvide a concise and direct result.")
+    # Inject specific personas based on the Agent ID requested!
+    system_role = "You are an expert AI agent fulfilling a task."
+    if "publisher" in step.lower() or "social" in step.lower():
+        system_role = "You are an expert Social Media Marketer. Take the input task and write a super hype, engaging Twitter marketing tweet with emojis and hashtags. Do not explain, just output the tweet."
+    elif "seo" in step.lower():
+        system_role = "You are an expert SEO Agent. Take the input and optimize it with high-ranking keywords."
+    elif "copywriter" in step.lower():
+        system_role = "You are an expert Copywriter. Write high-converting marketing copy."
+
+    ai_response = call_gemini(f"{system_role}\n\nTask: {prompt}{context_str}\n\nProvide a concise and direct result.")
     
     return {
         "agent": "dynamic_llm",
