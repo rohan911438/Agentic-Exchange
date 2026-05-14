@@ -48,7 +48,7 @@ const Dashboard = () => {
 
   const getPythonCode = (agent) => {
     if (!agent) return '';
-    return `from agentic_exchange import AgenticClient\n\nclient = AgenticClient(api_key="${apiKey}")\n\n# Trigger the ${agent.name} programmatically\nresponse = client.run_workflow(\n    steps=["${agent.agent_id || agent.id}"],\n    input={"prompt": "Your task objective here"}\n)\n\nprint(response["final_output"])`;
+    return `from agentic_exchange import AgenticClient\n\nclient = AgenticClient(\n    api_key="${apiKey}",\n    base_url="${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}"\n)\n\n# Trigger the ${agent.name} programmatically\nresponse = client.run_workflow(\n    steps=["${agent.agent_id || agent.id}"],\n    input={"prompt": "Your task objective here"}\n)\n\n# Extract the pure text result\nprint(response["run"]["final_output"].get("result", ""))`;
   };
 
   const handleCopy = (text, type) => {
@@ -284,8 +284,9 @@ client = AgenticClient(api_key=<span className="text-green-300">"{apiKey}"</span
 response = client.run_workflow({'\n'}
     steps=[<span className="text-green-300">"{apiModalAgent.agent_id || apiModalAgent.id}"</span>],{'\n'}
     input=<span className="text-blue-300">&#123;</span><span className="text-green-300">"prompt"</span>: <span className="text-green-300">"Your task objective here"</span><span className="text-blue-300">&#125;</span>{'\n'}
-){'\n\n'}
-<span className="text-blue-400">print</span>(response[<span className="text-green-300">"final_output"</span>])
+){'\n'}
+<span className="text-gray-500"># Extract the pure text result</span>{'\n'}
+<span className="text-blue-400">print</span>(response[<span className="text-green-300">"run"</span>][<span className="text-green-300">"final_output"</span>].get(<span className="text-green-300">"result"</span>, <span className="text-green-300">""</span>))
                   </pre>
                 </div>
               </div>
