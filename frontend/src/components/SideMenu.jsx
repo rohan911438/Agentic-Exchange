@@ -11,6 +11,7 @@ const menuLinks = [
   { name: 'Agent Studio', path: '/studio', icon: <Cpu size={18} /> },
   { name: 'Billing', path: '/billing', icon: <History size={18} /> },
   { name: 'Developer Docs', path: '/docs', icon: <Book size={18} /> },
+  { name: 'Legacy Negotiation', path: '/legacy', icon: <MessageSquare size={18} /> },
 ];
 
 const SideMenu = ({ isOpen, onClose, connected, account, disconnect, formatAddress }) => {
