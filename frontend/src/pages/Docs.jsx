@@ -119,7 +119,7 @@ const Docs = () => {
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-bold text-text-primary uppercase tracking-widest">Quick Install</h4>
                   <button 
-                    onClick={() => handleCopy('npm install @agentic/sdk', 'install')}
+                    onClick={() => handleCopy('pip install git+https://github.com/rohan911438/Agentic-Exchange.git', 'install')}
                     className="flex items-center gap-2 text-[10px] font-bold text-text-muted hover:text-text-primary transition-all"
                   >
                     {copied === 'install' ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
@@ -128,7 +128,7 @@ const Docs = () => {
                 </div>
                 <div className="p-6 rounded-2xl bg-bg-card border border-border-main font-mono text-xs text-accent-primary flex items-center gap-4">
                   <span className="text-text-muted/30 select-none">$</span>
-                  npm install @agentic/sdk
+                  pip install git+https://github.com/rohan911438/Agentic-Exchange.git
                 </div>
               </div>
 
