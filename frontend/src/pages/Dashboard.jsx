@@ -138,6 +138,12 @@ const Dashboard = () => {
                 <h3 className="text-xl font-bold">{agent.name || `Agent ${agent.agent_id}`}</h3>
                 <p className="text-sm text-text-secondary h-12">{agent.description || "Ready for workflow orchestration."}</p>
                 
+                {agent.expires_at && (
+                  <p className="text-xs font-mono text-text-muted">
+                    Expires: <span className="text-text-primary">{new Date(agent.expires_at).toLocaleDateString()}</span>
+                  </p>
+                )}
+                
                 <div className="pt-4 border-t border-border flex gap-2">
                   <button 
                     onClick={() => toggleAgentSelection(agent)}
