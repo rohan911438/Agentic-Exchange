@@ -34,12 +34,21 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden xl:flex items-center gap-8 mr-4">
             <NavLink to="/marketplace" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Marketplace</NavLink>
-            <NavLink to="/dashboard" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Dashboard</NavLink>
-            <NavLink to="/builder" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Builder</NavLink>
-            <NavLink to="/studio" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Studio</NavLink>
-            <NavLink to="/billing" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Billing</NavLink>
-            <NavLink to="/docs" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Docs</NavLink>
-            <NavLink to="/legacy" className="text-sm font-medium text-yellow-400/80 hover:text-yellow-300 transition-colors">Legacy</NavLink>
+            <NavLink to="/dashboard" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">My Agents</NavLink>
+            <NavLink to="/studio" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Creator Studio</NavLink>
+            
+            {/* External Docs Link */}
+            <a 
+              href="/docs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-text-muted hover:text-accent-primary transition-colors flex items-center gap-1"
+            >
+              Docs
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -107,4 +116,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
