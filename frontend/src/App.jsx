@@ -19,6 +19,7 @@ import AgentStudio from './pages/AgentStudio';
 import WorkflowBuilder from './pages/WorkflowBuilder';
 import ActiveDeal from './pages/ActiveDeal';
 import Completion from './pages/Completion';
+import LegacyNegotiation from './pages/LegacyNegotiation';
 
 function AppContent() {
   const { connected, initialized } = useWallet();
@@ -43,16 +44,24 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/agent/:id" element={<AgentDetails />} />
-          <Route path="/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
-          <Route path="/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
-          <Route path="/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />
           <Route path="/dashboard" element={connected ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/docs" element={<Docs />} />
           <Route path="/billing" element={connected ? <Billing /> : <Navigate to="/" />} />
           <Route path="/studio" element={connected ? <AgentStudio /> : <Navigate to="/" />} />
           <Route path="/builder" element={connected ? <WorkflowBuilder /> : <Navigate to="/" />} />
-          <Route path="/active-deal" element={connected ? <ActiveDeal /> : <Navigate to="/" />} />
-          <Route path="/completion" element={connected ? <Completion /> : <Navigate to="/" />} />
+          <Route path="/legacy" element={<LegacyNegotiation />} />
+          <Route path="/legacy/create-deal" element={connected ? <CreateDeal /> : <Navigate to="/" />} />
+          <Route path="/legacy/negotiation-room" element={connected ? <NegotiationRoom /> : <Navigate to="/" />} />
+          <Route path="/legacy/summary" element={connected ? <DealSummary /> : <Navigate to="/" />} />
+          <Route path="/legacy/active-deal" element={connected ? <ActiveDeal /> : <Navigate to="/" />} />
+          <Route path="/legacy/completion" element={connected ? <Completion /> : <Navigate to="/" />} />
+
+          {/* Backward compatibility redirects */}
+          <Route path="/create-deal" element={<Navigate to="/legacy/create-deal" replace />} />
+          <Route path="/negotiation-room" element={<Navigate to="/legacy/negotiation-room" replace />} />
+          <Route path="/summary" element={<Navigate to="/legacy/summary" replace />} />
+          <Route path="/active-deal" element={<Navigate to="/legacy/active-deal" replace />} />
+          <Route path="/completion" element={<Navigate to="/legacy/completion" replace />} />
         </Routes>
       </main>
 
