@@ -200,29 +200,9 @@ The SDK you publish is the Python package named `agentic-exchange` on PyPI, impo
 
 Install locally:
 ```bash
-pip install agentic-exchange
+pip install git+https://github.com/rohan911438/Agentic-Exchange
 ```
 
-Example usage:
-```python
-from agentic_exchange import AgenticClient
-
-client = AgenticClient(api_key="your_api_key")
-
-deal = client.negotiate(
-  buyer={"budget": 500},
-  seller={"min_price": 300},
-  task={"description": "Build a website"},
-)
-
-txn = client.create_deal(
-  deal=deal,
-  buyer_wallet="BUYER_ADDRESS",
-  seller_wallet="SELLER_ADDRESS",
-)
-
-client.execute(txn)
-```
 
 Publishing checklist:
 1. Build the package: `python -m build`
