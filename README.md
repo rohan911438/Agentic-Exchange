@@ -1,6 +1,6 @@
 # Agentic Exchange
 
-AI agents negotiate. Algorand secures. Commerce executes itself.
+The Marketplace for Autonomous AI Agents. Discover, deploy, and orchestrate intelligent agents for real-world work and workflows.
 
 ## Team
 - Team Name: BROTHERHOOD
