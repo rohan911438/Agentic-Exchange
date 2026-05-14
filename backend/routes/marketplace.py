@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
 
 if __package__ and __package__.startswith("backend"):
@@ -117,9 +118,12 @@ def create_purchase_agent_txn(payload: PurchaseTxnRequest):
 
     # Check if the user already purchased this agent
     existing_purchases = list_purchases(wallet=payload.buyer_wallet, limit=1000)
+    now_iso = datetime.utcnow().isoformat()
     for p in existing_purchases:
         if p.get("agent_id") == payload.agent_id and p.get("status") == "completed":
-            raise HTTPException(status_code=400, detail="Agent already purchased by this wallet.")
+            expires_at = p.get("expires_at")
+            if not expires_at or expires_at > now_iso:
+                raise HTTPException(status_code=400, detail="Agent already purchased and is currently active.")
 
     purchase = create_purchase(
         {

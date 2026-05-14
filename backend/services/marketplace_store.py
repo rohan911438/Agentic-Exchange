@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 from .agent_runtime import execute_workflow
 
@@ -163,6 +163,8 @@ def publish_agent(data: dict[str, Any]) -> dict[str, Any]:
         "name": data["name"],
         "category": data["category"],
         "description": data["description"],
+        "system_prompt": data.get("system_prompt", ""),
+        "endpoint_url": data.get("endpoint_url", ""),
         "capabilities": data.get("capabilities", []),
         "price_type": data["price_type"],
         "price_value": data["price_value"],
@@ -201,6 +203,7 @@ def patch_agent(agent_id: str, patch: dict[str, Any]) -> dict[str, Any] | None:
 def create_purchase(data: dict[str, Any]) -> dict[str, Any]:
     purchase_id = str(uuid.uuid4())
     now = datetime.utcnow()
+    expires_at = now + timedelta(days=30)  # Agent access expires in 30 days
     record = {
         "purchase_id": purchase_id,
         "buyer_wallet": data["buyer_wallet"],
@@ -209,6 +212,7 @@ def create_purchase(data: dict[str, Any]) -> dict[str, Any]:
         "txid": data.get("txid"),
         "amount": data["amount"],
         "timestamp": now,
+        "expires_at": expires_at,
         "status": data.get("status", "completed"),
     }
     db = _get_db()
@@ -258,8 +262,25 @@ def list_purchases(wallet: str | None = None, limit: int = 100, offset: int = 0)
 
 def list_my_agents(wallet: str, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     purchases = list_purchases(wallet, limit=5000, offset=0)
-    ids = {p["agent_id"] for p in purchases if p.get("status") == "completed"}
-    all_items = [a for a in list_agents(limit=5000, offset=0) if a["agent_id"] in ids]
+    now_iso = datetime.utcnow().isoformat()
+    
+    valid_purchases = {}
+    for p in purchases:
+        if p.get("status") == "completed":
+            expires_at = p.get("expires_at")
+            # Keep if no expiration set (legacy), or if expiration is in the future
+            if not expires_at or expires_at > now_iso:
+                existing_exp = valid_purchases.get(p["agent_id"])
+                if not existing_exp or (expires_at and expires_at > existing_exp):
+                    valid_purchases[p["agent_id"]] = expires_at
+
+    all_items = []
+    for a in list_agents(limit=5000, offset=0):
+        if a["agent_id"] in valid_purchases:
+            a_copy = dict(a)
+            a_copy["expires_at"] = valid_purchases[a["agent_id"]]
+            all_items.append(a_copy)
+            
     return all_items[offset : offset + limit]
 
 

@@ -75,14 +75,23 @@ def _dynamic_llm_agent(state: dict[str, Any], step: str) -> dict[str, Any]:
     if previous_results:
         context_str = "\n\n--- PREVIOUS AGENT OUTPUT TO BUILD UPON ---\n" + "\n\n".join(previous_results)
     
+    # Fetch the agent's custom system prompt from the database to make it a REAL 3rd party agent!
+    from .marketplace_store import get_agent
+    agent_record = get_agent(step)
+    custom_prompt = agent_record.get("system_prompt") if agent_record else None
+
     # Inject specific personas based on the Agent ID requested!
     system_role = "You are an expert AI agent fulfilling a task."
-    if "publisher" in step.lower() or "social" in step.lower():
-        system_role = "You are an expert Social Media Marketer. Take the input task and write a super hype, engaging Twitter marketing tweet with emojis and hashtags. Do not explain, just output the tweet."
-    elif "seo" in step.lower():
-        system_role = "You are an expert SEO Agent. Take the input and optimize it with high-ranking keywords."
-    elif "copywriter" in step.lower():
-        system_role = "You are an expert Copywriter. Write high-converting marketing copy."
+    
+    if custom_prompt:
+        system_role = custom_prompt
+    else:
+        if "publisher" in step.lower() or "social" in step.lower():
+            system_role = "You are an expert Social Media Marketer. Take the input task and write a super hype, engaging Twitter marketing tweet with emojis and hashtags. Do not explain, just output the tweet."
+        elif "seo" in step.lower():
+            system_role = "You are an expert SEO Agent. Take the input and optimize it with high-ranking keywords."
+        elif "copywriter" in step.lower():
+            system_role = "You are an expert Copywriter. Write high-converting marketing copy."
 
     ai_response = call_gemini(f"{system_role}\n\nTask: {prompt}{context_str}\n\nProvide a concise and direct result.")
     

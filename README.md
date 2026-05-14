@@ -1,6 +1,6 @@
 # Agentic Exchange
 
-The Marketplace for Autonomous AI Agents. Discover, deploy, and orchestrate intelligent agents for real-world work and workflows.
+The Web3 Marketplace for Autonomous AI Agents. Discover, purchase, and orchestrate intelligent agents for real-world workflows, directly on the Algorand blockchain.
 
 ## Team
 - Team Name: BROTHERHOOD
@@ -8,69 +8,46 @@ The Marketplace for Autonomous AI Agents. Discover, deploy, and orchestrate inte
 - Hackathon: AlgoBharat Hack Series 3.0 (Round 2)
 - Track: Agentic Commerce (AI + Blockchain)
 
-## What We Built
-Agentic Exchange is a full-stack agentic commerce platform where users do not manually negotiate every term. Instead, a buyer agent and seller agent autonomously negotiate price, milestones, and timeline, then execute the finalized agreement through Algorand smart contract escrow.
+## 💡 About The Project
+Agentic Exchange is a decentralized infrastructure layer and Web3 marketplace for autonomous AI agents. We are bridging the gap between AI creators and software developers by providing a unified platform to discover, monetize, and orchestrate multi-agent workflows directly on the Algorand blockchain.
 
-Core execution flow:
-UI -> AI negotiation -> on-chain escrow -> milestone release -> completion
+Creators can seamlessly publish custom AI agents (with built-in system personas) to the marketplace. Users can then purchase 30-day API access using ALGO and chain these agents together using our native Python SDK. All creator revenue splits and API access grants are handled trustlessly via Algorand Atomic Transfers.
 
 ## Live Deployment
 - Frontend (Netlify): https://agenticex.netlify.app/
 - Backend (Render): https://agentic-exchange.onrender.com
-- Demo Video:  https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
+- Demo Video: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
 - Presentation :- https://drive.google.com/file/d/1QLcaG2JUbkMqCdo8t4e_RRt4PQV05bmb/view?usp=drivesdk
 
-
 ## The Problem We Are Solving
-Digital service marketplaces are still inefficient and trust-heavy.
+The AI economy is growing rapidly, but there is no unified, decentralized infrastructure for creators to monetize their specialized AI agents, or for developers to seamlessly discover and chain multiple agents together.
 
-What breaks in current systems:
-- Manual negotiation creates delay and decision fatigue.
-- Verbal or off-platform agreements are hard to enforce.
-- Payments are either high-risk upfront or delayed with friction.
-- Multi-milestone projects often lead to disputes over who owes what and when.
-
-The real user pain is not just finding talent or clients. The pain is converting intent into a reliable, executable agreement.
-
-## Why Existing Platforms Are Not Enough
-Most peers solve one piece of the puzzle, not the full lifecycle.
-
-| Platform Type | Negotiation | Settlement | Trust Layer | End-to-End Automation |
-|---|---|---|---|---|
-| Traditional freelance marketplaces | Mostly manual chat | Centralized payout | Platform-mediated | Partial |
-| Escrow-only crypto tools | Manual off-platform | On-chain escrow | Smart contract only | No |
-| AI assistant products | Suggestive drafting | No native settlement | No enforced execution | No |
-| Agentic Exchange | Autonomous multi-agent bargaining | On-chain milestone escrow | Cryptographic + programmable | Yes |
+Current problems:
+- AI Agents are siloed and difficult to monetize securely.
+- No trustless settlement layer between the creator and the consumer.
+- Building multi-agent pipelines (like chaining a Researcher to a Copywriter) requires heavy custom infrastructure.
 
 ## Our Edge
-- We combine AI negotiation and blockchain execution in one integrated product.
-- We focus on one complete high-value loop instead of many disconnected features.
-- We enforce negotiated outcomes with on-chain milestone settlement.
-- We reduce both coordination cost and trust risk at the same time.
+- **Bring-Your-Own-Prompt:** Creators can easily inject custom System Prompts into the platform via the Creator Studio.
+- **On-Chain Revenue Split:** When an agent is purchased, an Algorand Atomic Transfer instantly splits the revenue (90% to the creator, 10% protocol fee).
+- **Python SDK Integration:** Users get a dedicated Python SDK to orchestrate workflows programmatically.
+- **Dynamic LLM Routing:** The backend intelligently passes the output of one agent as context to the next agent in the pipeline.
 
 ## How It Works
-- Buyer creates a deal request from the frontend.
-- Seller accepts and negotiation begins.
-- Buyer and seller agents negotiate in natural language.
-- Final terms are approved and converted into escrow actions.
-- Buyer creates and funds Algorand escrow.
-- Seller confirms participation on-chain.
-- Milestones are released progressively on verified progress.
-- Deal is completed after full settlement.
+- **Creator:** Connects Defly Wallet, visits Creator Studio, defines an Agent (Name, Price, System Prompt), and publishes it to the marketplace.
+- **Buyer:** Browses the Marketplace, purchases a 30-day subscription to an Agent using ALGO. 
+- **Orchestration:** The Buyer can now select their owned agents in the Dashboard, string them together (e.g. Research -> Social Publisher), and execute a workflow.
 
 ## System Architecture
 ```mermaid
 flowchart LR
-    U[Buyer and Seller] --> F[Frontend React]
+    U[Users & Creators] --> F[Frontend React]
     F --> B[Backend FastAPI]
-    B --> N[Negotiation Engine]
-    N --> BA[Buyer Agent]
-    N --> SA[Seller Agent]
-    B --> DS[Deal Store MongoDB]
+    B --> N[Dynamic LLM Router]
+    N --> BA[Gemini AI Engine]
+    B --> DS[Marketplace DB MongoDB]
     B --> AS[Algorand Service]
-    AS --> SC[PyTeal Escrow Contract]
-    SC --> MR[Milestone Release]
-    MR --> DC[Deal Completion]
+    AS --> SC[Atomic Transfer Escrow]
 ```
 
 Execution model:
@@ -83,32 +60,10 @@ Why Algorand:
 - Reliable chain performance supports agent-driven workflows.
 
 Wallet usage:
-- Pera Wallet is used for authentication and transaction signing.
+- Pera / Defly Wallet is used for authentication and transaction signing.
 - Users keep custody while the app coordinates transaction creation.
 
-Verify on-chain deployment:
-- Pera Explorer TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
-- Pera Explorer TestNet Application Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
-
-Demo wallet/account used (TestNet):
-- Pera Explorer TestNet Account: https://testnet.explorer.perawallet.app/address/NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA/
-- Pera Explorer TestNet Transactions: https://testnet.explorer.perawallet.app/transactions/?transaction_list_address=NVOMGL2X2F5NP3JLC66EFU45LKQJWFNFQZHSUWFTXBQZ4KQJQJ6K7EM6WA
-
-## Product Screenshots
-
-![Landing Page](docs/images/landing.png)
-
-![Features Section](docs/images/dashboard.png)
-
-![Create Deal Screen](docs/images/create-deal.png)
-
-## Testnet Transaction Screenshots
-
-![Testnet Wallet Transaction](docs/images/testnet-transaction-1.jpg)
-
-![Testnet App Confirmation](docs/images/testnet-transaction-2.jpg)
-
-![Testnet Explorer Verification](docs/images/testnet-transaction-3.jpg)
+*(Note: Final TestNet Explorer links and Product Screenshots will be added here prior to final submission.)*
 
 ## Hackathon Alignment
 - Full-stack implementation: frontend + backend + blockchain.
