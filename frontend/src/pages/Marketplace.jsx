@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { walletService } from '../services/AlgorandWalletService';
 import { submitSignedTxns } from '../services/ContractService';
@@ -62,7 +63,7 @@ const Marketplace = () => {
         body: JSON.stringify({
           buyer_wallet: account,
           agent_id: agent.agent_id || agent.id,
-          plan: 'lifetime',
+          plan: '30-days',
           amount: agent.price_microalgos || 200000, // Sending both in case the schema expects 'amount'
           amount_microalgos: agent.price_microalgos || 200000 // Default 0.2 ALGO
         })
@@ -105,6 +106,13 @@ const Marketplace = () => {
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter">AI Agent <span className="text-gradient">Marketplace</span></h1>
           <p className="text-text-secondary">Discover, purchase, and deploy autonomous agents for your workflows.</p>
+          
+          <div className="pt-4">
+            <Link to="/studio" className="inline-flex items-center gap-3 px-6 py-3 bg-surface border border-accent/30 text-accent font-bold rounded-xl hover:bg-accent/10 transition-colors">
+              <span>Build & Publish Your Own Agent</span>
+              <span className="text-[10px] px-2 py-1 bg-accent/20 rounded-md uppercase tracking-wider text-white">Earn ALGO</span>
+            </Link>
+          </div>
         </div>
         
         {txStatus && (
@@ -122,7 +130,10 @@ const Marketplace = () => {
                 <h3 className="text-xl font-bold">{agent.name}</h3>
                 <p className="text-sm text-text-secondary h-12">{agent.description}</p>
                 <div className="flex justify-between items-center pt-4 border-t border-border">
-                  <span className="font-mono font-bold text-accent">{(agent.price_microalgos || 200000) / 1000000} ALGO</span>
+                  <div>
+                    <span className="font-mono font-bold text-accent">{(agent.price_microalgos || 200000) / 1000000} ALGO</span>
+                    <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider">30-Day Access</p>
+                  </div>
                   
                   {ownedAgentIds.has(agent.agent_id || agent.id) ? (
                     <button disabled className="px-4 py-2 bg-background-secondary text-text-muted font-bold rounded-xl cursor-not-allowed">
