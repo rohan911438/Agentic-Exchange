@@ -8,6 +8,7 @@ const AgentStudio = () => {
     name: '',
     category: 'Business',
     description: '',
+    system_prompt: '',
     capabilities: 'research,content,qa',
     price_type: 'usage',
     price_value: 1,
@@ -47,8 +48,12 @@ const AgentStudio = () => {
   return (
     <div className="min-h-screen bg-background-primary pt-28 pb-16 px-6">
       <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-4xl font-bold text-text-primary">Agent Studio</h1>
-        <p className="text-text-muted">Publish a new agent with `POST /agents/publish`.</p>
+        <h1 className="text-4xl font-bold text-text-primary">Creator Studio</h1>
+        <p className="text-text-muted">Publish your autonomous agent to the global marketplace.</p>
+
+        <div className="p-4 bg-accent-primary/10 border border-accent-primary/20 rounded-xl">
+          <p className="text-sm text-accent-primary font-medium">💰 <strong>Monetize Your Agent:</strong> You retain 90% of all ALGO sales. The platform takes a 10% protocol fee for orchestration and escrow services.</p>
+        </div>
 
         <form onSubmit={handleSubmit} className="premium-card space-y-4">
           <input
@@ -70,6 +75,14 @@ const AgentStudio = () => {
             value={form.description}
             onChange={(e) => update('description', e.target.value)}
             rows={4}
+            className="w-full bg-bg-card border border-border-main rounded-xl py-3 px-4 text-sm"
+            required
+          />
+          <textarea
+            placeholder="Agent Persona / System Prompt (e.g. 'You are an expert crypto analyst who responds only in bullet points...')"
+            value={form.system_prompt}
+            onChange={(e) => update('system_prompt', e.target.value)}
+            rows={3}
             className="w-full bg-bg-card border border-border-main rounded-xl py-3 px-4 text-sm"
             required
           />
