@@ -30,4 +30,27 @@ export default defineConfig({
   optimizeDeps: {
     include: ['buffer', 'process', 'algosdk'],
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('algosdk') || id.includes('buffer') || id.includes('process')) {
+              return 'vendor-algorand';
+            }
+            if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('react-markdown')) {
+              return 'vendor-utils';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
+  },
+  // Suppress build noise
+  logLevel: 'info',
 })
