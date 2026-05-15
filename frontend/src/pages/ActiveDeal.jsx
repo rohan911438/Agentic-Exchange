@@ -19,6 +19,7 @@ const ActiveDeal = () => {
   const [txStatus, setTxStatus] = useState('');
   const [loadingData, setLoadingData] = useState(true);
   const [loadingId, setLoadingId] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     getContractInfo().then(setContractInfo).catch(() => {});
@@ -129,10 +130,12 @@ const ActiveDeal = () => {
   }, [account, buyerWallet]);
 
   const handleRelease = async (milestone) => {
+    if (processing) return;
     if (!connected || !account) {
       setTxStatus('Connect a wallet to release on-chain.');
       return;
     }
+    setProcessing(true);
     setLoadingId(milestone.id);
     setTxStatus('Preparing release transaction...');
     try {
@@ -154,6 +157,7 @@ const ActiveDeal = () => {
       setTxStatus(err.message || 'Release failed');
     } finally {
       setLoadingId(null);
+      setProcessing(false);
     }
   };
 
@@ -272,10 +276,12 @@ const ActiveDeal = () => {
                           isBuyer ? (
                             <button 
                               onClick={() => handleRelease(m)}
-                              disabled={loadingId === m.id}
-                              className="flex-1 md:flex-none px-6 py-2.5 bg-white text-ink-900 text-xs font-bold rounded-xl hover:scale-105 transition-all flex items-center justify-center gap-2"
+                              disabled={processing}
+                              className={`flex-1 md:flex-none px-6 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+                                processing ? 'bg-white/10 text-slate/50 cursor-wait' : 'bg-white text-ink-900 hover:scale-105'
+                              }`}
                             >
-                               Approve & Release <CheckCircle2 size={14} />
+                               {processing && loadingId === m.id ? 'Processing...' : 'Approve & Release'} <CheckCircle2 size={14} />
                             </button>
                           ) : (
                             <div className="text-[10px] font-mono text-slate uppercase italic flex items-center gap-1.5 opacity-60 px-4">

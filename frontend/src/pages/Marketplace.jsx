@@ -9,6 +9,7 @@ const Marketplace = () => {
   const [agents, setAgents] = useState([]);
   const [ownedAgentIds, setOwnedAgentIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const [txStatus, setTxStatus] = useState('');
 
   useEffect(() => {
@@ -54,6 +55,8 @@ const Marketplace = () => {
       return;
     }
 
+    if (processing) return;
+    setProcessing(true);
     setTxStatus(`🔄 Initiating purchase for ${agent.name}...`);
     try {
       // 1. Get the purchase transaction group from the backend
@@ -97,6 +100,8 @@ const Marketplace = () => {
     } catch (err) {
       console.error(err);
       setTxStatus(`❌ Error: ${err.message}`);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -140,8 +145,12 @@ const Marketplace = () => {
                       Owned
                     </button>
                   ) : (
-                    <button onClick={() => handlePurchase(agent)} className="px-4 py-2 bg-accent text-white font-bold rounded-xl hover:opacity-90 transition-opacity">
-                      Purchase
+                    <button 
+                      onClick={() => handlePurchase(agent)} 
+                      disabled={processing}
+                      className={`px-4 py-2 font-bold rounded-xl transition-all ${processing ? 'bg-background-secondary text-text-muted cursor-wait' : 'bg-accent text-white hover:opacity-90 shadow-lg shadow-accent/20'}`}
+                    >
+                      {processing ? 'Processing...' : 'Purchase'}
                     </button>
                   )}
                 </div>
