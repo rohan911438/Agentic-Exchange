@@ -18,7 +18,7 @@ const Marketplace = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/agents`);
         const data = await response.json();
-        
+
         setAgents(data.items || []);
       } catch (err) {
         console.error("Failed to fetch agents:", err);
@@ -71,9 +71,9 @@ const Marketplace = () => {
           amount_microalgos: agent.price_microalgos || 200000 // Default 0.2 ALGO
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         // FastAPI returns 422 with a "detail" array if validation fails
         const errorDetail = data.detail ? JSON.stringify(data.detail) : data.message || "Unknown server error";
@@ -81,14 +81,14 @@ const Marketplace = () => {
       }
 
       setTxStatus('📝 Please sign the transaction in your Defly wallet...');
-      
+
       // 2. Sign transaction with Defly Wallet
       const signedTxns = await walletService.signTransactions(data.txns, 'TestNet');
-      
+
       setTxStatus('🚀 Submitting transaction to Algorand network...');
       // 3. Submit the signed transaction to the network
       const { txids } = await submitSignedTxns(signedTxns);
-      
+
       // 4. Confirm the purchase with our backend
       await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/purchase-agent/confirm`, {
         method: 'POST',
@@ -111,7 +111,7 @@ const Marketplace = () => {
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter">AI Agent <span className="text-gradient">Marketplace</span></h1>
           <p className="text-text-secondary">Discover, purchase, and deploy autonomous agents for your workflows.</p>
-          
+
           <div className="pt-4">
             <Link to="/studio" className="inline-flex items-center gap-3 px-6 py-3 bg-surface border border-accent/30 text-accent font-bold rounded-xl hover:bg-accent/10 transition-colors">
               <span>Build & Publish Your Own Agent</span>
@@ -119,7 +119,7 @@ const Marketplace = () => {
             </Link>
           </div>
         </div>
-        
+
         {txStatus && (
           <div className="p-4 bg-accent/10 rounded-xl border border-accent/20 text-center font-mono text-sm text-accent">
             {txStatus}
@@ -139,14 +139,14 @@ const Marketplace = () => {
                     <span className="font-mono font-bold text-accent">{(agent.price_microalgos || 200000) / 1000000} ALGO</span>
                     <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider">30-Day Access</p>
                   </div>
-                  
+
                   {ownedAgentIds.has(agent.agent_id || agent.id) ? (
                     <button disabled className="px-4 py-2 bg-background-secondary text-text-muted font-bold rounded-xl cursor-not-allowed">
                       Owned
                     </button>
                   ) : (
-                    <button 
-                      onClick={() => handlePurchase(agent)} 
+                    <button
+                      onClick={() => handlePurchase(agent)}
                       disabled={processing}
                       className={`px-4 py-2 font-bold rounded-xl transition-all ${processing ? 'bg-background-secondary text-text-muted cursor-wait' : 'bg-accent text-white hover:opacity-90 shadow-lg shadow-accent/20'}`}
                     >

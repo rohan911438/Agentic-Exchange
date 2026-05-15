@@ -38,7 +38,7 @@ function AppContent() {
     <div className="min-h-screen bg-background-primary font-sans selection:bg-accent/30 selection:text-text-primary flex flex-col">
       <Navbar />
       <WalletModal />
-      
+
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />

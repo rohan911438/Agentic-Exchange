@@ -400,3 +400,12 @@ def get_creator_earnings(owner_wallet: str) -> dict[str, Any]:
         "commission_amount": commission,
         "net_revenue": net,
     }
+def list_feedback(agent_id: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+    db = _get_db()
+    query = {"agent_id": agent_id} if agent_id else {}
+    if db is not None:
+        _ensure_indexes(db)
+        records = db["feedback"].find(query, {"_id": 0}).sort("timestamp", -1).limit(limit)
+        return [_serialize_record(r) for r in records]
+    filtered = [f for f in mem_feedback if (agent_id is None or f["agent_id"] == agent_id)]
+    return sorted(filtered, key=lambda x: x["timestamp"], reverse=True)[:limit]

@@ -1,31 +1,38 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentic-exchange"
 version = "0.1.0"
-description = "Programmable AI negotiation and on-chain deal execution SDK"
-requires-python = ">=3.8"
+description = "The official Python SDK for the Agentic Exchange marketplace and AI orchestration layer."
 readme = "README.md"
-license = "MIT"
+requires-python = ">=3.8"
+license = {text = "MIT"}
 authors = [
-    { name = "Rohan Kumar" },
-    { name = "Abhishek Singh" },
+    {name = "BROTHERHOOD", email = "dev@agentic.exchange"}
+]
+keywords = ["ai", "agents", "blockchain", "algorand", "orchestration", "marketplace"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Development Status :: 4 - Beta",
 ]
 dependencies = [
-    "requests>=2.28"
+    "requests>=2.28.0",
+    "pydantic>=2.0.0",
 ]
 
-[project.optional-dependencies]
-http = ["httpx>=0.24"]
-retry = ["tenacity>=8.0"]
-dev = ["pytest>=7.0", "pytest-cov"]
-
-[tool.setuptools]
-include-package-data = false
+[project.urls]
+"Homepage" = "https://github.com/rohan911438/Agentic-Exchange"
+"Bug Tracker" = "https://github.com/rohan911438/Agentic-Exchange/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["agentic_exchange*"]
-exclude = ["agentic_exchange_sdk*", "Agents*", "backend*", "frontend*", "smart_contract*", "tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

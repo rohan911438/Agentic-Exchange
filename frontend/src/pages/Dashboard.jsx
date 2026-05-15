@@ -7,7 +7,7 @@ const Dashboard = () => {
   const { account, connected } = useWallet();
   const [myAgents, setMyAgents] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Workflow states
   const [selectedAgents, setSelectedAgents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +29,7 @@ const Dashboard = () => {
         // Fetch agents purchased by this wallet from your backend
         const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/my-agents?wallet=${account}`);
         const data = await response.json();
-        
+
         if (data.items) {
           setMyAgents(data.items);
         }
@@ -39,7 +39,7 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-    
+
     fetchMyAgents();
   }, [account, connected]);
 
@@ -74,7 +74,7 @@ const Dashboard = () => {
     if (!workflowInput.trim()) return;
     setWorkflowStatus('⏳ Orchestrating workflow with agent...');
     setWorkflowResult(null);
-    
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:8000'}/run-workflow`, {
         method: 'POST',
@@ -85,14 +85,14 @@ const Dashboard = () => {
           input: { prompt: workflowInput }
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         const errorDetail = data.detail ? JSON.stringify(data.detail) : "Unknown server error";
         throw new Error(errorDetail);
       }
-      
+
       setWorkflowStatus('✅ Execution Complete!');
       setWorkflowResult(data.run || data);
     } catch (err) {
@@ -137,21 +137,21 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-xl font-bold">{agent.name || `Agent ${agent.agent_id}`}</h3>
                 <p className="text-sm text-text-secondary h-12">{agent.description || "Ready for workflow orchestration."}</p>
-                
+
                 {agent.expires_at && (
                   <p className="text-xs font-mono text-text-muted">
                     Expires: <span className="text-text-primary">{new Date(agent.expires_at).toLocaleDateString()}</span>
                   </p>
                 )}
-                
+
                 <div className="pt-4 border-t border-border flex gap-2">
-                  <button 
+                  <button
                     onClick={() => toggleAgentSelection(agent)}
                     className={`flex-1 px-4 py-2 font-bold rounded-xl transition-colors text-sm ${selectedAgents.find(a => a.agent_id === agent.agent_id) ? 'bg-accent text-white border-accent' : 'bg-background-primary border-border text-text-primary hover:border-accent hover:text-accent'}`}
                   >
                     {selectedAgents.find(a => a.agent_id === agent.agent_id) ? 'Added to Pipeline' : 'Select Agent'}
                   </button>
-                  <button 
+                  <button
                     onClick={() => setApiModalAgent(agent)}
                     className="px-4 py-2 bg-background-primary border border-border text-text-primary font-bold rounded-xl hover:border-accent hover:text-accent transition-colors text-sm"
                   >
@@ -163,7 +163,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-      
+
       {/* Floating Pipeline Action Bar */}
       {selectedAgents.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface/90 backdrop-blur-xl border border-accent/50 p-4 rounded-2xl shadow-2xl flex items-center gap-6 z-40">
@@ -171,27 +171,27 @@ const Dashboard = () => {
             <span className="font-bold text-accent">{selectedAgents.length} Agents Selected</span>
             <span className="text-xs text-text-secondary">Ready for orchestration</span>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)} 
+          <button
+            onClick={() => setIsModalOpen(true)}
             className="px-6 py-3 bg-accent text-white font-bold rounded-xl hover:opacity-90 shadow-lg shadow-accent/20"
           >
             Configure Pipeline ➔
           </button>
         </div>
       )}
-      
+
       {/* Workflow Modal Overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 space-y-6 relative shadow-2xl">
-            <button 
+            <button
               onClick={() => { setIsModalOpen(false); setWorkflowResult(null); setWorkflowStatus(''); setWorkflowInput(''); }}
               className="absolute top-6 right-6 text-text-muted hover:text-white font-bold"
             >
               Close ✕
             </button>
             <h2 className="text-2xl font-bold">Orchestrate Pipeline</h2>
-            
+
             <div className="flex flex-wrap items-center gap-2 p-4 bg-background-primary rounded-xl border border-border">
               <span className="text-xs text-text-muted uppercase tracking-widest font-bold w-full mb-1">Execution Order:</span>
               {selectedAgents.map((a, i) => (
@@ -201,30 +201,30 @@ const Dashboard = () => {
                 </React.Fragment>
               ))}
             </div>
-            
+
             <div className="space-y-4">
               <label className="text-sm font-bold text-text-secondary">Task Objective / Prompt</label>
-              <textarea 
+              <textarea
                 value={workflowInput}
                 onChange={(e) => setWorkflowInput(e.target.value)}
                 placeholder="e.g. Research Algorand consensus mechanism and generate a summary..."
                 className="w-full bg-background-primary border border-border rounded-xl p-4 text-text-primary h-32 focus:border-accent focus:outline-none transition-colors resize-none"
               />
-              <button 
+              <button
                 onClick={handleRunWorkflow}
                 className="w-full py-4 bg-accent text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Execute Task
               </button>
             </div>
-            
+
             {workflowStatus && (
               <div className="flex items-center gap-3 p-4 bg-accent/10 border border-accent/20 rounded-xl text-sm font-bold text-accent">
                 {workflowStatus.includes('⏳') && <div className="w-4 h-4 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />}
                 {workflowStatus}
               </div>
             )}
-            
+
             {workflowResult && (
               <div className="space-y-6 mt-8">
                 <div className="flex items-center gap-3 mb-2">
@@ -252,8 +252,8 @@ const Dashboard = () => {
                       </div>
                       <div className="p-6 text-sm leading-relaxed prose prose-invert max-w-none prose-p:text-text-secondary prose-headings:text-text-primary prose-strong:text-accent">
                         <ReactMarkdown>
-                          {typeof (step.output?.result || step.output) === 'string' 
-                            ? (step.output?.result || step.output) 
+                          {typeof (step.output?.result || step.output) === 'string'
+                            ? (step.output?.result || step.output)
                             : JSON.stringify(step.output?.result || step.output || "No output generated for this step.", null, 2)}
                         </ReactMarkdown>
                       </div>
@@ -279,7 +279,7 @@ const Dashboard = () => {
       {apiModalAgent && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-8 space-y-6 relative shadow-2xl">
-            <button 
+            <button
               onClick={() => setApiModalAgent(null)}
               className="absolute top-6 right-6 text-text-muted hover:text-white font-bold"
             >
@@ -289,7 +289,7 @@ const Dashboard = () => {
             <p className="text-text-secondary text-sm">
               Integrate this agent directly into your own applications. Executions will be billed automatically to your Algorand wallet.
             </p>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2 block">Your API Key</label>
@@ -308,15 +308,15 @@ const Dashboard = () => {
                     {copiedCode ? 'Copied!' : 'Copy'}
                   </button>
                   <pre>
-<span className="text-pink-400">from</span> agentic_exchange <span className="text-pink-400">import</span> AgenticClient{'\n\n'}
-client = AgenticClient(api_key=<span className="text-green-300">"{apiKey}"</span>){'\n\n'}
-<span className="text-gray-500"># Trigger the {apiModalAgent.name} programmatically</span>{'\n'}
-response = client.run_workflow({'\n'}
-    steps=[<span className="text-green-300">"{apiModalAgent.agent_id || apiModalAgent.id}"</span>],{'\n'}
-    input=<span className="text-blue-300">&#123;</span><span className="text-green-300">"prompt"</span>: <span className="text-green-300">"Your task objective here"</span><span className="text-blue-300">&#125;</span>{'\n'}
-){'\n'}
-<span className="text-gray-500"># Extract the pure text result</span>{'\n'}
-<span className="text-blue-400">print</span>(response[<span className="text-green-300">"run"</span>][<span className="text-green-300">"final_output"</span>].get(<span className="text-green-300">"result"</span>, <span className="text-green-300">""</span>))
+                    <span className="text-pink-400">from</span> agentic_exchange <span className="text-pink-400">import</span> AgenticClient{'\n\n'}
+                    client = AgenticClient(api_key=<span className="text-green-300">"{apiKey}"</span>){'\n\n'}
+                    <span className="text-gray-500"># Trigger the {apiModalAgent.name} programmatically</span>{'\n'}
+                    response = client.run_workflow({'\n'}
+                    steps=[<span className="text-green-300">"{apiModalAgent.agent_id || apiModalAgent.id}"</span>],{'\n'}
+                    input=<span className="text-blue-300">&#123;</span><span className="text-green-300">"prompt"</span>: <span className="text-green-300">"Your task objective here"</span><span className="text-blue-300">&#125;</span>{'\n'}
+                    ){'\n'}
+                    <span className="text-gray-500"># Extract the pure text result</span>{'\n'}
+                    <span className="text-blue-400">print</span>(response[<span className="text-green-300">"run"</span>][<span className="text-green-300">"final_output"</span>].get(<span className="text-green-300">"result"</span>, <span className="text-green-300">""</span>))
                   </pre>
                 </div>
               </div>
