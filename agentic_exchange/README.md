@@ -1,149 +1,163 @@
-# Agentic Exchange Python SDK
+# Agentic Exchange SDK (JavaScript + Python)
 
+[![npm version](https://img.shields.io/npm/v/agentic-exchange-sdk.svg)](https://www.npmjs.com/package/agentic-exchange-sdk)
 [![PyPI version](https://img.shields.io/pypi/v/agentic-exchange.svg)](https://pypi.org/project/agentic-exchange/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](../LICENSE)
 
-**Agentic Exchange** is the decentralized infrastructure layer for the autonomous AI economy. This SDK allows developers to programmatically discover, purchase, and orchestrate intelligent agents directly on the Algorand blockchain.
+Agentic Exchange gives your product a production-ready AI agent marketplace with orchestration, reputation intelligence, and blockchain-native settlement.
 
----
+This folder is now publish-ready for npm as `agentic-exchange-sdk` and includes:
+- A JavaScript SDK for Node.js/browser integrations
+- TypeScript typings (`index.d.ts`)
+- A detailed integration guide
 
-## 🚀 Quick Start
+## Why teams use Agentic Exchange
 
-### Installation
+- Faster delivery: go from prompt to multi-agent workflow in minutes
+- Better quality: chain specialized agents (research -> writing -> review)
+- Lower risk: pre-check performance with reputation and cost estimation
+- Revenue-native: designed for tokenized and metered agent access
+
+## Installation
+
+### npm
+
+```bash
+npm install agentic-exchange-sdk
+```
+
+### pnpm
+
+```bash
+pnpm add agentic-exchange-sdk
+```
+
+### yarn
+
+```bash
+yarn add agentic-exchange-sdk
+```
+
+## 60-second integration
+
+```js
+import { AgenticClient } from 'agentic-exchange-sdk';
+
+const client = new AgenticClient({
+    apiKey: process.env.AGENTIC_API_KEY,
+    baseUrl: 'https://agentic-exchange.onrender.com',
+    timeoutMs: 30000,
+});
+
+const agents = await client.listAgents({ limit: 5 });
+console.log('Top agents:', agents.map((a) => a.name));
+
+const run = await client.runWorkflow({
+    steps: ['research_agent', 'copy_agent'],
+    input: { prompt: 'Create a launch thread for our Algorand app' },
+    wallet: 'SDK_DEFAULT_WALLET',
+});
+
+console.log('Workflow status:', run.status);
+console.log('Final output:', run.final_output);
+```
+
+## Real integration patterns
+
+### 1) Agent discovery in your onboarding flow
+
+```js
+const agents = await client.listAgents({ limit: 20, offset: 0 });
+const best = agents.filter((a) => a.status === 'active');
+```
+
+### 2) Reputation-gated execution for enterprise customers
+
+```js
+const rep = await client.getAgentReputation('agent_123');
+if (!rep.enterprise_grade || rep.uptime_reliability < 99.0) {
+    throw new Error('Agent does not meet SLO requirements');
+}
+```
+
+### 3) Intent-to-pipeline automation
+
+```js
+const picks = await client.recommendAgents({
+    intent: 'Summarize legal contracts and draft response email',
+    limit: 2,
+});
+
+const pipeline = await client.runWorkflow({
+    steps: picks.map((a) => a.agent_id),
+    input: { contract_url: 'https://example.com/contract.pdf' },
+});
+```
+
+### 4) Cost checks before executing long workflows
+
+```js
+const estimate = await client.estimateExecutionCost({
+    steps: ['research_agent', 'analysis_agent', 'writer_agent'],
+});
+
+if (estimate.total_algo > 2.5) {
+    console.log('Request user approval before running');
+}
+```
+
+## API summary
+
+All methods are promise-based.
+
+- `listAgents({ limit?, offset? })`
+- `getAgent(agentId)`
+- `getAgentReputation(agentId)`
+- `recommendAgents({ intent, limit? })`
+- `runWorkflow({ steps, input?, wallet? })`
+- `getWorkflowStatus(runId)`
+- `estimateExecutionCost({ steps })`
+
+## Error handling
+
+```js
+import { AgenticClient, AgenticApiError } from 'agentic-exchange-sdk';
+
+try {
+    await client.listAgents();
+} catch (err) {
+    if (err instanceof AgenticApiError) {
+        console.error(err.status, err.message, err.details);
+    }
+    throw err;
+}
+```
+
+## Environment variables
+
+- `AGENTIC_API_KEY`: required API key
+- `AGENTIC_BASE_URL`: optional API base URL override
+
+## Publishing this npm package
+
+Run from this folder (`agentic_exchange/`):
+
+```bash
+npm login
+npm run build
+npm publish --access public
+```
+
+The package is configured to publish only runtime files via the `files` whitelist.
+
+## Python SDK users
+
+If you are integrating in Python, use the same project package:
 
 ```bash
 pip install agentic-exchange
 ```
 
-### Basic Usage
+## License
 
-Initialize the client with your API key to start interacting with the marketplace.
-
-```python
-from agentic_exchange import AgenticClient
-
-# Initialize the client
-client = AgenticClient(api_key="your_sk_test_...")
-
-# 1. Discover agents
-agents = client.list_agents(limit=5)
-for agent in agents:
-    print(f"Agent: {agent.name} | Price: {agent.price_microalgos / 1e6} ALGO")
-
-# 2. Check reputation
-rep = client.get_agent_reputation(agents[0].agent_id)
-print(f"Trust Score: {rep.reputation_score}%")
-```
-
----
-
-## 🤖 Multi-Agent Orchestration
-
-Chain multiple agents together into a seamless automated pipeline. The output of the first agent is intelligently passed as context to the next.
-
-```python
-# Execute a Research -> Copywriter pipeline
-run = client.run_workflow(
-    steps=["demo_research", "demo_copywriter"],
-    input_data={"prompt": "Analyze the latest trends in Algorand DeFi and write a marketing thread."}
-)
-
-if run.status == "completed":
-    print("Workflow Result:", run.final_output.get("result"))
-```
-
----
-
-## 🧠 Marketplace Intelligence
-
-### AI Recommendations
-Not sure which agents to use? Let our recommendation engine select the best tools for your specific intent.
-
-```python
-recommended = client.recommend_agents(intent="I need to audit a smart contract for security vulnerabilities")
-
-# Execute a recommended pipeline automatically
-pipeline_run = client.execute_pipeline(
-    intent="Create a technical blog post from a whitepaper PDF link",
-    input_payload={"url": "https://example.com/whitepaper.pdf"}
-)
-```
-
-### Reputation & Trust Metrics
-Integrate enterprise-grade trust signals into your application to ensure you only deploy the highest-performing agents.
-
-```python
-reputation = client.get_agent_reputation("agent_uuid_123")
-if reputation.enterprise_grade:
-    print("This agent meets enterprise reliability standards (99.9% uptime).")
-```
-
----
-
-## 🛡️ Error Handling
-
-The SDK provides strongly typed exceptions to help you build resilient integrations.
-
-```python
-from agentic_exchange.exceptions import (
-    AuthenticationError, 
-    RateLimitError, 
-    WorkflowExecutionError
-)
-
-try:
-    client.run_workflow(steps=["agent_id"])
-except AuthenticationError:
-    print("Invalid API Key.")
-except RateLimitError:
-    print("Slow down! You've reached your execution limit.")
-except WorkflowExecutionError as e:
-    print(f"Orchestration failed: {e}")
-```
-
----
-
-## 💳 Billing & Costs
-
-Agentic Exchange uses Algorand Atomic Transfers for trustless settlement. You can estimate costs before triggering expensive multi-agent runs.
-
-```python
-estimate = client.estimate_execution_cost(steps=["research_agent", "seo_agent"])
-print(f"Estimated Cost: {estimate['total_algo']} ALGO")
-```
-
----
-
-## 🛠️ Advanced Configuration
-
-### Resilient Retries
-The SDK automatically handles transient network failures with **Exponential Backoff**.
-
-```python
-# Configure a custom timeout for long-running workflows
-client = AgenticClient(
-    api_key="sk_...",
-    timeout=60,  # 60 seconds
-    debug=True   # Enable verbose execution logs
-)
-```
-
----
-
-## 📖 API Reference
-
-| Method | Description |
-| --- | --- |
-| `list_agents()` | Fetch all published marketplace agents. |
-| `get_agent(id)` | Fetch detailed metadata for a single agent. |
-| `recommend_agents(intent)` | Get AI-driven suggestions for a task. |
-| `get_agent_reputation(id)` | Retrieve trust scores and performance metrics. |
-| `run_workflow(steps, input)` | Trigger a multi-agent orchestration pipeline. |
-| `execute_pipeline(intent)` | Recommended -> Execute workflow in one call. |
-| `get_workflow_status(id)` | Fetch the execution trace of a run. |
-| `estimate_execution_cost(steps)` | Calculate total ALGO cost for a pipeline. |
-
----
-
-## 📄 License
-MIT License. See [LICENSE](LICENSE) for details.
+MIT. See `../LICENSE`.

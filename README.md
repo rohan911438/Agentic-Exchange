@@ -1,226 +1,202 @@
 # Agentic Exchange
 
-The Web3 Marketplace for Autonomous AI Agents. Discover, purchase, and orchestrate intelligent agents for real-world workflows, directly on the Algorand blockchain.
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![PyPI](https://img.shields.io/pypi/v/agentic-exchange.svg)](https://pypi.org/project/agentic-exchange) [![Build Status](https://img.shields.io/github/actions/workflow/status/rohan911438/Agentic-Exchange/python-publish.yml?branch=main)](https://github.com/rohan911438/Agentic-Exchange/actions)
 
-## Team
-- Team Name: BROTHERHOOD
-- Team Members: Rohan Kumar, Abhishek Singh
-- Hackathon: AlgoBharat Hack Series 3.0 (Round 2)
-- Track: Agentic Commerce (AI + Blockchain)
+Agentic Exchange is a Web3 marketplace and orchestration SDK for autonomous AI agents, integrated with the Algorand blockchain. This repository contains the full-stack app (frontend UI + backend APIs), the Python SDK (`agentic_exchange`), and example agent implementations.
 
-## 💡 About The Project
-Agentic Exchange is a decentralized infrastructure layer and Web3 marketplace for autonomous AI agents. We are bridging the gap between AI creators and software developers by providing a unified platform to discover, monetize, and orchestrate multi-agent workflows directly on the Algorand blockchain.
+Key features:
+- Publish and monetize autonomous agents on a marketplace
+- Chain multiple agents into programmatic workflows
+- Trustless settlement via Algorand atomic transfers
+- SDK to discover agents, run orchestration pipelines, and inspect execution traces
 
-Creators can seamlessly publish custom AI agents (with built-in system personas) to the marketplace. Users can then purchase 30-day API access using ALGO and chain these agents together using our native Python SDK. All creator revenue splits and API access grants are handled trustlessly via Algorand Atomic Transfers.
+## Quick links
+- Live frontend: https://agenticex.netlify.app/
+- Backend API: https://agentic-exchange.onrender.com
+- Demo video: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
 
-## Live Deployment
-- Frontend (Netlify): https://agenticex.netlify.app/
-- Backend (Render): https://agentic-exchange.onrender.com
-- Demo Video: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
-- Presentation :- https://drive.google.com/file/d/1QLcaG2JUbkMqCdo8t4e_RRt4PQV05bmb/view?usp=drivesdk
+## Install (Python SDK)
+Install directly from PyPI once published, or from the Git repository for development:
 
-## The Problem We Are Solving
-The AI economy is growing rapidly, but there is no unified, decentralized infrastructure for creators to monetize their specialized AI agents, or for developers to seamlessly discover and chain multiple agents together.
-
-Current problems:
-- AI Agents are siloed and difficult to monetize securely.
-- No trustless settlement layer between the creator and the consumer.
-- Building multi-agent pipelines (like chaining a Researcher to a Copywriter) requires heavy custom infrastructure.
-
-## Our Edge
-- **Bring-Your-Own-Prompt:** Creators can easily inject custom System Prompts into the platform via the Creator Studio.
-- **On-Chain Revenue Split:** When an agent is purchased, an Algorand Atomic Transfer instantly splits the revenue (90% to the creator, 10% protocol fee).
-- **Python SDK Integration:** Users get a dedicated Python SDK to orchestrate workflows programmatically.
-- **Dynamic LLM Routing:** The backend intelligently passes the output of one agent as context to the next agent in the pipeline.
-
-## How It Works
-- **Creator:** Connects Defly Wallet, visits Creator Studio, defines an Agent (Name, Price, System Prompt), and publishes it to the marketplace.
-- **Buyer:** Browses the Marketplace, purchases a 30-day subscription to an Agent using ALGO. 
-- **Orchestration:** The Buyer can now select their owned agents in the Dashboard, string them together (e.g. Research -> Social Publisher), and execute a workflow.
-
-## System Architecture
-```mermaid
-flowchart LR
-    U[Users & Creators] --> F[Frontend React]
-    F --> B[Backend FastAPI]
-    B --> N[Dynamic LLM Router]
-    N --> BA[Gemini AI Engine]
-    B --> DS[Marketplace DB MongoDB]
-    B --> AS[Algorand Service]
-    AS --> SC[Atomic Transfer Escrow]
+```bash
+pip install agentic-exchange
+# or (from GitHub)
+pip install git+https://github.com/rohan911438/Agentic-Exchange
 ```
 
-Execution model:
-The frontend captures intent and signatures, the backend orchestrates negotiation and state transitions, and Algorand enforces payment and completion guarantees.
+## JavaScript SDK (npm)
 
-## Algorand Integration and On-Chain Verification
-Why Algorand:
-- Low fees enable practical milestone payouts.
-- Fast finality improves confidence in every release event.
-- Reliable chain performance supports agent-driven workflows.
+Official npm package: https://www.npmjs.com/package/agentic-exchange-sdk
 
-Wallet usage:
-- Pera / Defly Wallet is used for authentication and transaction signing.
-- Users keep custody while the app coordinates transaction creation.
+The JavaScript SDK is designed for teams that want to integrate Agentic Exchange into Node.js or browser apps quickly, with typed APIs and production-safe error handling.
 
-*(Note: Final TestNet Explorer links and Product Screenshots will be added here prior to final submission.)*
+Why it is worth using:
+- Faster integration: ship agent discovery and orchestration in hours, not weeks.
+- Better outcomes: chain specialized agents (research -> writing -> review) in one workflow.
+- Lower operational risk: check agent reputation and estimate execution cost before running.
+- Developer experience: clean async API, TypeScript typings, and structured API errors.
 
-## Hackathon Alignment
-- Full-stack implementation: frontend + backend + blockchain.
-- End-to-end working flow from UI to on-chain execution.
-- Real Algorand smart contract escrow integration.
-- Clear focus on one core flow: autonomous negotiation and escrow deal execution.
+Install:
 
-### Local Demo
-Prerequisites:
-- Python 3.11
-- Node.js 18+
-- npm
-- Pera Wallet on Algorand TestNet
+```bash
+npm install agentic-exchange-sdk
+```
 
-Backend:
+Quick integration example:
+
+```js
+import { AgenticClient } from 'agentic-exchange-sdk';
+
+const client = new AgenticClient({
+	apiKey: process.env.AGENTIC_API_KEY,
+	baseUrl: 'https://agentic-exchange.onrender.com',
+	timeoutMs: 30000,
+});
+
+const agents = await client.listAgents({ limit: 5 });
+const run = await client.runWorkflow({
+	steps: ['research_agent', 'copy_agent'],
+	input: { prompt: 'Create a launch thread for our product' },
+});
+
+console.log(agents.length, run.status);
+```
+
+Key npm SDK methods:
+- `listAgents({ limit?, offset? })`
+- `getAgent(agentId)`
+- `getAgentReputation(agentId)`
+- `recommendAgents({ intent, limit? })`
+- `runWorkflow({ steps, input?, wallet? })`
+- `getWorkflowStatus(runId)`
+- `estimateExecutionCost({ steps })`
+
+Detailed npm SDK docs are available in `agentic_exchange/README.md`.
+
+## Quickstart (Python SDK)
+```python
+from agentic_exchange.client import AgenticClient
+
+# Initialize (use your API key and backend base URL)
+client = AgenticClient(api_key="YOUR_API_KEY", base_url="https://agentic-exchange.onrender.com")
+
+# List marketplace agents
+agents = client.list_agents(limit=10)
+print([a.name for a in agents])
+
+# Run a workflow with specific agent IDs
+run = client.run_workflow(steps=["agent_123", "agent_456"], input_data={"text": "Summarize Q2 results"})
+print(run.output)
+
+# High-level pipeline by intent
+result = client.execute_pipeline(intent="social-posts for product launch", input_payload={"product": "Acme Gadget"})
+print(result.summary)
+```
+
+## SDK API Reference (selected)
+
+- `AgenticClient(api_key, base_url, timeout=30, debug=False)` — main SDK client.
+- `list_agents(limit=50, offset=0) -> List[Agent]` — returns published agents.
+- `get_agent(agent_id) -> Agent` — fetch agent metadata.
+- `recommend_agents(intent, limit=3) -> List[Agent]` — AI-driven recommendations.
+- `run_workflow(steps: List[str], input_data: dict, wallet_context: str) -> WorkflowRun` — execute a multi-agent pipeline.
+- `execute_pipeline(intent: str, input_payload: dict) -> WorkflowRun` — recommend then run a pipeline.
+- `get_workflow_status(run_id: str) -> WorkflowRun` — query run status.
+- `estimate_execution_cost(steps: List[str]) -> dict` — cost estimate in ALGO.
+
+See the `agentic_exchange` package source for full docstrings and types.
+
+## Configuration & Environment
+
+When running the backend locally or deploying, set the required environment variables (example values shown in `.env.example`):
+
+- `GEMINI_API_KEY` — AI model key used by the negotiation engine.
+- `CORS_ORIGINS` — comma-separated allowed frontend origins.
+- `ALGOD_ADDRESS` / `ALGOD_TOKEN` — Algorand node endpoint and token.
+- `MONGODB_URI` / `MONGODB_DB` — MongoDB connection settings.
+- `CONTRACT_APP_ID` — deployed escrow smart contract app id (TestNet).
+
+Backend start (local dev):
 ```bash
 py -3.11 -m pip install -r requirements.txt
-$env:PORT = "8000"
+$env:PORT=8000
 py -3.11 -m uvicorn backend.main:app --host 0.0.0.0 --port $env:PORT --reload
 ```
 
-Recommended setup on Windows:
-- Install Python 3.11 from python.org.
-- Reopen the terminal so the new interpreter is on PATH.
-- Verify with `py -3.11 --version` before installing dependencies.
-- Use `py -3.11 -m uvicorn` to avoid command recognition issues.
-
-Frontend:
+Frontend (local dev):
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Test negotiation endpoint:
+## Publishing
+
+Python (PyPI) publish checklist:
+
+1. Update `pyproject.toml` version.
+2. Build artifacts:
 ```bash
-curl -X POST http://127.0.0.1:8000/start-negotiation \
-  -H "Content-Type: application/json" \
-  -d "{\"deal_id\":\"<deal_id>\"}"
+python -m build
 ```
-
-## Deployment
-
-### Frontend hosting:
-- Deploy the `frontend/` app to Netlify.
-- Set `VITE_API_BASE` in Netlify to your backend URL, for example `https://agentic-exchange-backend.onrender.com`.
-- The included Netlify config handles the Vite build and SPA fallback routing.
-
-### Backend hosting:
-
-1. Deploy the FastAPI backend to Render.
-2. Use the provided `render.yaml` blueprint or create a web service with:
-   - **Build command:** `pip install -r requirements.txt`
-   - **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-3. Set all backend environment variables listed below in Render.
-4. Ensure Python runtime is `3.11.x` (configured via `.python-version` and `PYTHON_VERSION` in `render.yaml`).
-
-### Render Backend Configuration (Copy Checklist)
-
-**Service settings:**
-- **Runtime:** Python
-- **Build command:** `pip install -r requirements.txt`
-- **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-- **Health check path:** `/`
-
-Required environment variables:
-
-| Variable | Example Value | Required | Purpose |
-|---|---|---|---|
-| `GEMINI_API_KEY` | `your_gemini_api_key` | Yes | Enables AI negotiation in `/start-negotiation`. |
-| `GOOGLE_API_KEY` | `your_google_api_key` | Optional | Alternate key path used by agent modules. |
-| `CORS_ORIGINS` | `https://your-site.netlify.app` | Yes | Allowed frontend origins (comma-separated supported). |
-| `ALGOD_ADDRESS` | `https://testnet-api.algonode.cloud` | Yes | Algorand node endpoint. |
-| `ALGOD_TOKEN` | `` | Usually empty | Token for public Algonode endpoint (blank for Algonode). |
-| `CONTRACT_APP_ID` | `758126516` | Yes | Deployed escrow smart contract app ID. |
-| `CONTRACT_BOX_FUNDING` | `160000` | Recommended | Min microAlgos used to fund app boxes during create flow. |
-| `MONGODB_DB` | `agentic_exchange` | Yes | Mongo database name used by the deal store. |
-| `MONGODB_URI` | `mongodb+srv://<user>:<pass>@...` | Yes | MongoDB connection string. |
-
-Optional variables:
-
-| Variable | Example Value | Purpose |
-|---|---|---|
-| `HOST` | `0.0.0.0` | Uvicorn host override. |
-| `UVICORN_RELOAD` | `false` | Keep disabled in production. |
-| `CONTRACT_TOTAL` | `380` | Convenience value for scripts/tools. |
-| `CONTRACT_MILESTONES` | `150,230` | Convenience value for scripts/tools. |
-
-Algorand contract references:
-- TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
-- TestNet App Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
-
-Netlify to Render connection:
-- In Netlify frontend env, set `VITE_API_BASE` to your Render backend URL.
-- Example: `VITE_API_BASE=https://agentic-exchange-backend.onrender.com`
-- For your current frontend deployment, set backend `CORS_ORIGINS` to include `https://agenticex.netlify.app`.
-
-Environment files:
-- `.env.example` shows full backend variables for local and Render deployment.
-- `frontend/.env.example` shows the frontend API base URL variable.
-
-Security note:
-- Never commit live secrets (API keys, DB URIs, wallet secrets) into the repository.
-- If a key or URI has been shared publicly, rotate it immediately and update Render/Netlify env variables.
-
-Render troubleshooting:
-- If build fails on `pydantic-core` with Rust/maturin errors, your runtime is likely too new (for example Python 3.14).
-- Fix by setting Render Python version to `3.12.8`, then redeploy.
-- If deploy logs show `Running 'uvicorn'` and `Missing argument 'APP'`, your Render start command is incorrect.
-- Fix start command to `bash ./start_backend.sh` (or `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`) and redeploy.
-
-Simulate deal lifecycle:
-- Create deal in UI.
-- Seller accepts.
-- Run AI negotiation and approve terms.
-- Create and fund escrow.
-- Seller performs on-chain accept.
-- Release milestone payouts.
-- Complete deal.
-
-## Demo Video
-- Link: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
-
-## Repository Structure
-```text
-frontend/         # React UI and wallet integration
-backend/          # FastAPI APIs, services, and schemas
-Agents/           # Buyer/seller agents and negotiation engine
-smart_contract/   # PyTeal escrow contract and deployment scripts
-```
-
-## Python SDK Release
-The SDK you publish is the Python package named `agentic-exchange` on PyPI, imported in code as `agentic_exchange`.
-
-Install locally:
+3. Validate with Twine:
 ```bash
-pip install git+https://github.com/rohan911438/Agentic-Exchange
+python -m twine check dist/*
+```
+4. Upload to TestPyPI first (recommended):
+```bash
+python -m twine upload --repository testpypi dist/*
+```
+5. Install from TestPyPI to verify:
+```bash
+pip install --index-url https://test.pypi.org/simple/ agentic-exchange
+```
+6. Publish to PyPI:
+```bash
+python -m twine upload dist/*
 ```
 
+Frontend (npm) notes:
+- The `frontend/` app is a separate Vite project and can be published as an npm package if you extract reusable components. The root `package.json` is intentionally `private: true` for the full-stack repository.
 
-Publishing checklist:
-1. Build the package: `python -m build`
-2. Inspect the artifacts: `python -m twine check dist/*`
-3. Test on TestPyPI: `twine upload --repository testpypi dist/*`
-4. Verify install from TestPyPI: `pip install --index-url https://test.pypi.org/simple/ agentic-exchange`
-5. Publish to PyPI: `twine upload dist/*`
-6. For future releases, push a tag like `v0.1.0` to trigger the GitHub Actions release workflow.
+## Release & CI
 
-Naming note:
-- agents/ in documentation maps to Agents/ in this repository.
-- contracts/ in documentation maps to smart_contract/ in this repository.
+- Add a Git tag (e.g. `v0.1.0`) and push to GitHub to trigger release workflows.
+- Configure GitHub Actions secrets for `PYPI_API_TOKEN` to enable automatic publishing.
 
-## Future Scope
-- Fully autonomous agents with memory and strategy adaptation.
-- DAO-based dispute resolution for complex edge cases.
-- Multi-agent marketplaces for specialized service composition.
-- Cross-chain settlement extensions with Algorand escrow as trust anchor.
+## Contributing
 
-## Why This Matters
-Agentic Exchange demonstrates a practical shift from chat-based contracting to executable digital agreements. It reduces negotiation friction, hardens payment trust through smart contracts, and proves how AI agents can participate in real economic workflows with verifiable on-chain settlement.
+Contributions are welcome. Please open issues or PRs for:
+
+- Bug fixes and small features
+- Documentation improvements and examples
+- Additional agent templates or strategy patterns
+
+Developer guidelines:
+- Run tests: `pytest -q`
+- Follow the repository style (Black/Flake8 where configured)
+
+## Repository layout
+
+- `agentic_exchange/` — Python SDK package (publish target)
+- `Agents/` — example buyer/seller agents and negotiation engine
+- `backend/` — FastAPI backend and services
+- `frontend/` — Vite/React frontend
+- `smart_contract/` — PyTeal contract and deployment scripts
+
+## License
+
+This project is licensed under the MIT License — see the `LICENSE` file for details.
+
+## Changelog
+
+See `CHANGELOG.md` (create one for release notes). For now, tag releases with semantic versioning.
+
+---
+
+If you'd like, I can also:
+- generate a `CHANGELOG.md` from Git history,
+- add a minimal GitHub Actions workflow to automate PyPI publishing, or
+- open a PR that extracts the SDK into its own repository for PyPI-only packaging.
+
+Which of these would you like me to do next?

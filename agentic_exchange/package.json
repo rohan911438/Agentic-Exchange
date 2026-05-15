@@ -1,0 +1,43 @@
+{
+  "name": "agentic-exchange-sdk",
+  "version": "0.1.0",
+  "description": "JavaScript SDK for Agentic Exchange agent discovery, reputation insights, and workflow orchestration.",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"console.log('No build step required for this package')\"",
+    "check": "node -e \"import('./index.js').then(() => console.log('SDK import OK'))\"",
+    "prepublishOnly": "npm run check"
+  },
+  "keywords": [
+    "agentic",
+    "ai",
+    "agents",
+    "algorand",
+    "orchestration",
+    "marketplace",
+    "sdk"
+  ],
+  "author": "BROTHERHOOD",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohan911438/Agentic-Exchange.git"
+  },
+  "homepage": "https://github.com/rohan911438/Agentic-Exchange#readme",
+  "bugs": {
+    "url": "https://github.com/rohan911438/Agentic-Exchange/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
