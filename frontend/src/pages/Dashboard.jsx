@@ -183,7 +183,7 @@ const Dashboard = () => {
       {/* Workflow Modal Overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-8 space-y-6 relative shadow-2xl">
+          <div className="bg-surface border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 space-y-6 relative shadow-2xl">
             <button 
               onClick={() => { setIsModalOpen(false); setWorkflowResult(null); setWorkflowStatus(''); setWorkflowInput(''); }}
               className="absolute top-6 right-6 text-text-muted hover:text-white font-bold"
@@ -226,22 +226,46 @@ const Dashboard = () => {
             )}
             
             {workflowResult && (
-              <div className="space-y-4">
-                {workflowResult.final_output?.result && (
-                  <div className="p-6 bg-accent/5 border border-accent/20 rounded-2xl">
-                    <h3 className="text-accent font-bold mb-4 flex items-center gap-2">
-                      ✨ Task Completed
-                    </h3>
-                    <div className="text-text-primary text-sm leading-relaxed prose prose-invert max-w-none">
-                      <ReactMarkdown>{workflowResult.final_output.result}</ReactMarkdown>
-                    </div>
+              <div className="space-y-6 mt-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="px-3 py-1 bg-lime/10 text-lime border border-lime/20 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    Execution Successful
                   </div>
-                )}
-                <details className="group">
-                  <summary className="cursor-pointer text-xs font-bold text-text-muted hover:text-text-primary transition-colors">
-                    View Execution Trace (JSON)
+                </div>
+
+                {/* Pretty rendering of outputs */}
+                <div className="space-y-4">
+                  {(workflowResult.outputs || []).map((step, i) => (
+                    <div key={i} className="bg-background-primary border border-border rounded-2xl overflow-hidden">
+                      <div className="px-6 py-3 bg-white/5 border-b border-border flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <span className="w-6 h-6 rounded-full bg-accent text-white text-[10px] flex items-center justify-center font-bold">
+                            {i + 1}
+                          </span>
+                          <span className="text-xs font-bold uppercase tracking-tight text-text-secondary">
+                            Step: <span className="text-text-primary">{step.step}</span>
+                          </span>
+                        </div>
+                        <div className="text-[10px] font-mono text-text-muted">
+                          Run ID: {workflowResult.run_id?.slice(0, 8)}
+                        </div>
+                      </div>
+                      <div className="p-6 text-sm leading-relaxed prose prose-invert max-w-none prose-p:text-text-secondary prose-headings:text-text-primary prose-strong:text-accent">
+                        <ReactMarkdown>
+                          {typeof (step.output?.result || step.output) === 'string' 
+                            ? (step.output?.result || step.output) 
+                            : JSON.stringify(step.output?.result || step.output || "No output generated for this step.", null, 2)}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <details className="group opacity-50 hover:opacity-100 transition-opacity">
+                  <summary className="cursor-pointer text-xs font-bold text-text-muted hover:text-text-primary transition-colors flex items-center gap-2">
+                    <span>View Technical Trace (JSON)</span>
                   </summary>
-                  <div className="mt-2 p-4 bg-background-primary border border-border rounded-xl max-h-64 overflow-y-auto font-mono text-xs text-text-secondary">
+                  <div className="mt-4 p-4 bg-background-primary border border-border rounded-xl max-h-64 overflow-y-auto font-mono text-[10px] text-text-secondary">
                     <pre>{JSON.stringify(workflowResult, null, 2)}</pre>
                   </div>
                 </details>
