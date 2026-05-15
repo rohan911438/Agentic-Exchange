@@ -96,3 +96,24 @@ class WorkflowRunRequest(BaseModel):
     wallet: str
     steps: list[str] = Field(default_factory=list)
     input: dict[str, Any] = Field(default_factory=dict)
+
+class RecommendationRequest(BaseModel):
+    intent: str
+    wallet: Optional[str] = None
+    budget_limit: Optional[float] = None
+    preferences: Optional[dict[str, Any]] = None
+
+class WorkflowRecommendation(BaseModel):
+    name: str
+    description: str
+    steps: list[str]
+    total_estimated_price: float
+    confidence_score: float
+    compatibility_index: float
+
+class RecommendationResponse(BaseModel):
+    intent_id: str
+    decomposed_tasks: list[str]
+    recommended_agents: list[dict[str, Any]]
+    suggested_workflows: list[WorkflowRecommendation]
+    insights: str

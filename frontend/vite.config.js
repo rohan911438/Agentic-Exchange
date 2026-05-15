@@ -14,6 +14,20 @@ export default defineConfig({
       },
       protocolImports: true,
     }),
+    // Fix eval warnings in node_modules
+    {
+      name: 'fix-eval',
+      transform(code, id) {
+        if (id.includes('node_modules/vm-browserify') || id.includes('node_modules/lottie-web')) {
+          if (code.includes('eval(')) {
+            return {
+              code: code.replace(/eval\(/g, '(0, eval)('),
+              map: null
+            };
+          }
+        }
+      }
+    }
   ],
   resolve: {
     alias: {
@@ -31,7 +45,13 @@ export default defineConfig({
     include: ['buffer', 'process', 'algosdk'],
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
+    minify: 'oxc', // Use oxc as recommended by Vite 8
+    rolldownOptions: {
+      output: {
+        codeSplitting: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -11,6 +11,9 @@ from .schemas import (
     PurchaseConfirmRequest,
     SubscriptionTxnRequest,
     WorkflowRunRequest,
+    RecommendationRequest,
+    RecommendationResponse,
+    WorkflowRecommendation,
 )
 
 __all__ = [
@@ -26,4 +29,7 @@ __all__ = [
     "PurchaseConfirmRequest",
     "SubscriptionTxnRequest",
     "WorkflowRunRequest",
+    "RecommendationRequest",
+    "RecommendationResponse",
+    "WorkflowRecommendation",
 ]

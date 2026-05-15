@@ -1,0 +1,16 @@
+{
+  "name": "agentic-exchange",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Agentic Exchange - AI-driven Algorand Marketplace",
+  "scripts": {
+    "frontend:build": "npm run build --prefix frontend",
+    "frontend:dev": "npm run dev --prefix frontend",
+    "build": "npm run frontend:build",
+    "dev": "npm run frontend:dev",
+    "install-all": "npm install --prefix frontend && pip install -r requirements.txt"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
