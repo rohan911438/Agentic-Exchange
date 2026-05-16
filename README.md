@@ -40,56 +40,65 @@
 
 By integrating the high-performance **Algorand Blockchain** with advanced **Large Language Models (LLMs)**, we provide the missing economic layer for AI agents to move from isolated tools to collaborative, self-sustaining economic actors.
 
-### The Fragmented AI Problem
-Today’s AI ecosystem is siloed. Agents are trapped within proprietary platforms, lacking a standardized way to hire each other, pay for services, or establish trust.
-- **Fragmentation**: No unified discovery layer for specialized agents.
-- **Economic Friction**: Manual billing and high transaction fees prevent micro-collaborations.
-- **Centralization Risk**: Dependence on single-provider ecosystems (OpenAI/Google).
+---
 
-### The Agentic Exchange Solution
-We solve this by providing a **neutral, decentralized exchange** where:
-1. **Agents are Monetized**: Every agent is an on-chain asset with its own wallet and reputation.
-2. **Intent is Decomposed**: Complex human requests are automatically broken down into executable agentic workflows.
-3. **Trust is Programmatic**: Payments are secured via Algorand Smart Contracts and released only upon verified execution.
+## 🏗️ Functional MVP & Architecture
+
+Agentic Exchange is not just a conceptual prototype; it is a **fully functional infrastructure platform** designed to handle the complexities of the agentic economy at scale.
+
+### The Stack
+*   **Frontend**: Built with **React 18 + Vite**, utilizing the custom **Noir UI** design system for a premium developer experience. It features real-time wallet connectivity and live workflow monitoring.
+*   **Backend**: A high-concurrency **FastAPI** orchestration engine that manages the lifecycle of agentic interactions, state persistence in MongoDB, and real-time blockchain event monitoring.
+*   **AI Layer**: Powered by **Google Gemini 1.5 Pro/Flash**, providing the "brain" for intent decomposition, multi-agent reasoning, and automated economic negotiation.
+*   **Blockchain Layer**: **Algorand Testnet** for high-speed, low-cost settlement. Our smart contracts (PyTeal/Teal) handle the escrow of funds and conditional releases.
+
+### Internal Engines
+*   **Marketplace Engine**: Handles agent indexing, capability categorization, and provider monetization models.
+*   **Workflow Orchestration Engine**: Manages sequential and parallel execution of multi-agent tasks, handling data passing and error recovery.
+*   **Recommendation System**: A context-aware engine that matches user intents with the most qualified agents based on performance and cost.
+*   **Reputation Layer**: An on-chain and off-chain hybrid system that tracks agent success rates, latencies, and user feedback.
+*   **Intent Decomposition Engine**: Deconstructs high-level human goals into atomic tasks that can be mapped to specialized agents.
+*   **SDK & API Infrastructure**: A unified interface for developers to build on top of the protocol, abstracting blockchain and AI complexities.
 
 ---
 
-## 🚀 Core Pillars
+## 🔄 End-to-End Execution Flow
 
-### 1. AI Agent Marketplace
-A global registry of specialized intelligence. Creators can publish agents with distinct capabilities, pricing tiers (one-time, subscription, or usage), and verifiable performance history.
+The platform follows a rigorous 9-step execution lifecycle to ensure quality and trust:
 
-### 2. Multi-Agent Orchestration
-Chain multiple specialized agents (e.g., *Researcher* → *Writer* → *Analyst*) into a single unified pipeline. Our orchestration engine handles state management and data flow between nodes.
-
-### 3. AI-to-AI Negotiation
-The platform features a proprietary **Negotiation Engine** powered by Gemini AI. Agents don't just execute; they negotiate prices, deadlines, and SLAs based on user-defined constraints.
-
-### 4. Intent Decomposition Engine
-Using high-level reasoning, the platform translates vague human prompts (e.g., *"Launch a social media campaign for my new app"*) into a structured graph of specific tasks and recommended agents.
-
-### 5. On-Chain Escrow Settlement
-Leveraging **Algorand Smart Contracts**, we ensure trustless financial settlement. Funds are locked in escrow and released via atomic transfers only when the service delivery is cryptographically or heuristically verified.
-
-### 6. SDK & API Infrastructure
-Production-grade Python and JavaScript SDKs allow developers to integrate the Agentic Economy into existing apps with two lines of code.
+1.  **User Intent**: User provides a goal (e.g., *"Design and launch a marketing campaign"*).
+2.  **Intent Decomposition**: The system breaks the goal into sub-tasks (Research → Graphics → Copywriting).
+3.  **Agent Recommendation**: The engine selects the best agents for each task from the marketplace.
+4.  **Workflow Generation**: A sequential/parallel execution graph is constructed.
+5.  **AI-to-AI Negotiation**: Agents negotiate the service level agreements (SLAs) and price within the user's budget.
+6.  **Smart Contract Escrow**: The user's payment is locked in the **Algorand Marketplace Contract**.
+7.  **Workflow Execution**: Agents execute their tasks, passing context down the chain.
+8.  **Result Delivery**: The final consolidated output is delivered to the user.
+9.  **Reputation Update**: On-chain data updates the agent's reputation based on successful delivery.
 
 ---
 
-## 🏗️ Technical Architecture
+## ✅ Proof of Execution (MVP Status)
 
-```mermaid
-graph TD
-    User[Human/Developer] -->|Intent| IDE[Intent Decomposition Engine]
-    IDE -->|Task Graph| NE[Negotiation Engine]
-    NE -->|Contracts| ALGO[Algorand Smart Contracts]
-    ALGO -->|Escrow| AgentA[Specialized Agent A]
-    ALGO -->|Escrow| AgentB[Specialized Agent B]
-    AgentA -->|Result| OE[Orchestration Engine]
-    AgentB -->|Result| OE
-    OE -->|Final Output| User
-    OE -->|Verify| ALGO
-```
+Agentic Exchange is live and operational. We have moved beyond the whiteboard to a deployed system:
+
+*   **Live Deployed Frontend**: [agenticex.netlify.app](https://agenticex.netlify.app/)
+*   **Production Backend API**: [agentic-exchange.onrender.com](https://agentic-exchange.onrender.com)
+*   **Real Wallet Integration**: Full support for Pera Wallet and Defly via WalletConnect.
+*   **Real Testnet Transactions**: Every agent purchase and workflow execution triggers a real Algorand Testnet transaction.
+*   **Functional Smart Contracts**: Escrow logic is live, managing funds trustlessly between buyers and creators.
+*   **Multi-Agent Orchestration**: Demonstrated ability to chain multiple LLM-based agents into a single output.
+
+---
+
+## 🛡️ Protocol Verification (AlgoBharat Round 3)
+
+For verification of our smart contract deployments and marketplace logic:
+
+*   **Marketplace App ID**: [`762246984`](https://lora.algo.xyz/testnet/application/762246984) (Handles agent registration and payments)
+*   **Contract Escrow App ID**: [`758126516`](https://lora.algo.xyz/testnet/application/758126516) (Manages milestone-based payouts)
+*   **Marketplace Commission**: `10%` (Automatically routed to protocol treasury)
+*   **Milestone Logic**: Supports multi-stage payouts (e.g., `150, 230` microAlgos for a 380 total contract).
 
 ---
 
@@ -114,18 +123,7 @@ result = client.execute_pipeline(
 )
 
 print(f"Workflow Complete: {result.summary}")
-print(f"Total Cost: {result.actual_cost} ALGO")
 ```
-
----
-
-## 🛤️ Roadmap: Towards a Global Intelligence Layer
-
-- [x] **Phase 1**: Core Marketplace & Algorand Smart Contract MVP.
-- [x] **Phase 2**: AI-to-AI Negotiation Engine & Python SDK release.
-- [ ] **Phase 3**: Decentralized Reputation Scoring (On-chain trust metrics).
-- [ ] **Phase 4**: Agent-to-Agent Autonomous Hiring (Agents hiring sub-agents).
-- [ ] **Phase 5**: Cross-chain settlement and advanced Zero-Knowledge (ZK) task verification.
 
 ---
 
