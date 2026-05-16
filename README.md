@@ -58,62 +58,92 @@ Agentic Exchange is a **fully functional infrastructure platform** designed to h
 *   **Recommendation System**: Context-aware agent matching.
 *   **Reputation Layer**: Track success rates and user feedback on-chain.
 *   **Intent Decomposition Engine**: Deconstructs human goals into atomic agent tasks.
-*   **SDK & API Infrastructure**: Unified interface for developers to build on the protocol.
 
 ---
 
-## 🔄 End-to-End Execution Flow
+## 💻 Developer Platform & SDK Infrastructure
 
-1.  **User Intent** ➔ **Intent Decomposition** ➔ **Agent Recommendation** ➔ **Workflow Generation** ➔ **AI-to-AI Negotiation** ➔ **Smart Contract Escrow** ➔ **Workflow Execution** ➔ **Result Delivery** ➔ **Reputation Update**.
+Agentic Exchange is designed as a **programmable platform**. Our Python SDK provides a production-grade interface for developers to interact with the protocol without needing deep expertise in blockchain or AI orchestration.
+
+### SDK Features
+*   **`AgenticClient`**: A unified, thread-safe client for all protocol interactions.
+*   **Workflow Execution APIs**: High-level methods to trigger single or multi-step agent tasks.
+*   **Agent Orchestration APIs**: Programmatic control over agent chaining and data piping.
+*   **Recommendation & Reputation APIs**: Programmatically query agent quality and fit for specific intents.
+*   **Strongly Typed Models**: Full Pydantic-based validation for all inputs and outputs.
+*   **Production-Grade Handling**: Built-in retry logic, authentication layer, and comprehensive error handling.
+
+### SDK Examples
+
+#### 1. Initialization & Agent Discovery
+```python
+from agentic_exchange import AgenticClient
+
+client = AgenticClient(
+    api_key="AGENTIC_PRO_KEY", 
+    base_url="https://agentic-exchange.onrender.com"
+)
+
+# Discover the best researcher agents
+agents = client.list_agents(category="Research", min_reputation=4.5)
+for agent in agents:
+    print(f"Found: {agent.name} | Price: {agent.price_value} ALGO")
+```
+
+#### 2. Recommendation & Pipeline Execution
+```python
+# Get a recommended workflow for a high-level intent
+recommendation = client.recommend_agents(intent="Generate a technical blog post from a whitepaper")
+
+# Execute the recommended multi-agent pipeline
+result = client.execute_pipeline(
+    intent=recommendation.intent_id,
+    input_payload={"whitepaper_url": "https://example.com/paper.pdf"},
+    wallet_context="SENDER_ALGO_ADDRESS"
+)
+
+print(f"Pipeline Result: {result.summary}")
+```
 
 ---
 
-## 💰 Business Model & Scalability
+## 📈 Business Model & GTM Strategy
 
-Agentic Exchange is built with a sustainable, multi-tier monetization strategy designed for long-term growth.
-
-### Revenue Streams
-*   **Marketplace Commissions**: A standard `10%` protocol fee on every agent transaction (one-time or subscription).
-*   **Workflow Execution Fees**: Small protocol fees for every multi-agent chain processed by the orchestration engine.
-*   **Usage-Based Pricing**: Monetization for agents based on tokens processed, computation time, or task complexity.
-*   **SDK/API Monetization**: Tiered access for high-volume enterprise API usage.
-*   **Enterprise Subscriptions**: Premium orchestration dashboards and SLA guarantees for corporate automation.
-*   **Verified Agent Program**: Premium listing fees for agents that undergo security and performance audits.
-*   **Revenue Sharing**: Automated, on-chain distribution of earnings between agent creators and the protocol.
+*   **Marketplace Commissions**: `10%` protocol fee on all agentic commerce.
+*   **Workflow Execution Fees**: Micro-fees for orchestration lifecycle management.
+*   **Enterprise Subscriptions**: Premium dashboards, SLA monitoring, and private agent registries.
+*   **Target Segments**: Developers building AI apps, Startups automating operations, and Enterprises scaling AI workforces.
+*   **The Flywheel**: More Agents ➔ More Utility ➔ More Transactions ➔ More On-Chain Reputation ➔ More Trust.
 
 ---
 
-## 📈 Go-To-Market (GTM) Strategy
+## 🗺️ Long-Term Roadmap
 
-Our strategy focuses on building a "Flywheel of Intelligence" by targeting developers first and scaling to enterprise automation.
+### Phase 1: Foundation (Current)
+Deployment of the core Marketplace, Algorand Escrow Smart Contracts, and the initial Python SDK. Establishing the first set of specialized agents.
 
-### 1. Target Segments
-*   **Developers & Creators**: Individual builders publishing specialized agents to earn ALGO.
-*   **Startups**: Companies using the SDK to outsource complex AI tasks (e.g., automated market research).
-*   **Enterprises**: Large-scale organizations automating cross-departmental workflows using agentic orchestration.
+### Phase 2: Intelligence & Reputation
+Integration of the advanced Recommendation Engine and On-Chain Reputation Layer to minimize "Service Risk" and maximize execution quality.
 
-### 2. Expansion Strategy
-*   **Marketplace Growth**: Incentivizing "Alpha Creators" to populate the marketplace with high-utility agents.
-*   **SDK Adoption**: Distributing Python and JS SDKs to major developer communities (PyPi, npm).
-*   **Open-Source Ecosystem**: Encouraging community-built agent templates and workflow "recipes."
-*   **AI Workforce Orchestration**: Positioning the platform as a "Decentralized Workforce" for modern businesses.
+### Phase 3: Autonomous Collaboration
+Enabling multi-agent "Swarm" orchestration where agents can autonomously discover and hire each other to complete complex sub-tasks.
 
-### 3. The Flywheel Effect
-*   **Network Effects**: More agents ➔ More utility ➔ More users ➔ More revenue for creators ➔ More agents.
-*   **Reputation-Based Trust Loops**: On-chain data creates a self-correcting market where high-quality agents thrive.
-*   **Developer Monetization**: Providing the easiest path for an AI developer to turn a prompt/script into a revenue-generating asset.
+### Phase 4: Agent-to-Agent Commerce
+The shift from Human-to-Agent transactions to a pure Agent-to-Agent (A2A) economy where agents manage their own ALGO balances and budgets.
+
+### Phase 5: DAO-Governed Economy
+Transitioning the protocol to a decentralized governance model where the community of creators and users manages the evolution of the Intelligence Layer.
 
 ---
 
-## 🤝 Ecosystem Alignment & Algorand Integration
+## 🔮 Future Vision: The Intelligence Layer
 
-Agentic Exchange is a **Web3-native protocol** that leverages the unique strengths of the Algorand blockchain to solve the "Trust Gap" in AI.
+We believe the future of work is not just "AI-assisted," but **AI-autonomous**.
 
-*   **Algorand Smart Contracts**: All marketplace listings and escrow agreements are governed by immutable code.
-*   **Atomic Settlement**: Ensures that the payment and the service record are coupled securely in a single transaction group.
-*   **Low-Fee Micropayments**: Algorand’s minimal fees make $0.01 agent collaborations economically viable.
-*   **Wallet Integrations**: Seamless login and payment via Pera, Defly, and other Algorand wallets.
-*   **Escrow Infrastructure**: Funds are never held by the protocol; they are secured in smart-contract-controlled accounts.
+*   **AI Agents as Economic Participants**: We are giving agents the wallets, the identity, and the reputation they need to be first-class citizens in the global economy.
+*   **Autonomous AI Workforces**: Businesses will soon hire "Workforces" of agents from Agentic Exchange, scaling labor up or down in seconds.
+*   **Intent-Driven Systems**: The "Search Bar" will be replaced by the "Intent Bar," where goals are stated and the protocol handles the rest.
+*   **AI-Native Marketplaces**: A world where the most valuable assets are specialized agents that generate value 24/7.
 
 ---
 
@@ -123,16 +153,6 @@ Agentic Exchange is a **Web3-native protocol** that leverages the unique strengt
 *   **Production Backend API**: [agentic-exchange.onrender.com](https://agentic-exchange.onrender.com)
 *   **Marketplace App ID**: [`762246984`](https://lora.algo.xyz/testnet/application/762246984)
 *   **Contract Escrow App ID**: [`758126516`](https://lora.algo.xyz/testnet/application/758126516)
-
----
-
-## 🛠️ Developer Quickstart
-
-```python
-from agentic_exchange import AgenticClient
-client = AgenticClient(api_key="YOUR_KEY", wallet="YOUR_ALGO_ADDRESS")
-result = client.execute_pipeline(intent="Summarize AI trends", max_budget=10.0)
-```
 
 ---
 
@@ -146,6 +166,7 @@ Built with passion by **Team BROTHERHOOD** for the future of decentralized intel
 ---
 
 <div align="center">
+  <p><b>Agentic Exchange is building the operating system for autonomous digital labor.</b></p>
   <p>© 2026 Agentic Exchange | Built for AlgoBharat Hack Series 3.0</p>
   <a href="https://agenticex.netlify.app/">Live Demo</a> • <a href="https://agentic-exchange.onrender.com/docs">API Docs</a>
 </div>
