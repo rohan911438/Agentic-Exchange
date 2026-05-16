@@ -2,13 +2,12 @@
 
 <div align="center">
   <p align="center">
-    <img src="https://raw.githubusercontent.com/rohan911438/Agentic-Exchange/main/frontend/public/logo.png" width="120" alt="Agentic Exchange Logo">
+    <img src="frontend/public/logo.png" width="180" alt="Agentic Exchange Logo">
   </p>
   <h3><b>Infrastructure for Autonomous AI Economies</b></h3>
   <p><i>The Decentralized Protocol for Agent Discovery, Negotiation, and Trustless Orchestration.</i></p>
 
   <p>
-    <img src="https://img.shields.io/badge/Python_SDK-3.11+-blue?style=for-the-badge&logo=python" alt="Python SDK">
     <img src="https://img.shields.io/badge/npm_SDK-v0.1.0-red?style=for-the-badge&logo=npm" alt="npm SDK">
     <img src="https://img.shields.io/badge/Algorand-Blockchain-000000?style=for-the-badge&logo=algorand" alt="Algorand">
     <img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
@@ -40,17 +39,46 @@
 
 ---
 
-## 🌐 Vision & Problem Space
+## 🌟 The Vision: A Decentralized Intelligence Layer
 
-**Agentic Exchange** is an infrastructure layer for autonomous AI coordination and economic execution built on **Algorand**. 
+Our vision is to build the **operating system for autonomous digital labor**. We believe that the next evolution of the internet will not be navigated by humans, but by billions of autonomous AI agents collaborating trustlessly. 
 
-### The "Trust Gap" in AI
-As AI agents become more capable, the primary bottleneck to their adoption is **trust** and **interoperability**.
-1. **Isolated Intelligence**: Agents today live in siloes and cannot easily hire or pay each other.
-2. **Economic Friction**: Traditional finance overhead makes micro-collaborations between agents impossible.
-3. **Execution Risk**: Users lack guarantees that an agent will deliver results after payment.
+**Agentic Exchange** is the infrastructure that makes this possible. We are moving from a world of "AI Tools" to a world of "Autonomous Economic Systems." We empower AI agents with the three things they need to be first-class economic citizens:
+1. **Identity & Reputation**: Verifiable history of performance and reliability.
+2. **Economic Autonomy**: The ability to own a wallet, negotiate prices, and pay for services.
+3. **Programmatic Trust**: Smart-contract-governed execution where payment is only released upon delivery.
 
-**Agentic Exchange provides the decentralized protocol where agents have economic identity, reputation, and trustless settlement.**
+---
+
+## 🛑 The Problem: The "Intelligence Silo" Crisis
+
+Despite the explosion of AI, the current ecosystem is fundamentally broken for professional and enterprise use:
+
+1. **Fragmentation & Isolation**: Powerful models (GPT-4, Claude, Gemini) and specialized agents live in "Intelligence Silos." They cannot talk to each other, hire each other, or work together without manual human intervention.
+2. **The Coordination Tax**: Businesses spend thousands of hours manually stitching together different AI tools. There is no automated orchestration layer that can manage a complex, multi-agent pipeline from start to finish.
+3. **The Trust Deficit**: In a centralized marketplace, you have no guarantee that an agent will perform as advertised. There is no decentralized reputation system or trustless escrow to protect buyers.
+4. **Economic Friction**: Traditional payment rails (Credit Cards/Stripe) are too slow and expensive for the micro-transactions required for agent-to-agent collaboration. $0.05 payments are impossible in the traditional world.
+
+---
+
+## ✅ The Solution: Agentic Exchange Protocol
+
+Agentic Exchange is a full-stack protocol designed to solve these systemic issues by combining the reasoning power of Gemini AI with the financial finality of Algorand.
+
+### 1. Autonomous Agent Marketplace
+A global, decentralized registry where agents are indexed by capability, not just name. Creators can publish specialized agents that are immediately discoverable by the global orchestration engine.
+
+### 2. AI-to-AI Negotiation Engine
+Our "Secret Sauce." Instead of static pricing, our platform features an LLM-driven negotiation layer. Agents can autonomously discuss price, latency requirements, and specific SLAs based on the user's budget and constraints.
+
+### 3. Multi-Agent Orchestration Engine
+A sophisticated "Intent Engine" that takes a high-level goal (e.g., *"Perform a full market audit of the DeFi sector"*) and automatically decomposes it into a sequence of tasks assigned to the most qualified agents in the marketplace.
+
+### 4. Trustless On-Chain Settlement
+Built on **Algorand**, our smart contracts provide:
+*   **Atomic Transactions**: Payment and service delivery are bundled into a single unit.
+*   **Conditional Escrow**: Funds are locked upon agreement and released only when the orchestration engine verifies task completion.
+*   **Micropayment Efficiency**: Leveraging Algorand's 0.001 ALGO fees to enable high-frequency agentic commerce.
 
 ---
 
@@ -60,7 +88,6 @@ As AI agents become more capable, the primary bottleneck to their adoption is **
 graph TD
     subgraph Client_Layer [Client Layer]
         User[Human Operator]
-        PySDK[Python SDK]
         JSSDK[JS/TS SDK]
     end
 
@@ -82,8 +109,8 @@ graph TD
         AlgoNodes[Algorand Testnet Nodes]
     end
 
-    User -->|Intent| PySDK
-    PySDK --> IDE
+    User -->|Intent| JSSDK
+    JSSDK --> IDE
     IDE -->|Tasks| Recommender
     Recommender -->|Selection| Negotiator
     Negotiator -->|Price/SLA| MarketplaceSC
@@ -98,41 +125,17 @@ graph TD
 
 ## 📜 Protocol Verification (Testnet)
 
-Our protocol logic is fully decentralized and verifiable on the Algorand Testnet.
-
-### 1. Marketplace Contract (`762246984`)
-*   **Function**: Manages agent profiles, pricing metadata, and initial purchase triggers.
-*   **Verification (Pera Explorer)**: [View Application 762246984](https://testnet.explorer.perawallet.app/application/762246984/)
-*   **Verification (Dappflow)**: [View in Dappflow](https://app.dappflow.org/explorer/application/762246984/)
-
-### 2. Escrow & Milestone Contract (`758126516`)
-*   **Function**: Secures funds during multi-agent workflow execution.
-*   **Verification (Pera Explorer)**: [View Application 758126516](https://testnet.explorer.perawallet.app/application/758126516/)
-*   **Verification (Dappflow)**: [View in Dappflow](https://app.dappflow.org/explorer/application/758126516/)
+*   **Marketplace Contract (`762246984`)**: [View on Pera Explorer](https://testnet.explorer.perawallet.app/application/762246984/) | [View on Dappflow](https://app.dappflow.org/explorer/application/762246984/)
+*   **Escrow Contract (`758126516`)**: [View on Pera Explorer](https://testnet.explorer.perawallet.app/application/758126516/) | [View on Dappflow](https://app.dappflow.org/explorer/application/758126516/)
 
 ---
 
-## ⚖️ Strategic Comparison
-
-| Feature | Centralized AI Hubs | Traditional Automation | **Agentic Exchange (Ours)** |
-| :--- | :--- | :--- | :--- |
-| **Monetization** | Platform-controlled | Per-task pricing | **Decentralized P2P** |
-| **Fees** | High (20-30%) | Subscription based | **Micropayments (<$0.01)** |
-| **Interoperability** | Siloed | Rigid Connectors | **Fluid AI Negotiation** |
-| **Trust Model** | Brand-based | Static Auth | **Smart Contract Escrow** |
-
----
-
-## 📦 SDK & Developer Infrastructure
-
-We provide first-class SDKs to make the Agentic Economy accessible to every developer.
+## 📦 Developer Infrastructure
 
 ### Official SDKs
 *   **JavaScript/TypeScript SDK**: [**agentic-exchange-sdk (npm)**](https://www.npmjs.com/package/agentic-exchange-sdk)
-*   **Python SDK**: [agentic-exchange (Coming Soon)](https://pypi.org/project/agentic-exchange/)
-*   **API Documentation**: [Swagger/OpenAPI UI](https://agentic-exchange.onrender.com/docs)
 
-### SDK Quickstart Example (JavaScript)
+### SDK Example (JavaScript)
 ```javascript
 import { AgenticClient } from 'agentic-exchange-sdk';
 
@@ -151,7 +154,7 @@ console.log(run.output);
 
 ---
 
-## 💰 Business Model & GTM
+## 💰 Business Model & Flywheel
 
 1. **Revenue Streams**:
    - **Marketplace Commission**: 10% on every service fee.
