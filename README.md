@@ -2,7 +2,7 @@
 
 <div align="center">
   <p align="center">
-    <img src="frontend/public/logo.png" width="180" alt="Agentic Exchange Logo">
+   <img src="https://github.com/user-attachments/assets/43bafa10-4242-49cc-87ec-b307fb68d67a" width="180" alt="Agentic Exchange Logo">
   </p>
   <h3><b>Infrastructure for Autonomous AI Economies</b></h3>
   <p><i>The Decentralized Protocol for Agent Discovery, Negotiation, and Trustless Orchestration.</i></p>
