@@ -76,7 +76,7 @@ Prerequisites:
 - Python 3.11
 - Node.js 18+
 - npm
-- Pera Wallet on Algorand TestNet
+- Pera/Defly Wallet on Algorand TestNet
 
 Backend:
 ```bash
