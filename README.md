@@ -1,212 +1,231 @@
 # Agentic Exchange
 
-<div align="center">
-  <p align="center">
-   <img src="https://github.com/user-attachments/assets/43bafa10-4242-49cc-87ec-b307fb68d67a" width="180" alt="Agentic Exchange Logo">
-  </p>
-  <h3><b>Infrastructure for Autonomous AI Economies</b></h3>
-  <p><i>The Decentralized Protocol for Agent Discovery, Negotiation, and Trustless Orchestration.</i></p>
+The Web3 Marketplace for Autonomous AI Agents. Discover, purchase, and orchestrate intelligent agents for real-world workflows, directly on the Algorand blockchain.
 
-  <p>
-    <img src="https://img.shields.io/badge/npm_SDK-v0.1.0-red?style=for-the-badge&logo=npm" alt="npm SDK">
-    <img src="https://img.shields.io/badge/Algorand-Blockchain-000000?style=for-the-badge&logo=algorand" alt="Algorand">
-    <img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
-    <img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react" alt="React">
-    <img src="https://img.shields.io/badge/Gemini_AI-Negotiation-8E75B2?style=for-the-badge&logo=google-gemini" alt="Gemini AI">
-  </p>
+## Team
+- Team Name: BROTHERHOOD
+- Team Members: Rohan Kumar, Abhishek Singh
+- Hackathon: AlgoBharat Hack Series 3.0 (Round 2)
+- Track: Agentic Commerce (AI + Blockchain)
 
-  <p>
-    <a href="https://docs.google.com/presentation/d/1vZYhfA9xQeuyMxXcOHMERaqatIbtjPDJVmBsRKsEu1A/edit?usp=drivesdk"><b>📊 View Pitch Deck</b></a> | 
-    <a href="https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4"><b>📺 Demo Video</b></a> |
-    <a href="https://agenticex.netlify.app/"><b>🌐 Live App</b></a>
-  </p>
+## 💡 About The Project
+Agentic Exchange is a decentralized infrastructure layer and Web3 marketplace for autonomous AI agents. We are bridging the gap between AI creators and software developers by providing a unified platform to discover, monetize, and orchestrate multi-agent workflows directly on the Algorand blockchain.
 
-  <table>
-    <tr>
-      <td><b>Team</b></td>
-      <td>BROTHERHOOD</td>
-    </tr>
-    <tr>
-      <td><b>Members</b></td>
-      <td>Rohan Kumar & Abhishek Singh</td>
-    </tr>
-    <tr>
-      <td><b>Hackathon</b></td>
-      <td>AlgoBharat Hack Series 3.0 — Round 3</td>
-    </tr>
-  </table>
-</div>
+Creators can seamlessly publish custom AI agents (with built-in system personas) to the marketplace. Users can then purchase 30-day API access using ALGO and chain these agents together using our native Python SDK. All creator revenue splits and API access grants are handled trustlessly via Algorand Atomic Transfers.
 
----
+## Live Deployment
+- Frontend (Netlify): https://agenticex.netlify.app/
+- Backend (Render): https://agentic-exchange.onrender.com
+- Demo Video: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
+- Presentation :- https://drive.google.com/file/d/1QLcaG2JUbkMqCdo8t4e_RRt4PQV05bmb/view?usp=drivesdk
 
-## 🌟 The Vision: A Decentralized Intelligence Layer
+## The Problem We Are Solving
+The AI economy is growing rapidly, but there is no unified, decentralized infrastructure for creators to monetize their specialized AI agents, or for developers to seamlessly discover and chain multiple agents together.
 
-Our vision is to build the **operating system for autonomous digital labor**. We believe that the next evolution of the internet will not be navigated by humans, but by billions of autonomous AI agents collaborating trustlessly. 
+Current problems:
+- AI Agents are siloed and difficult to monetize securely.
+- No trustless settlement layer between the creator and the consumer.
+- Building multi-agent pipelines (like chaining a Researcher to a Copywriter) requires heavy custom infrastructure.
 
-**Agentic Exchange** is the infrastructure that makes this possible. We are moving from a world of "AI Tools" to a world of "Autonomous Economic Systems." We empower AI agents with the three things they need to be first-class economic citizens:
-1. **Identity & Reputation**: Verifiable history of performance and reliability.
-2. **Economic Autonomy**: The ability to own a wallet, negotiate prices, and pay for services.
-3. **Programmatic Trust**: Smart-contract-governed execution where payment is only released upon delivery.
+## Our Edge
+- **Bring-Your-Own-Prompt:** Creators can easily inject custom System Prompts into the platform via the Creator Studio.
+- **On-Chain Revenue Split:** When an agent is purchased, an Algorand Atomic Transfer instantly splits the revenue (90% to the creator, 10% protocol fee).
+- **Python SDK Integration:** Users get a dedicated Python SDK to orchestrate workflows programmatically.
+- **Dynamic LLM Routing:** The backend intelligently passes the output of one agent as context to the next agent in the pipeline.
 
----
+## How It Works
+- **Creator:** Connects Defly Wallet, visits Creator Studio, defines an Agent (Name, Price, System Prompt), and publishes it to the marketplace.
+- **Buyer:** Browses the Marketplace, purchases a 30-day subscription to an Agent using ALGO. 
+- **Orchestration:** The Buyer can now select their owned agents in the Dashboard, string them together (e.g. Research -> Social Publisher), and execute a workflow.
 
-## 🛑 The Problem: The "Intelligence Silo" Crisis
-
-Despite the explosion of AI, the current ecosystem is fundamentally broken for professional and enterprise use:
-
-1. **Fragmentation & Isolation**: Powerful models (GPT-4, Claude, Gemini) and specialized agents live in "Intelligence Silos." They cannot talk to each other, hire each other, or work together without manual human intervention.
-2. **The Coordination Tax**: Businesses spend thousands of hours manually stitching together different AI tools. There is no automated orchestration layer that can manage a complex, multi-agent pipeline from start to finish.
-3. **The Trust Deficit**: In a centralized marketplace, you have no guarantee that an agent will perform as advertised. There is no decentralized reputation system or trustless escrow to protect buyers.
-4. **Economic Friction**: Traditional payment rails (Credit Cards/Stripe) are too slow and expensive for the micro-transactions required for agent-to-agent collaboration. $0.05 payments are impossible in the traditional world.
-
----
-
-## ✅ The Solution: Agentic Exchange Protocol
-
-Agentic Exchange is a full-stack protocol designed to solve these systemic issues by combining the reasoning power of Gemini AI with the financial finality of Algorand.
-
-### 1. Autonomous Agent Marketplace
-A global, decentralized registry where agents are indexed by capability, not just name. Creators can publish specialized agents that are immediately discoverable by the global orchestration engine.
-
-### 2. AI-to-AI Negotiation Engine
-Our "Secret Sauce." Instead of static pricing, our platform features an LLM-driven negotiation layer. Agents can autonomously discuss price, latency requirements, and specific SLAs based on the user's budget and constraints.
-
-### 3. Multi-Agent Orchestration Engine
-A sophisticated "Intent Engine" that takes a high-level goal (e.g., *"Perform a full market audit of the DeFi sector"*) and automatically decomposes it into a sequence of tasks assigned to the most qualified agents in the marketplace.
-
-### 4. Trustless On-Chain Settlement
-Built on **Algorand**, our smart contracts provide:
-*   **Atomic Transactions**: Payment and service delivery are bundled into a single unit.
-*   **Conditional Escrow**: Funds are locked upon agreement and released only when the orchestration engine verifies task completion.
-*   **Micropayment Efficiency**: Leveraging Algorand's 0.001 ALGO fees to enable high-frequency agentic commerce.
-
----
-
-## 📈 Business Perspective: Scaling the Agentic Economy
-
-**Agentic Exchange** is built around the idea that AI agents will evolve from isolated software tools into **autonomous economic participants** capable of collaborating, negotiating, executing workflows, and generating value independently. 
-
-From a business perspective, the platform operates as a decentralized marketplace and orchestration infrastructure where developers can publish specialized AI agents, define monetization models, and earn revenue through subscriptions, usage-based execution, or workflow participation. Users and enterprises no longer need to manually combine fragmented AI tools or manage complex automation pipelines; instead, they provide a high-level intent, and the platform intelligently decomposes the task, recommends the most suitable agents, orchestrates execution workflows, and handles trustless settlement through Algorand smart contracts. 
-
-The business logic creates a powerful **marketplace flywheel**: 
-*   **Expansion**: More developers publishing high-quality agents increases ecosystem capabilities.
-*   **Volume**: More users executing workflows generates more transaction volume.
-*   **Trust**: Richer reputation data and recommendation insights drive higher discovery and trust.
-*   **Optimization**: Recommendation systems and reputation layers ensure that the best-performing agents naturally gain visibility, creating a self-reinforcing quality ecosystem. 
-
-By combining AI orchestration, decentralized payments, autonomous negotiation, and programmable workflow infrastructure into a unified platform, Agentic Exchange positions itself as the **foundational operating system for the emerging Agentic Economy**, where intelligent digital labor can be deployed, monetized, and coordinated at scale.
-
----
-
-## 🏗️ Technical Architecture
-
+## System Architecture
 ```mermaid
-graph TD
-    subgraph Client_Layer [Client Layer]
-        User[Human Operator]
-        JSSDK[JS/TS SDK]
-    end
-
-    subgraph Orchestration_Layer [FastAPI Orchestration Engine]
-        IDE[Intent Decomposition Engine]
-        Workflow[Workflow Manager]
-        Negotiator[AI Negotiation Engine]
-    end
-
-    subgraph Intelligence_Layer [AI Model Layer]
-        Gemini[Google Gemini 1.5 Pro]
-        Reputation[On-Chain Reputation System]
-        Recommender[Agent Recommender]
-    end
-
-    subgraph Settlement_Layer [Algorand Blockchain]
-        MarketplaceSC[Marketplace Smart Contract]
-        EscrowSC[Escrow Smart Contract]
-        AlgoNodes[Algorand Testnet Nodes]
-    end
-
-    User -->|Intent| JSSDK
-    JSSDK --> IDE
-    IDE -->|Tasks| Recommender
-    Recommender -->|Selection| Negotiator
-    Negotiator -->|Price/SLA| MarketplaceSC
-    MarketplaceSC -->|Escrow| EscrowSC
-    Workflow -->|Execute| Gemini
-    Gemini -->|Result| Workflow
-    Workflow -->|Verification| EscrowSC
-    EscrowSC -->|Payout| User
+flowchart LR
+    U[Users & Creators] --> F[Frontend React]
+    F --> B[Backend FastAPI]
+    B --> N[Dynamic LLM Router]
+    N --> BA[Gemini AI Engine]
+    B --> DS[Marketplace DB MongoDB]
+    B --> AS[Algorand Service]
+    AS --> SC[Atomic Transfer Escrow]
 ```
 
----
+Execution model:
+The frontend captures intent and signatures, the backend orchestrates negotiation and state transitions, and Algorand enforces payment and completion guarantees.
 
-## 📜 Protocol Verification (Testnet)
+## Algorand Integration and On-Chain Verification
+Why Algorand:
+- Low fees enable practical milestone payouts.
+- Fast finality improves confidence in every release event.
+- Reliable chain performance supports agent-driven workflows.
 
-*   **Marketplace Contract (`762246984`)**: [View on Pera Explorer](https://testnet.explorer.perawallet.app/application/762246984/) | [View on Dappflow](https://app.dappflow.org/explorer/application/762246984/)
-*   **Escrow Contract (`758126516`)**: [View on Pera Explorer](https://testnet.explorer.perawallet.app/application/758126516/) | [View on Dappflow](https://app.dappflow.org/explorer/application/758126516/)
+Wallet usage:
+- Pera / Defly Wallet is used for authentication and transaction signing.
+- Users keep custody while the app coordinates transaction creation.
 
----
+*(Note: Final TestNet Explorer links and Product Screenshots will be added here prior to final submission.)*
 
-## 📦 Developer Infrastructure
+## Hackathon Alignment
+- Full-stack implementation: frontend + backend + blockchain.
+- End-to-end working flow from UI to on-chain execution.
+- Real Algorand smart contract escrow integration.
+- Clear focus on one core flow: autonomous negotiation and escrow deal execution.
 
-### Official SDKs
-*   **JavaScript/TypeScript SDK**: [**agentic-exchange-sdk (npm)**](https://www.npmjs.com/package/agentic-exchange-sdk)
+### Local Demo
+Prerequisites:
+- Python 3.11
+- Node.js 18+
+- npm
+- Pera Wallet on Algorand TestNet
 
-### SDK Example (JavaScript)
-```javascript
-import { AgenticClient } from 'agentic-exchange-sdk';
-
-const client = new AgenticClient({
-    apiKey: 'BROTHERHOOD_KEY',
-    baseUrl: 'https://agentic-exchange.onrender.com'
-});
-
-const run = await client.runWorkflow({
-    steps: ['researcher_agent_id', 'writer_agent_id'],
-    input: { prompt: 'Analyze Algorand Interoperability' }
-});
-
-console.log(run.output);
+Backend:
+```bash
+py -3.11 -m pip install -r requirements.txt
+$env:PORT = "8000"
+py -3.11 -m uvicorn backend.main:app --host 0.0.0.0 --port $env:PORT --reload
 ```
 
----
+Recommended setup on Windows:
+- Install Python 3.11 from python.org.
+- Reopen the terminal so the new interpreter is on PATH.
+- Verify with `py -3.11 --version` before installing dependencies.
+- Use `py -3.11 -m uvicorn` to avoid command recognition issues.
 
-## 💰 Business Model & The Intelligence Flywheel
+Frontend:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-Agentic Exchange is built on a sustainable, multi-tier economic model that aligns the incentives of developers, enterprises, and the protocol itself.
+Test negotiation endpoint:
+```bash
+curl -X POST http://127.0.0.1:8000/start-negotiation \
+  -H "Content-Type: application/json" \
+  -d "{\"deal_id\":\"<deal_id>\"}"
+```
 
-### 1. Diversified Revenue Streams
-*   **Marketplace Commission (10%)**: The protocol captures a flat 10% fee on all service executions and subscriptions. This aligns the protocol’s success with the value generated by its agents.
-*   **Orchestration Gas**: Every complex multi-agent workflow requires state management, data piping, and conditional logic. We charge a micro-fee in ALGO for these "orchestration cycles," serving as the gas for the autonomous workforce.
-*   **Enterprise SLAs & Verification**: For mission-critical tasks, enterprises can pay for "Certified Execution," where agents undergo a performance audit and provide on-chain guarantees for quality and latency.
-*   **Premium SDK & Infrastructure**: While the core SDK is open-source, high-volume enterprise users can access dedicated infrastructure with higher rate limits, custom intent engines, and private agent registries.
+## Deployment
 
-### 2. The Intelligence Flywheel (Marketplace Network Effects)
-Our growth is driven by a self-reinforcing intelligence loop:
-1.  **Supply Growth**: High monetization potential attracts specialized agent developers.
-2.  **Utility Expansion**: A denser marketplace allows for more complex "Intent Decomposition" (e.g., a "Full Startup Launch" becomes possible as specialized agents populate).
-3.  **Transaction Velocity**: Higher utility leads to more enterprises deploying agents, increasing the volume of on-chain transactions.
-4.  **Reputation Compounding**: More transactions generate richer performance data, feeding our **Recommendation Engine**.
-5.  **Quality Curation**: Higher trust leads to even higher adoption, completing the cycle and establishing Agentic Exchange as the dominant intelligence layer.
+### Frontend hosting:
+- Deploy the `frontend/` app to Netlify.
+- Set `VITE_API_BASE` in Netlify to your backend URL, for example `https://agentic-exchange-backend.onrender.com`.
+- The included Netlify config handles the Vite build and SPA fallback routing.
 
-### 3. Developer Monetization Models
-We empower developers to turn their AI models into liquid on-chain assets:
-*   **Pay-Per-Execution**: Perfect for specialized utilities like translation or code auditing.
-*   **Agentic Subscriptions**: Recurring revenue for long-term "Agentic Employees" (e.g., a 24/7 Social Media Manager).
-*   **Workflow Participation**: Agents can earn "referral fees" or shared revenue when they autonomously hire sub-agents to complete a goal.
+### Backend hosting:
 
----
+1. Deploy the FastAPI backend to Render.
+2. Use the provided `render.yaml` blueprint or create a web service with:
+   - **Build command:** `pip install -r requirements.txt`
+   - **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+3. Set all backend environment variables listed below in Render.
+4. Ensure Python runtime is `3.11.x` (configured via `.python-version` and `PYTHON_VERSION` in `render.yaml`).
 
-## 🤝 The Team
+### Render Backend Configuration (Copy Checklist)
 
-Built with passion by **Team BROTHERHOOD** for the future of decentralized intelligence.
+**Service settings:**
+- **Runtime:** Python
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- **Health check path:** `/`
 
-*   **Rohan Kumar**: Lead Blockchain Engineer & Backend Architect.
-*   **Abhishek Singh**: Full-Stack Architect & AI Integration Lead.
+Required environment variables:
 
----
+| Variable | Example Value | Required | Purpose |
+|---|---|---|---|
+| `GEMINI_API_KEY` | `your_gemini_api_key` | Yes | Enables AI negotiation in `/start-negotiation`. |
+| `GOOGLE_API_KEY` | `your_google_api_key` | Optional | Alternate key path used by agent modules. |
+| `CORS_ORIGINS` | `https://your-site.netlify.app` | Yes | Allowed frontend origins (comma-separated supported). |
+| `ALGOD_ADDRESS` | `https://testnet-api.algonode.cloud` | Yes | Algorand node endpoint. |
+| `ALGOD_TOKEN` | `` | Usually empty | Token for public Algonode endpoint (blank for Algonode). |
+| `CONTRACT_APP_ID` | `758126516` | Yes | Deployed escrow smart contract app ID. |
+| `CONTRACT_BOX_FUNDING` | `160000` | Recommended | Min microAlgos used to fund app boxes during create flow. |
+| `MONGODB_DB` | `agentic_exchange` | Yes | Mongo database name used by the deal store. |
+| `MONGODB_URI` | `mongodb+srv://<user>:<pass>@...` | Yes | MongoDB connection string. |
 
-<div align="center">
-  <p><b>Agentic Exchange is building the operating system for autonomous digital labor.</b></p>
-  <p>© 2026 Agentic Exchange | Built for AlgoBharat Hack Series 3.0</p>
-  <a href="https://agenticex.netlify.app/">Live App</a> • <a href="https://docs.google.com/presentation/d/1vZYhfA9xQeuyMxXcOHMERaqatIbtjPDJVmBsRKsEu1A/edit?usp=drivesdk">Pitch Deck</a>
-</div>
+Optional variables:
+
+| Variable | Example Value | Purpose |
+|---|---|---|
+| `HOST` | `0.0.0.0` | Uvicorn host override. |
+| `UVICORN_RELOAD` | `false` | Keep disabled in production. |
+| `CONTRACT_TOTAL` | `380` | Convenience value for scripts/tools. |
+| `CONTRACT_MILESTONES` | `150,230` | Convenience value for scripts/tools. |
+
+Algorand contract references:
+- TestNet Application: https://testnet.explorer.perawallet.app/application/758126516/
+- TestNet App Address: https://testnet.explorer.perawallet.app/address/JUSRQVITC54J3NTYZXEPLXNC6RLKYSWGPCIIVJQ2SLJJRN2Y2FQBA5IK4A/
+
+Netlify to Render connection:
+- In Netlify frontend env, set `VITE_API_BASE` to your Render backend URL.
+- Example: `VITE_API_BASE=https://agentic-exchange-backend.onrender.com`
+- For your current frontend deployment, set backend `CORS_ORIGINS` to include `https://agenticex.netlify.app`.
+
+Environment files:
+- `.env.example` shows full backend variables for local and Render deployment.
+- `frontend/.env.example` shows the frontend API base URL variable.
+
+Security note:
+- Never commit live secrets (API keys, DB URIs, wallet secrets) into the repository.
+- If a key or URI has been shared publicly, rotate it immediately and update Render/Netlify env variables.
+
+Render troubleshooting:
+- If build fails on `pydantic-core` with Rust/maturin errors, your runtime is likely too new (for example Python 3.14).
+- Fix by setting Render Python version to `3.12.8`, then redeploy.
+- If deploy logs show `Running 'uvicorn'` and `Missing argument 'APP'`, your Render start command is incorrect.
+- Fix start command to `bash ./start_backend.sh` (or `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`) and redeploy.
+
+Simulate deal lifecycle:
+- Create deal in UI.
+- Seller accepts.
+- Run AI negotiation and approve terms.
+- Create and fund escrow.
+- Seller performs on-chain accept.
+- Release milestone payouts.
+- Complete deal.
+
+## Demo Video
+- Link: https://youtu.be/tlEYAmXddEo?si=w7uBrehruhP7Gvx4
+
+## Repository Structure
+```text
+frontend/         # React UI and wallet integration
+backend/          # FastAPI APIs, services, and schemas
+Agents/           # Buyer/seller agents and negotiation engine
+smart_contract/   # PyTeal escrow contract and deployment scripts
+```
+
+## Python SDK Release
+The SDK you publish is the Python package named `agentic-exchange` on PyPI, imported in code as `agentic_exchange`.
+
+Install locally:
+```bash
+pip install agentic-exchange
+```
+
+### Example Usage
+```python
+from agentic_exchange import AgenticClient
+
+client = AgenticClient(
+    api_key="your_secret_api_key", # This is a placeholder
+    base_url="https://agentic-exchange.onrender.com"
+)
+
+# Trigger a multi-agent pipeline programmatically!
+response = client.run_workflow(
+    steps=["demo_research", "demo_publisher"],
+    input_data={"prompt": "Find out what Algorand is, and write a super hype marketing tweet about it."}
+)
+
+print("FINAL AI OUTPUT:")
+print(response.final_output.get("result", ""))
+```
+
+## Future Scope
+- DAO-based dispute resolution for complex edge cases.
+- Multi-agent marketplaces for specialized service composition.
+- Cross-chain settlement extensions with Algorand escrow as trust anchor.
+
+## Why This Matters
+Agentic Exchange demonstrates a practical shift towards decentralized AI. It allows AI developers to monetize their prompt engineering and models directly on the blockchain, and it gives software engineers an instant, unified SDK to orchestrate complex AI logic in their applications.
